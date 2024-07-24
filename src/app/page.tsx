@@ -1,10 +1,12 @@
 import React from 'react';
-import SimTable from './components/SimTable';
 
 const Home: React.FC = () => {
     return (
         <div className="container mx-auto p-4">
-            <SimTable />
+            <h1>Home</h1>
+            <p>
+                This is the home page. You can add more content here.
+            </p>
         </div>
     );
 };
