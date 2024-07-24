@@ -14,6 +14,7 @@ import {
 } from "../DeviceTypeScript";
 import {
   createDeviceApi,
+  deleteDeviceApi,
   getDeviceListApi,
   getDeviceTypeListApi,
 } from "../DeviceService";
@@ -42,13 +43,15 @@ interface DeviceContextProps {
 
   // Message
   message: MessageInterface;
-  setMessage: (message: MessageInterface) => void; 
-  resetMessage: () => void; 
+  setMessage: (message: MessageInterface) => void;
+  resetMessage: () => void;
 
   // Create device form modal state
   isCreateDeviceModalOpen: boolean;
   setIsCreateDeviceModalOpen: (isOpen: boolean) => void;
 
+  // Delete device
+  deleteDevice: (id: number) => void;
 }
 
 const DeviceContext = createContext<DeviceContextProps | undefined>(undefined);
@@ -69,7 +72,6 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       messagesObject: null,
     });
   };
-
 
   // Alert State
   const [alertOpen, setAlertOpen] = useState(false);
@@ -176,13 +178,51 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setMessage({
           message: error.message,
           messageType: MessageType.ERROR,
-          messagesObject: error.messagesObject ,
+          messagesObject: error.messagesObject,
         });
 
         // Open alert
         setAlertOpen(true);
       });
   };
+
+  /**
+   * Delete device function
+   * @param id
+   */
+
+  const deleteDevice = (id: number) => {
+    console.log("Delete Device Id", id);
+    deleteDeviceApi(id)
+        .then((data: BasicResponse) => {
+            console.log("Delete Device Response", data);
+            // Set message state
+            setMessage({
+                message: data.message,
+                messageType: MessageType[data.messageType as keyof typeof MessageType], // Convert string to enum
+                messagesObject: data.messagesObject,
+            });
+    
+            // Open alert
+            setAlertOpen(true);
+
+            // Fetch Device List
+            fetchDeviceList(pagination.currentPage, 5);
+        })
+        .catch((error) => {
+            console.error(error);
+    
+            // Set message state
+            setMessage({
+                message: error.message,
+                messageType: MessageType.ERROR,
+                messagesObject: error.messagesObject,
+            });
+    
+            // Open alert
+            setAlertOpen(true);
+        });
+  }
 
   useEffect(() => {
     // fetchDeviceList(pagination.currentPage, 5);
@@ -219,13 +259,15 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         isCreateDeviceModalOpen,
         setIsCreateDeviceModalOpen,
 
+        // Delete device
+        deleteDevice,
 
         // deviceDetails,
         // setDeviceDetails,
       }}
     >
       {children}
-      {message.messageType != MessageType.INIT &&  (
+      {message.messageType != MessageType.INIT && (
         <DynamicAlert
           open={alertOpen}
           onClose={() => setAlertOpen(false)}
