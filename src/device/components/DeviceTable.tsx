@@ -21,7 +21,6 @@ import { useDeviceContext } from "../contexts/DeviceProvider";
 import { useEffect } from "react";
 import DeviceTableBody from "./table/DeviceTableBody";
 import DeviceTableFooter from "./table/DeviceTableFooter";
-import { DeviceForm } from "./DeviceForm";
 
 const tableHead = ["IMEI", "Device Type", "Created At", "Status", "Actions"];
 

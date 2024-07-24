@@ -36,3 +36,16 @@ export const createDeviceApi = async (payload: DeviceFormData): Promise<BasicRes
         throw data;
     }
 }
+
+// Delete device api
+export const deleteDeviceApi = async (id: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.delete(`/stock-api/devices/${id}/`);
+        console.error("Delete device data ", data);
+        return data;
+    } catch (error: any) {
+        const data = error.response.data;
+        console.error("Delete device error", data);
+        throw data;
+    }
+}

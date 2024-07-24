@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { PencilIcon } from "@heroicons/react/24/solid";
+import { PencilIcon,TrashIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -15,6 +15,7 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { DeviceInterface } from "@/device/DeviceTypeScript";
+import { useDeviceContext } from "@/device/contexts/DeviceProvider";
 
 interface DeviceTableBodyProps {
   tableHead: string[];
@@ -38,6 +39,13 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
       default:
         return "gray";
     }
+  };
+
+  const { deleteDevice } = useDeviceContext();
+
+  const handleDeleteDevice = (id: number, ev) => {
+    ev.preventDefault();
+    deleteDevice(id);
   };
 
   return (
@@ -73,6 +81,7 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
           {tableRows.map((row: DeviceInterface, index) => {
             const isLast = index === tableRows.length - 1;
             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+            const classesActions = isLast ? "p-4 flex flex-row gap-2" : "p-4 border-b border-blue-gray-50 flex flex-row gap-2";
 
             return (
               <tr key={row.id}>
@@ -121,16 +130,24 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
                   </div>
                 </td>
 
-                <td className={classes}>
-                  <Tooltip title="Edit User">
-                    <IconButton
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </IconButton>
-                  </Tooltip>
+                <td className={classesActions}>
+                  <IconButton
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    color="blue"
+                  >
+                    <PencilIcon className="h-4 w-4" />
+                  </IconButton>
+                  <IconButton
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    color="red"
+                    onClick={(ev) => handleDeleteDevice(row.id, ev)}
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </IconButton>
                 </td>
               </tr>
             );
