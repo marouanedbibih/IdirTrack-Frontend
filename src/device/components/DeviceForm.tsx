@@ -10,6 +10,7 @@ import {
 import React, { FormEvent, useEffect } from "react";
 import { useDeviceContext } from "../contexts/DeviceProvider";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { error } from "console";
 
 export const DeviceForm: React.FC = () => {
   const {
@@ -18,18 +19,24 @@ export const DeviceForm: React.FC = () => {
     deviceTypes,
     fetchDeviceTypes,
     createDevice,
-    setIsCreateDeviceModalOpen
+    setIsCreateDeviceModalOpen,
+    message,
+    resetMessage,
   } = useDeviceContext();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Device Form Data Details", deviceFormData);
+    if (message) {
+      console.log("Device Errors", message.messagesObject);
+    }
     createDevice(deviceFormData);
   };
 
   const handleModalClose = () => {
     setIsCreateDeviceModalOpen(false);
-  }
+    resetMessage();
+  };
 
   useEffect(() => {
     fetchDeviceTypes(1, 10);
@@ -62,15 +69,22 @@ export const DeviceForm: React.FC = () => {
           onSubmit={handleSubmit}
           className="w-full gap-4 flex flex-col mt-4"
         >
-          <FormField
-            label="IMEI"
-            placeholder="Enter IMEI"
-            type="text"
-            value={deviceFormData.imei}
-            onChange={(e) => {
-              setDeviceFormData({ ...deviceFormData, imei: e.target.value });
-            }}
-          />
+          <div className="w-full">
+            <FormField
+              label="IMEI"
+              placeholder="Enter IMEI"
+              type="text"
+              value={deviceFormData.imei as string}
+              onChange={(e) => {
+                setDeviceFormData({ ...deviceFormData, imei: e.target.value });
+                if (message?.messagesObject?.imei) {
+                  message.messagesObject.imei = null;
+                }
+              }}
+              error={message?.messagesObject?.imei}
+            />
+          </div>
+
           <div className="w-72">
             <Typography
               variant="h6"
@@ -84,25 +98,21 @@ export const DeviceForm: React.FC = () => {
             </Typography>
             <Select
               size="lg"
-              label="Select Country"
-              // selected={(element) =>
-              //   element &&
-              //   React.cloneElement(element, {
-              //     disabled: true,
-              //     className:
-              //       "flex items-center opacity-100 px-0 gap-2 pointer-events-none",
-              //   })
-              // }
+              label="Select Device"
               onChange={(val) =>
                 setDeviceFormData({
                   ...deviceFormData,
-                  deviceTypeId: parseInt(val),
+                  deviceTypeId: parseInt(val as string),
                 })
               }
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              error={message.messagesObject?.deviceTypeId ? true : false}
             >
+              <Option value={""} disabled>
+                Select Device Type
+              </Option>
               {deviceTypes.map(({ id, name }) => (
                 <Option
                   key={id}
@@ -113,12 +123,15 @@ export const DeviceForm: React.FC = () => {
                 </Option>
               ))}
             </Select>
+            <small className="text-red-500">
+              {message?.messagesObject?.deviceTypeId}
+            </small>
           </div>
           <FormField
             label="Remarque"
             placeholder="Enter IMEI"
             type="text"
-            value={deviceFormData.remarque}
+            value={deviceFormData.remarque as string}
             onChange={(e) => {
               setDeviceFormData({
                 ...deviceFormData,

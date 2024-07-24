@@ -15,9 +15,9 @@ export interface DeviceInterface {
 
 export interface DeviceFormData {
     id?: number;
-    imei: string;
-    remarque: string;
-    deviceTypeId: number;
+    imei: string | null;
+    remarque: string | null;
+    deviceTypeId: number | null;
 }
 
 export enum DeviceStatus {
@@ -31,4 +31,6 @@ export interface DeviceTypeInterface {
     id: number;
     name: string;
 }
+
+
 

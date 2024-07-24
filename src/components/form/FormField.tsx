@@ -7,6 +7,7 @@ interface FormFieldProps {
   type?: string;
   value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  error?: string | null;
 }
 
 const FormField: FC<FormFieldProps> = ({
@@ -15,6 +16,7 @@ const FormField: FC<FormFieldProps> = ({
   type = "text",
   value,
   onChange,
+  error,
 }) => {
   return (
     <div className="mb-1 flex flex-col gap-4">
@@ -34,14 +36,16 @@ const FormField: FC<FormFieldProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="!border-t-blue-gray-200 focus:!border-science-blue-700"
+        className={`!border-t-blue-gray-200 focus:!border-science-blue-700"`}
         labelProps={{
           className: "before:content-none after:content-none",
         }}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
         crossOrigin={undefined}
+        error={error ? true : false}
       />
+      <small className="text-red-500">{error}</small>
     </div>
   );
 };

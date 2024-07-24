@@ -10,12 +10,13 @@ export enum MessageType {
   SUCCESS = "SUCCESS",
   ERROR = "ERROR",
   WARNING = "WARNING",
+  INIT = "INIT",
 }
 
 export interface BasicResponse {
   content?: any;
   message?: string;
-  messageObject?: { [key: string]: string | null };
+  messagesObject?: { [key: string]: string | null };
   messageType?: MessageType;
   redirectUrl?: string;
   status?: string;
@@ -24,7 +25,7 @@ export interface BasicResponse {
 
 export interface MessageInterface {
   message?: string;
-  messageObject?: { [key: string]: string | null };
+  messagesObject?: { [key: string]: string | null } | null;
   messageType: MessageType;
 }
 
