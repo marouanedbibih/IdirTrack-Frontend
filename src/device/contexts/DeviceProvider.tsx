@@ -42,10 +42,13 @@ interface DeviceContextProps {
 
   // Message
   message: MessageInterface;
+  setMessage: (message: MessageInterface) => void; 
+  resetMessage: () => void; 
 
   // Create device form modal state
   isCreateDeviceModalOpen: boolean;
   setIsCreateDeviceModalOpen: (isOpen: boolean) => void;
+
 }
 
 const DeviceContext = createContext<DeviceContextProps | undefined>(undefined);
@@ -54,9 +57,19 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Messages State
   const [message, setMessage] = useState<MessageInterface>({
     message: "",
-    messageType: MessageType.SUCCESS,
-    messageObject: {},
+    messageType: MessageType.INIT,
+    messagesObject: null,
   });
+
+  // Reset Message
+  const resetMessage = () => {
+    setMessage({
+      message: "",
+      messageType: MessageType.INIT,
+      messagesObject: null,
+    });
+  };
+
 
   // Alert State
   const [alertOpen, setAlertOpen] = useState(false);
@@ -64,8 +77,10 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Create device form modal state
   const [isCreateDeviceModalOpen, setIsCreateDeviceModalOpen] = useState(false);
 
+  // Devices List State
   const [devicesList, setDevicesList] = useState<DeviceInterface[]>([]);
 
+  // Pagination
   const [pagination, setPagination] = useState<Pagination>({
     currentPage: 1,
     totalPages: 1,
@@ -93,17 +108,17 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   // Device Form Data State and functions
   const [deviceFormData, setDeviceFormData] = useState<DeviceFormData>({
-    imei: "",
-    deviceTypeId: 0,
-    remarque: "",
+    imei: null,
+    deviceTypeId: null,
+    remarque: null,
   });
 
   // Reset Device Form Data
   const resetDeviceFormData = () => {
     setDeviceFormData({
-      imei: "",
-      deviceTypeId: 0,
-      remarque: "",
+      imei: null,
+      deviceTypeId: null,
+      remarque: null,
     });
   };
 
@@ -142,7 +157,7 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           message: data.message,
           messageType:
             MessageType[data.messageType as keyof typeof MessageType], // Convert string to enum
-          messageObject: data.messageObject || {},
+          messagesObject: data.messagesObject,
         });
 
         // Open alert
@@ -156,6 +171,16 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       })
       .catch((error) => {
         console.error(error);
+
+        // Set message state
+        setMessage({
+          message: error.message,
+          messageType: MessageType.ERROR,
+          messagesObject: error.messagesObject ,
+        });
+
+        // Open alert
+        setAlertOpen(true);
       });
   };
 
@@ -169,7 +194,10 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         // Message
         message,
+        resetMessage,
+        setMessage,
 
+        // Devices List
         devicesList,
         fetchDeviceList,
         pagination,
@@ -191,12 +219,13 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         isCreateDeviceModalOpen,
         setIsCreateDeviceModalOpen,
 
+
         // deviceDetails,
         // setDeviceDetails,
       }}
     >
       {children}
-      {message && (
+      {message.messageType != MessageType.INIT &&  (
         <DynamicAlert
           open={alertOpen}
           onClose={() => setAlertOpen(false)}
