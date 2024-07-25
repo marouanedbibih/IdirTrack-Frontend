@@ -1,6 +1,8 @@
 import { ComplexNavbar } from "@/components/navbar/ComplexNavbar";
 import { SidebarWithContentSeparator } from "@/components/sidebar/SidebarWithContentSeparator";
 import { DeviceProvider } from "@/device/contexts/DeviceProvider";
+import { theme } from "@/styles/customTheme";
+import { ThemeProvider } from "@material-tailwind/react";
 import { Metadata } from "next";
 import React from "react";
 
@@ -16,15 +18,15 @@ export default function VehicleLayout({
 }) {
   return (
     <DeviceProvider>
-      <React.Fragment>
-        <div className="flex min-h-screen bg-blue-gray-50 w-full h-screen p-4 gap-4">
-          <SidebarWithContentSeparator />
-          <div className="flex-1 w-full">
-            <ComplexNavbar />
-            <main className="px-16">{children}</main>
+        <React.Fragment>
+          <div className="flex min-h-screen bg-blue-gray-50 w-full h-screen p-4 gap-4">
+            <SidebarWithContentSeparator />
+            <div className="flex-1 w-full">
+              <ComplexNavbar />
+              <main className="px-16">{children}</main>
+            </div>
           </div>
-        </div>
-      </React.Fragment>
+        </React.Fragment>
     </DeviceProvider>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { PencilIcon,TrashIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -41,11 +41,25 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
     }
   };
 
-  const { deleteDevice } = useDeviceContext();
+  const { deleteDevice, deviceId, setDeviceId, setIsCreateDeviceModalOpen } =
+    useDeviceContext();
 
-  const handleDeleteDevice = (id: number, ev) => {
+  const handleDeleteDevice = (
+    id: number,
+    ev: React.MouseEvent<HTMLButtonElement>
+  ) => {
     ev.preventDefault();
     deleteDevice(id);
+  };
+
+  const handleEditDevice = (
+    id: number,
+    ev: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    ev.preventDefault();
+    console.log("Edit device", id);
+    setDeviceId(id);
+    setIsCreateDeviceModalOpen(true);
   };
 
   return (
@@ -81,7 +95,9 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
           {tableRows.map((row: DeviceInterface, index) => {
             const isLast = index === tableRows.length - 1;
             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-            const classesActions = isLast ? "p-4 flex flex-row gap-2" : "p-4 border-b border-blue-gray-50 flex flex-row gap-2";
+            const classesActions = isLast
+              ? "p-4 flex flex-row gap-2"
+              : "p-4 border-b border-blue-gray-50 flex flex-row gap-2";
 
             return (
               <tr key={row.id}>
@@ -116,8 +132,11 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
                     variant="small"
                     color="blue-gray"
                     className="font-normal"
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                   >
-                    {row.createAt}
+                    {row.createAt?.toString()}
                   </Typography>
                 </td>
                 <td className={classes}>
@@ -136,6 +155,7 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     color="blue"
+                    onClick={(ev) => handleEditDevice(row.id, ev)}
                   >
                     <PencilIcon className="h-4 w-4" />
                   </IconButton>

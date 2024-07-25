@@ -22,6 +22,10 @@ export const DeviceForm: React.FC = () => {
     setIsCreateDeviceModalOpen,
     message,
     resetMessage,
+    fetchDeviceById,
+    deviceId,
+    updateDevice,
+    setDeviceId,
   } = useDeviceContext();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -30,15 +34,25 @@ export const DeviceForm: React.FC = () => {
     if (message) {
       console.log("Device Errors", message.messagesObject);
     }
-    createDevice(deviceFormData);
+
+    if (deviceId != 0) {
+      console.log("Update device");
+      updateDevice(deviceId, deviceFormData);
+    } else {
+      createDevice(deviceFormData);
+    }
   };
 
   const handleModalClose = () => {
     setIsCreateDeviceModalOpen(false);
     resetMessage();
+    setDeviceId(0);
   };
 
   useEffect(() => {
+    if (deviceId != 0) {
+      fetchDeviceById(deviceId);
+    }
     fetchDeviceTypes(1, 10);
   }, []);
 
