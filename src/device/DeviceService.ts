@@ -49,3 +49,39 @@ export const deleteDeviceApi = async (id: number): Promise<BasicResponse> => {
         throw data;
     }
 }
+
+/**
+ * Get device by id api
+ * @param id 
+ * @returns BasicResponse
+ */
+export const getDeviceByIdApi = async (id: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/stock-api/devices/${id}/`);
+        console.error("Get device by id data ", data);
+        return data;
+    } catch (error: any) {
+        const data: BasicResponse = error.response.data;
+        console.error("Get device by id error", data);
+        throw data;
+    }
+}
+
+/**
+ * Update device api
+ * @param id
+ * @param payload
+ * @returns BasicResponse
+ * @throws BasicResponse
+ */
+export const updateDeviceApi = async (id: number, payload: DeviceFormData): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.put(`/stock-api/devices/${id}/`, payload);
+        console.error("Update device data ", data);
+        return data;
+    } catch (error: any) {
+        const data = error.response.data;
+        console.error("Update device error", data);
+        throw data;
+    }
+}
