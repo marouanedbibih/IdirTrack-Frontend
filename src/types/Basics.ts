@@ -17,7 +17,7 @@ export interface BasicResponse {
   content?: any;
   message?: string;
   messagesObject?: { [key: string]: string | null };
-  messageType?: MessageType;
+  messageType: MessageType;
   redirectUrl?: string;
   status?: string;
   metadata?: MetaData;
@@ -30,3 +30,9 @@ export interface MessageInterface {
 }
 
 // export { MetaData, MessageType, BasicResponse };
+
+
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+}

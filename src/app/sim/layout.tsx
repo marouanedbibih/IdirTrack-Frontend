@@ -1,8 +1,7 @@
 // "use client";
 import { ComplexNavbar } from "@/components/navbar/ComplexNavbar";
 import { SidebarWithContentSeparator } from "@/components/sidebar/SidebarWithContentSeparator";
-import { DeviceProvider } from "@/device/contexts/DeviceProvider";
-import { ThemeProvider } from "@material-tailwind/react";
+import { SimProvider } from "@/sim/SimProvider";
 import { Metadata } from "next";
 import React from "react";
 
@@ -17,7 +16,7 @@ export default function VehicleLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DeviceProvider>
+    <SimProvider>
         <React.Fragment>
           <div className="flex min-h-screen bg-blue-gray-50 w-full h-screen p-4 gap-4">
             <SidebarWithContentSeparator />
@@ -27,6 +26,6 @@ export default function VehicleLayout({
             </div>
           </div>
         </React.Fragment>
-    </DeviceProvider>
+    </SimProvider>
   );
 }
