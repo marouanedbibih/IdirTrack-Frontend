@@ -69,111 +69,132 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
     >
-      <table className="w-full min-w-max table-auto text-left">
-        <thead>
-          <tr>
-            {tableHead.map((head) => (
-              <th
-                key={head}
-                className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-              >
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal leading-none opacity-70"
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  {head}
-                </Typography>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {tableRows.map((row: DeviceInterface, index) => {
-            const isLast = index === tableRows.length - 1;
-            const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-            const classesActions = isLast
-              ? "p-4 flex flex-row gap-2"
-              : "p-4 border-b border-blue-gray-50 flex flex-row gap-2";
+      {
+        // Table is null or empty display message
+        tableRows === null ? (
+          <div className="flex flex-col justify-end items-center">
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="font-normal"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            No Devices Found
+          </Typography>
+          </div>
 
-            return (
-              <tr key={row.id}>
-                <td className={classes}>
-                  <div className="flex items-center gap-3">
+        ) : (
+          <table className="w-full min-w-max table-auto text-left">
+            <thead>
+              <tr>
+                {tableHead.map((head) => (
+                  <th
+                    key={head}
+                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                  >
                     <Typography
                       variant="small"
                       color="blue-gray"
-                      className="font-bold"
+                      className="font-normal leading-none opacity-70"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}
                     >
-                      {row.imei}
+                      {head}
                     </Typography>
-                  </div>
-                </td>
-                <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                  >
-                    {row.deviceType}
-                  </Typography>
-                </td>
-                <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                  >
-                    {row.createAt?.toString()}
-                  </Typography>
-                </td>
-                <td className={classes}>
-                  <div className="w-max">
-                    <Chip
-                      variant="ghost"
-                      value={row.status}
-                      color={getStatusColor(row.status)}
-                    />
-                  </div>
-                </td>
-
-                <td className={classesActions}>
-                  <IconButton
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    color="blue"
-                    onClick={(ev) => handleEditDevice(row.id, ev)}
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </IconButton>
-                  <IconButton
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    color="red"
-                    onClick={(ev) => handleDeleteDevice(row.id, ev)}
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </IconButton>
-                </td>
+                  </th>
+                ))}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {tableRows.map((row: DeviceInterface, index) => {
+                const isLast = index === tableRows.length - 1;
+                const classes = isLast
+                  ? "p-4"
+                  : "p-4 border-b border-blue-gray-50";
+                const classesActions = isLast
+                  ? "p-4 flex flex-row gap-2"
+                  : "p-4 border-b border-blue-gray-50 flex flex-row gap-2";
+
+                return (
+                  <tr key={row.id}>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-bold"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {row.imei}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        {row.deviceType}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        {row.createAt?.toString()}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <div className="w-max">
+                        <Chip
+                          variant="ghost"
+                          value={row.status}
+                          color={getStatusColor(row.status)}
+                        />
+                      </div>
+                    </td>
+
+                    <td className={classesActions}>
+                      <IconButton
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        color="blue"
+                        onClick={(ev) => handleEditDevice(row.id, ev)}
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </IconButton>
+                      <IconButton
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        color="red"
+                        onClick={(ev) => handleDeleteDevice(row.id, ev)}
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </IconButton>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )
+      }
     </CardBody>
   );
 };
