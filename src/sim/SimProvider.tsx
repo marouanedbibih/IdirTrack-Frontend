@@ -25,6 +25,7 @@ import {
 } from "./SimServices";
 import { Operator, Sim } from "./SimDTOs";
 
+// Props
 interface SimContextProps {
   // Message
   message: MessageInterface;
