@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { CardBody, Typography, IconButton, Card } from "@material-tailwind/react";
+import { CardBody, Typography, IconButton, Card, Button } from "@material-tailwind/react";
 import { Car } from "../Car";
 import { useVehicleContext } from "@/vehicle/contexts/VehicleProvider";
 
@@ -10,8 +10,20 @@ export function VehicleTableBody({ className }: { className?: string }) {
   const { vehiclesList, fetchVehiclesList, vehiclePagination, setCurrentPage } = useVehicleContext();
 
   useEffect(() => {
-    fetchVehiclesList(vehiclePagination.currentPage, 10);
+    fetchVehiclesList(vehiclePagination.currentPage, 5); // Fetch 5 vehicles per page
   }, [vehiclePagination.currentPage]);
+
+  const handlePreviousPage = () => {
+    if (vehiclePagination.currentPage > 1) {
+      setCurrentPage(vehiclePagination.currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (vehiclePagination.currentPage < vehiclePagination.totalPages) {
+      setCurrentPage(vehiclePagination.currentPage + 1);
+    }
+  };
 
   return (
     <Card className="h-full w-1/2"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>

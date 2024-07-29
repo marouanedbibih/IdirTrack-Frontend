@@ -10,7 +10,6 @@ interface VehicleContextProps {
   vehiclesList: VehicleInterface[];
   fetchVehiclesList: (page: number, size: number) => void;
   vehiclePagination: Pagination;
-  setVehiclePagination: (pagination: Pagination) => void;
   setCurrentPage: (page: number) => void;
   fetchVehicleById: (id: number) => void;
   vehicleDetails: VehicleInterface;
@@ -31,10 +30,8 @@ const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const fetchVehiclesList = async (page: number, size: number) => {
-    console.log(`Fetching vehicles list for page: ${page}, size: ${size}`);
     try {
       const data = await getVehicleListApi(page, size);
-      console.log("Data Response of getVehicleListApi", data);
       setVehiclesList(data.content);
       setVehiclePagination({
         currentPage: data.metadata?.currentPage || 1,
@@ -45,16 +42,16 @@ const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       console.error("Error fetching vehicles list:", error);
     }
   };
+
   const [vehicleDetails, setVehicleDetails] = useState<VehicleInterface>(vehicleDetailstemplate);
 
   const fetchVehicleById = async (id: number) => {
-    getVehicleById(id)
-      .then((data: BasicResponse) => {
-        setVehicleDetails(data.content);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    try {
+      const data = await getVehicleById(id);
+      setVehicleDetails(data.content);
+    } catch (error) {
+      console.error("Error fetching vehicle details:", error);
+    }
   };
 
   useEffect(() => {
@@ -67,7 +64,6 @@ const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         vehiclesList,
         fetchVehiclesList,
         vehiclePagination,
-        setVehiclePagination,
         setCurrentPage,
         fetchVehicleById,
         vehicleDetails,
