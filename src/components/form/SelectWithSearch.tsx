@@ -44,9 +44,9 @@ function SelectWithSearch<T extends SelectableItem>({
 
   useEffect(() => {
     if (searchTerm !== "") {
-      fetchSearchedItems(searchTerm, currentPage, 10);
+      fetchSearchedItems(searchTerm, currentPage, 5);
     } else {
-      fetchItems(currentPage, 10);
+      fetchItems(currentPage, 5);
     }
   }, [searchTerm]);
 

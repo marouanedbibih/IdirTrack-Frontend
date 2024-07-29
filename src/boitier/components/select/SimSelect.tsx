@@ -1,8 +1,7 @@
 import { useBoitierContext } from "@/boitier/BoitierProvider";
 import SelectWithSearch, { SelectableItem } from "@/components/form/SelectWithSearch";
 import React, { useEffect, useState } from "react";
-// import { useCreateVehicleContext } from "@/contexts/CreateVehicleProvider";
-// import SelectWithSearch, { SelectableItem } from "../form/SelectWithSearch";
+
 
 export interface SimItem extends SelectableItem {
   id: number;

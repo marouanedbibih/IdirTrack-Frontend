@@ -41,3 +41,45 @@ export const searchPendingSims = async (query: string, page: number, size: numbe
         throw data;
     }
 }
+
+/**
+ * Service to retrieve List of devices with not installed status for create a new boitier
+ * @param page: number
+ * @param size: number
+ * @returns Promise<BasicResponse>
+ * @throws Error
+ */
+
+export const getNotInstalledDevices = async (page: number, size: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/stock-api/devices/not-installed/?page=${page}&size=${size}`);
+        console.log("Response from retrievePendingDevices", data);
+        return data;
+    } catch (error: any) {
+        const { data } = error.response.data;
+        console.error("Error from retrievePendingDevices", data);
+        throw data;
+    }
+}
+
+/**
+ * Service to retrieve searched List of Devices
+ * @param imei: string
+ * @param page: number
+ * @param size: number
+ * @returns Promise<BasicResponse>
+ * @throws Error
+ */
+
+export const searchNotInstalledDevices = async (imei: string, page: number, size: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/stock-api/devices/not-installed/search/?imei=${imei}&page=${page}&size=${size}`);
+        console.log("Response from retrieveSearchDevices", data);
+        return data;
+    } catch (error: any) {
+        const { data } = error.response.data;
+        console.error("Error from retrieveSearchDevices", data);
+        throw data;
+    }
+}
+
