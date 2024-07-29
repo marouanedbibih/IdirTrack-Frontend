@@ -9,7 +9,8 @@ import {
 import exp from "constants";
 import FormField from "../form/FormField";
 import SelectField from "../form/SelectField";
-import { useVehicleContext } from "@/contexts/VehicleProvider";
+// import { useVehicleContext } from "@/contexts/VehicleProvider";
+import { ChangeEvent } from "react";
 
 
 const formFields = [
@@ -42,13 +43,12 @@ const formFields = [
 ];
 function VehicleForm() {
 
-  const {vehicleFormData} = useVehicleContext();
+  // const {vehicleFormData} = useVehicleContext();
   return (
     <Card
       color="white"
       shadow={false}
-      className="w-1/2 rounded-xl p-4 flex flex-col"
-    >
+      className="w-1/2 rounded-xl p-4 flex flex-col"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}    >
       <form className="w-full">
         <div className="mb-1 flex flex-col gap-6">
           {formFields.map((field, index) => {
@@ -56,8 +56,9 @@ function VehicleForm() {
               return (
                 <FormField
                   key={index}
-                  label={field.label}
-                  // placeholder={field.placeholder}
+                  label={field.label} placeholder={""} value={""} onChange={function (event: ChangeEvent<HTMLInputElement>): void {
+                    throw new Error("Function not implemented.");
+                  } }                  // placeholder={field.placeholder}
                   // value={formData[field.name]}
                   // onChange={handleChange}
                 />
@@ -76,7 +77,7 @@ function VehicleForm() {
             return null;
           })}
         </div>
-        <Button className="mt-6" fullWidth color="green">
+        <Button className="mt-6" fullWidth color="green"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           Submit
         </Button>
       </form>

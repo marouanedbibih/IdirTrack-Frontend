@@ -16,7 +16,7 @@ interface TableProps {
 
 const VehicleList: React.FC<TableProps> = ({ tableHead, tableRows }) => {
   return (
-    <Card className="h-full w-full overflow-scroll">
+    <Card className="h-full w-full overflow-scroll"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
       <table className="w-full min-w-max table-auto text-left">
         <thead>
           <tr>
@@ -28,8 +28,7 @@ const VehicleList: React.FC<TableProps> = ({ tableHead, tableRows }) => {
                 <Typography
                   variant="small"
                   color="blue-gray"
-                  className="font-normal leading-none opacity-70"
-                >
+                  className="font-normal leading-none opacity-70"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}                >
                   {head}
                 </Typography>
               </th>
@@ -49,8 +48,7 @@ const VehicleList: React.FC<TableProps> = ({ tableHead, tableRows }) => {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
-                  >
+                    className="font-normal"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}                  >
                     {vehicle.matricule}
                   </Typography>
                 </td>
@@ -58,8 +56,7 @@ const VehicleList: React.FC<TableProps> = ({ tableHead, tableRows }) => {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
-                  >
+                    className="font-normal"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}                  >
                     {vehicle.client}
                   </Typography>
                 </td>
@@ -67,8 +64,7 @@ const VehicleList: React.FC<TableProps> = ({ tableHead, tableRows }) => {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
-                  >
+                    className="font-normal"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}                  >
                     {vehicle.type}
                   </Typography>
                 </td>
@@ -78,8 +74,7 @@ const VehicleList: React.FC<TableProps> = ({ tableHead, tableRows }) => {
                     href="#"
                     variant="small"
                     color="blue-gray"
-                    className="font-medium"
-                  >
+                    className="font-medium"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}                  >
                     Edit
                   </Typography>
                 </td>
