@@ -14,6 +14,7 @@ export enum MessageType {
 }
 
 export interface BasicResponse {
+  data(data: any): unknown;
   content?: any;
   message?: string;
   messagesObject?: { [key: string]: string | null };

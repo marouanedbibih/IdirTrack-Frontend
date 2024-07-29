@@ -1,7 +1,6 @@
 import axiosClient from "@/api/axiosClient";
 import { BasicResponse } from "@/types/Basics";
 
-
 export const getVehicleListApi = async (page: number, size: number): Promise<BasicResponse> => {
     try {
         const { data } = await axiosClient.get(`/vehicle-api/vehicles/?page=${page}&size=${size}`);
