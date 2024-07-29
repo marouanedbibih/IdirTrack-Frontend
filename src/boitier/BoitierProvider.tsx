@@ -2,22 +2,23 @@
 
 import { ReactNode, useContext, useState } from "react";
 import { createContext } from "react";
-import { BoitierErrors, BoitierRequest, SimBoitier } from "./BoitierDTO";
-import { getPendingSims, searchPendingSims } from "./BoitierService";
+import {
+  BoitierErrors,
+  BoitierRequest,
+  DeviceBoitier,
+  SimBoitier,
+} from "./BoitierDTO";
+import { getNotInstalledDevices, getPendingSims, searchNotInstalledDevices, searchPendingSims } from "./BoitierService";
 
 // Props interface
 interface BoitierProviderProps {
+  //------ Sim Props ------
+
   // Sim Boitier list
   simBoitierList: SimBoitier[];
 
   // Fetch Sim Boitier list
   fetchSimBoitierList: (page: number, size: number) => void;
-
-  // Pagination
-  currentSimPage: number;
-  setCurrentSimPage: (page: number) => void;
-  totalSimPages: number;
-  setTotalSimPages: (pages: number) => void;
 
   // Search Function
   searchSimTerm: string;
@@ -27,6 +28,31 @@ interface BoitierProviderProps {
     page: number,
     size: number
   ) => void;
+
+  // Sim Pagination
+  currentSimPage: number;
+  setCurrentSimPage: (page: number) => void;
+  totalSimPages: number;
+  setTotalSimPages: (pages: number) => void;
+
+  // ------ Devices Props ------
+
+  // Device Boitier list
+  deviceBoitierList: DeviceBoitier[];
+
+  // Fetch Device Boitier list
+  fetchDeviceBoitierList: (page: number, size: number) => void;
+
+  // Search Function
+  searchDeviceTerm: string;
+  setSearchDeviceTerm: (imei: string) => void;
+  fetchDeviceSearched: (imei: string, page: number, size: number) => void;
+
+  // Device Pagination
+  currentDevicePage: number;
+  setCurrentDevicePage: (page: number) => void;
+  totalDevicePages: number;
+  setTotalDevicePages: (pages: number) => void;
 
   // Create Boitier states
   createNewBoitier: (request: BoitierRequest) => void;
@@ -43,6 +69,9 @@ const BoitierContext = createContext<BoitierProviderProps | undefined>(
 );
 
 const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+
+  // --------------------------------- Sim ---------------------------------
+
   // Sim Boitier list
   const [simBoitierList, setSimBoitierList] = useState<SimBoitier[]>([]);
 
@@ -91,6 +120,46 @@ const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     endDate: "",
   });
 
+  // --------------------------------- Devices ---------------------------------
+
+  // Device Boitier list
+  const [deviceBoitierList, setDeviceBoitierList] = useState<DeviceBoitier[]>(
+    []
+  );
+
+  // Fetch Device Boitier list
+  const fetchDeviceBoitierList = (page: number, size: number) => {
+    console.log("Fetch Device Boitier List");
+    getNotInstalledDevices(page, size)
+      .then((data) => {
+        setDeviceBoitierList(data.content);
+      })
+      .catch((error) => {
+        console.error("Error from fetchDeviceBoitierList", error);
+      });
+  };
+
+  // Search Function
+  const [searchDeviceTerm, setSearchDeviceTerm] = useState<string>("");
+
+  const fetchDeviceSearched = (imei: string, page: number, size: number) => {
+    console.log("Fetch Device Searched");
+    searchNotInstalledDevices(imei, page, size)
+      .then((data) => {
+        setDeviceBoitierList(data.content);
+      })
+      .catch((error) => {
+        console.error("Error from fetchDeviceSearched", error);
+      });
+  };
+
+  // Device Pagination
+  const [currentDevicePage, setCurrentDevicePage] = useState<number>(1);
+  const [totalDevicePages, setTotalDevicePages] = useState<number>(1);
+
+
+  // --------------------------------- Boitier ---------------------------------
+
   // Create Boitier
   const createNewBoitier = (request: BoitierRequest) => {
     console.log("Request Boitier Data:", request);
@@ -103,10 +172,6 @@ const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     startDate: null,
     endDate: null,
   });
-
-
-
-
 
   return (
     <BoitierContext.Provider
@@ -135,6 +200,24 @@ const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         boitierErrors,
         setBoitierErrors,
 
+        // -- Devices --
+
+        // Device Boitier list
+        deviceBoitierList,
+        fetchDeviceBoitierList,
+
+        // Search Function
+        searchDeviceTerm,
+        setSearchDeviceTerm,
+        fetchDeviceSearched,
+
+        // Device Pagination
+        currentDevicePage,
+        setCurrentDevicePage,
+        totalDevicePages,
+        setTotalDevicePages,
+
+        
       }}
     >
       {children}

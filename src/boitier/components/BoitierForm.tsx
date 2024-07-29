@@ -6,7 +6,8 @@ import { Card, Button } from "@material-tailwind/react";
 // import SimSelect from "../sim/SimSelect";
 // import DateField from "../field/DateFiled";
 import { create } from "domain";
-import SimSelect from "./Select/SimSelect";
+import SimSelect from "./select/SimSelect";
+import DeviceSelect from "./select/DeviceSelect";
 
 const BoitierForm: React.FC = () => {
 //   const { boitierRequest, setBoitierRequest,createNewBoitier,boitierErrors } = useCreateVehicleContext();
@@ -66,7 +67,7 @@ const BoitierForm: React.FC = () => {
     >
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="mb-1 flex flex-col gap-6">
-          {/* <DeviceSelect /> */}
+          <DeviceSelect />
           <SimSelect />
           {/* <DateField
             label="Select Start Date"
