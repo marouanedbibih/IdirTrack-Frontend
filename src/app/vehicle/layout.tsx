@@ -1,5 +1,6 @@
 import { ComplexNavbar } from "@/components/navbar/ComplexNavbar";
 import { SidebarWithContentSeparator } from "@/components/sidebar/SidebarWithContentSeparator";
+import { VehicleProvider } from "@/vehicle/contexts/VehicleProvider";
 import { Metadata } from "next";
 import React from "react";
 
@@ -14,6 +15,7 @@ export default function VehicleLayout({
   children: React.ReactNode;
 }) {
   return (
+    <VehicleProvider>
       <React.Fragment>
         <div className="flex min-h-screen bg-blue-gray-50 w-full h-screen p-4 gap-4">
           <SidebarWithContentSeparator />
@@ -24,5 +26,6 @@ export default function VehicleLayout({
           </div>
         </div>
       </React.Fragment>
+    </VehicleProvider>
   );
 }
