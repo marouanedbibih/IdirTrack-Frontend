@@ -58,6 +58,8 @@ export function DynamicAlert({
       case MessageType.WARNING:
         return "bg-orange-500";
       case MessageType.SUCCESS:
+        return "bg-green-500";
+      case MessageType.INFO:
       default:
         return "bg-green-500";
     }
