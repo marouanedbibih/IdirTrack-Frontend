@@ -43,6 +43,8 @@ interface DeviceContextProps {
   // Create new device
   createDevice: (device: DeviceFormData) => void;
 
+
+  
   // Message
   message: MessageInterface;
   setMessage: (message: MessageInterface) => void;
@@ -351,6 +353,9 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setDeviceId,
         deviceId,
         updateDevice,
+
+        //search device by imei
+    
       }}
     >
       {children}

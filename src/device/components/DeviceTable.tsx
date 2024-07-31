@@ -21,6 +21,7 @@ import { useDeviceContext } from "../contexts/DeviceProvider";
 import { useEffect } from "react";
 import DeviceTableBody from "./table/DeviceTableBody";
 import DeviceTableFooter from "./table/DeviceTableFooter";
+import DeviceTableFilter from "./table/DeviceTableFilter";
 
 const tableHead = ["IMEI", "Device Type", "Created At", "Status", "Actions"];
 
@@ -46,6 +47,7 @@ export function DeviceTable() {
           onSearch={(event) => console.log(event.target.value)}
           onDownload={() => console.log("Download")}
         />
+        <DeviceTableFilter  />
         <DeviceTableBody tableRows={devicesList} tableHead={tableHead} />
         <DeviceTableFooter
           currentPage={pagination.currentPage}

@@ -3,7 +3,7 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: `http://localhost:8000`
+  baseURL: `http://localhost:8085`
 });
 
 // Request interceptor to add the Authorization header
