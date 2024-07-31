@@ -21,11 +21,13 @@ import { useDeviceContext } from "../contexts/DeviceProvider";
 import { useEffect } from "react";
 import DeviceTableBody from "./table/DeviceTableBody";
 import DeviceTableFooter from "./table/DeviceTableFooter";
+import DeviceTableFilter from "./table/DeviceTableFilter";
+import { searchDeviceApi } from "../DeviceService";
 
 const tableHead = ["IMEI", "Device Type", "Created At", "Status", "Actions"];
 
 export function DeviceTable() {
-  const { fetchDeviceList, devicesList, pagination, setCurrentPage } =
+  const { setSearchTerm,fetchSearchDevice,fetchDeviceList, devicesList, pagination, setCurrentPage } =
     useDeviceContext();
 
   useEffect(() => {
@@ -43,9 +45,14 @@ export function DeviceTable() {
         <DeviceTableHeader
           title="Device List"
           subtitle="Here is a list of all devices"
-          onSearch={(event) => console.log(event.target.value)}
+          onSearch={(event) => {
+            setSearchTerm(event.target.value);
+            fetchSearchDevice(event.target.value,1,5);
+          }
+          }
           onDownload={() => console.log("Download")}
         />
+        <DeviceTableFilter  />
         <DeviceTableBody tableRows={devicesList} tableHead={tableHead} />
         <DeviceTableFooter
           currentPage={pagination.currentPage}

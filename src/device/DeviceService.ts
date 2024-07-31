@@ -84,4 +84,46 @@ export const updateDeviceApi = async (id: number, payload: DeviceFormData): Prom
         console.error("Update device error", data);
         throw data;
     }
+
 }
+
+// Get device type by id api
+export const getAllDeviceTypes = async (id: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/stock-api/device-types/`);
+        console.error("Get device type by id data ", data);
+        return data;
+    } catch (error: any) {
+        const data = error.response.data;
+        console.error("Get device type by id error", data);
+        throw data;
+    }
+}
+
+
+//filter device 
+export const filterDeviceApi = async (filter: string): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/stock-api/devices/filter?=${filter}`);
+        console.error("Filter device data ", data);
+        return data;
+    } catch (error: any) {
+        const data = error.response.data;
+        console.error("Filter device error", data);
+        throw data;
+    }
+}
+
+//search device by imei
+export const searchDeviceApi = async (imei: string, page: number, size: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/stock-api/devices/search?imei=${imei}&page=${page}&size=${size}`);
+        console.error("Search device data ", data);
+        return data;
+    
+    } catch (error: any) {
+        const data = error.response.data;
+        console.error("Search device error", data);
+        throw data;
+    }
+}   

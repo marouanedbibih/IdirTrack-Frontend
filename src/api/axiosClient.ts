@@ -1,7 +1,10 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: `http://localhost:8000`,  // Ensure this URL is correct
+
+  baseURL: `http://localhost:8085`
+
+
 });
 
 axiosClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
