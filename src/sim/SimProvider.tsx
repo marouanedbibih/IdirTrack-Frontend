@@ -21,6 +21,7 @@ import {
   fetchOperatorsApi,
   getSimByIdApi,
   getSimListApi,
+  searchSimApi,
   updateSimApi,
 } from "./SimServices";
 import { Operator, Sim } from "./SimDTOs";
@@ -71,6 +72,13 @@ interface SimContextProps {
 
   // Update SIM
   updateSim: (simId: number | null, sim: Sim) => void;
+
+  //  SearchTerm state
+  searchTerm: string;
+  setSearchTerm: (searchTerm: string) => void;
+
+  // Fetch searched sims
+  fetchSearchedSims: (searchTerm: string, page: number, size: number) => void;
 }
 
 const SimContext = createContext<SimContextProps | undefined>(undefined);
@@ -297,6 +305,33 @@ const SimProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       });
   };
 
+  // Search Term State
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Fetch searched sims
+  const fetchSearchedSims = async (
+    searchTerm: string,
+    page: number,
+    size: number
+  ) => {
+    try {
+      const data = await searchSimApi(searchTerm, page, size);
+      setSimList(data.content);
+      setTotalPages(data.metadata?.totalPages || 1);
+      setCurrentPage(data.metadata?.currentPage || 1);
+    } catch (error) {
+      console.error(error);
+      setSimList([]);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Search term: ", searchTerm);
+    if (searchTerm === "") {
+      fetchSimList(pagination.currentPage, 5);
+    }
+  }, [searchTerm]);
+
   return (
     <SimContext.Provider
       value={{
@@ -344,6 +379,13 @@ const SimProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
         // Update SIM
         updateSim,
+
+        //  SearchTerm state
+        searchTerm,
+        setSearchTerm,
+
+        // Fetch searched sims
+        fetchSearchedSims,
       }}
     >
       {children}
