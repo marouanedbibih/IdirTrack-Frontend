@@ -11,13 +11,14 @@ export enum MessageType {
   ERROR = "ERROR",
   WARNING = "WARNING",
   INIT = "INIT",
+  INFO = "INFO",
 }
 
 export interface BasicResponse {
   data(data: any): unknown;
   content?: any;
   message?: string;
-  messagesObject?: { [key: string]: string | null };
+  messageObject?: { [key: string]: string | null };
   messageType: MessageType;
   redirectUrl?: string;
   status?: string;

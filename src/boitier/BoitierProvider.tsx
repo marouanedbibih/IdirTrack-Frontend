@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { createContext } from "react";
 import {
   BoitierErrors,
@@ -8,10 +8,22 @@ import {
   DeviceBoitier,
   SimBoitier,
 } from "./BoitierDTO";
-import { getNotInstalledDevices, getPendingSims, searchNotInstalledDevices, searchPendingSims } from "./BoitierService";
+import {
+  createBoitierApi,
+  getNotInstalledDevices,
+  getPendingSims,
+  searchNotInstalledDevices,
+  searchPendingSims,
+} from "./BoitierService";
+import { MessageInterface, MessageType } from "@/types/Basics";
+import { DynamicAlert } from "@/components/alert/DynamicAlert";
 
 // Props interface
 interface BoitierProviderProps {
+  // ------ Message Props ------
+  message: MessageInterface;
+  setMessage: (message: MessageInterface) => void;
+
   //------ Sim Props ------
 
   // Sim Boitier list
@@ -69,6 +81,11 @@ const BoitierContext = createContext<BoitierProviderProps | undefined>(
 );
 
 const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // ------------------------------ Message ------------------------------
+  const [message, setMessage] = useState<MessageInterface>({
+    message: "",
+    messageType: MessageType.INIT,
+  });
 
   // --------------------------------- Sim ---------------------------------
 
@@ -107,19 +124,6 @@ const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       });
   };
 
-  // Boitier Request
-  const [boitierRequest, setBoitierRequest] = useState<BoitierRequest>({
-    deviceMicroserviceId: 0,
-    imei: "",
-    deviceType: "",
-    simMicroserviceId: 0,
-    phone: "",
-    operatorName: "",
-    ccid: "",
-    startDate: "",
-    endDate: "",
-  });
-
   // --------------------------------- Devices ---------------------------------
 
   // Device Boitier list
@@ -157,25 +161,110 @@ const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentDevicePage, setCurrentDevicePage] = useState<number>(1);
   const [totalDevicePages, setTotalDevicePages] = useState<number>(1);
 
-
   // --------------------------------- Boitier ---------------------------------
+
+  // Boitier Request
+  const [boitierRequest, setBoitierRequest] = useState<BoitierRequest>({
+    deviceMicroserviceId: 0,
+    imei: "",
+    deviceType: "",
+    simMicroserviceId: 0,
+    phone: "",
+    operatorName: "",
+    ccid: "",
+    startDate: "",
+    endDate: "",
+  });
+
+  // Reset Boitier Request
+  const resetBoitierRequest = () => {
+    setBoitierRequest({
+      deviceMicroserviceId: 0,
+      imei: "",
+      deviceType: "",
+      simMicroserviceId: 0,
+      phone: "",
+      operatorName: "",
+      ccid: "",
+      startDate: "",
+      endDate: "",
+    });
+  };
 
   // Create Boitier
   const createNewBoitier = (request: BoitierRequest) => {
     console.log("Request Boitier Data:", request);
+
+    createBoitierApi(request)
+      .then((data) => {
+        console.log("Boitier created successfully");
+        setMessage({
+          message: data.message,
+          messageType: data.messageType,
+        });
+
+        // Reset Boitier Request
+        resetBoitierRequest();
+
+        // Reset Boitier Errors
+        setBoitierErrors({
+          device: null,
+          sim: null,
+          dateStart: null,
+          dateEnd: null,
+        });
+
+        // Open Alert
+        setAlertOpen(true);
+
+
+      })
+      .catch((data) => {
+        console.error("Error creating boitier:", data);
+
+        // Set Boitier Errors
+        setBoitierErrors({
+          device: data.messageObject?.device ?? null,
+          sim: data.messageObject?.sim ?? null,
+          dateStart: data.messageObject?.dateStart ?? null,
+          dateEnd: data.messageObject?.dateEnd ?? null,
+        });
+
+        // if exist one message show it
+        if (data.message) {
+          setMessage({
+            message: data.message,
+            messageType: MessageType.WARNING,
+          });
+        }
+      });
   };
+
+  useEffect(() => {
+    console.log("Message:", message);
+    if (message.messageType === MessageType.SUCCESS) {
+      resetBoitierRequest();
+    }
+  }, [message]);
 
   // Boitier Errors
   const [boitierErrors, setBoitierErrors] = useState<BoitierErrors>({
     device: null,
     sim: null,
-    startDate: null,
-    endDate: null,
+    dateStart: null,
+    dateEnd: null,
   });
+
+  // Alert state
+  const [alertOpen, setAlertOpen] = useState<boolean>(true);
 
   return (
     <BoitierContext.Provider
       value={{
+        // ------ Message Props ------
+        message,
+        setMessage,
+
         // Sim Boitier list
         simBoitierList,
         fetchSimBoitierList,
@@ -216,11 +305,18 @@ const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setCurrentDevicePage,
         totalDevicePages,
         setTotalDevicePages,
-
-        
       }}
     >
       {children}
+      {message && message.messageType !== MessageType.INIT && (
+        <DynamicAlert
+          open={alertOpen}
+          onClose={() => setAlertOpen(false)}
+          title={message.messageType?.toString()}
+          message={message.message ?? ""}
+          type={message.messageType}
+        />
+      )}
     </BoitierContext.Provider>
   );
 };

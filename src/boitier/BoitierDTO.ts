@@ -31,6 +31,6 @@ export interface BoitierRequest {
 export interface BoitierErrors {
   device: string | null;
   sim: string | null;
-  startDate: string | null;
-  endDate: string | null;
+  dateStart: string | null;
+  dateEnd: string | null;
 }

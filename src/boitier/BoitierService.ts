@@ -1,5 +1,6 @@
 import axiosClient from "@/api/axiosClient";
 import { BasicResponse } from "@/types/Basics";
+import { BoitierRequest } from "./BoitierDTO";
 
 
 /**
@@ -82,4 +83,23 @@ export const searchNotInstalledDevices = async (imei: string, page: number, size
         throw data;
     }
 }
+
+/**
+ * Service to create a new Boitier
+ * @param boitierRequest: BoitierRequest
+ * @returns Promise<void>
+ * @throws Error
+ */
+
+export const createBoitierApi = async (boitierRequest: BoitierRequest): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.post('/vehicle-api/boitier/', boitierRequest);
+        console.log('Boitier created successfully:', data);
+        return data;
+    } catch (error: any) {
+        // console.error('Error creating boitier:', error);
+        const data = error.response.data;
+        throw data;
+    }
+};
 
