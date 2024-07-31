@@ -11,13 +11,15 @@ export enum MessageType {
   ERROR = "ERROR",
   WARNING = "WARNING",
   INIT = "INIT",
+  INFO = "INFO",
 }
 
 export interface BasicResponse {
+  data(data: any): unknown;
   content?: any;
   message?: string;
-  messagesObject?: { [key: string]: string | null };
-  messageType?: MessageType;
+  messageObject?: { [key: string]: string | null };
+  messageType: MessageType;
   redirectUrl?: string;
   status?: string;
   metadata?: MetaData;
@@ -30,3 +32,9 @@ export interface MessageInterface {
 }
 
 // export { MetaData, MessageType, BasicResponse };
+
+
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+}
