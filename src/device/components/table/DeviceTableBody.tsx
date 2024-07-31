@@ -71,7 +71,7 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({
     >
       {
         // Table is null or empty display message
-        tableRows === null ? (
+        tableRows.length === 0 ?  (
           <div className="flex flex-col justify-end items-center">
           <Typography
             variant="small"

@@ -18,6 +18,7 @@ import {
   getDeviceByIdApi,
   getDeviceListApi,
   getDeviceTypeListApi,
+  searchDeviceApi,
   updateDeviceApi,
 } from "../DeviceService";
 import { BasicResponse, MessageInterface, MessageType } from "@/types/Basics";
@@ -63,6 +64,15 @@ interface DeviceContextProps {
 
   deviceId: number;
   setDeviceId: (id: number) => void;
+
+  //search device by imei
+  searchTerm: string;
+  setSearchTerm: (searchTerm: string) => void;
+  fetchSearchDevice: (searchTerm: string, page: number, size: number) => void;
+
+  //fetch device by imei
+  fetchDeviceByImei: (imei: string) => void;
+
 }
 
 const DeviceContext = createContext<DeviceContextProps | undefined>(undefined);
@@ -310,10 +320,39 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       );
   };
 
+  //search device by imei
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const fetchSearchDevice = async(
+    searchTerm: string,
+    page : number,
+    size : number
+  ) => {
+    try {
+      const data = await searchDeviceApi(searchTerm, page, size);
+      console.log("Search device data", data);
+        setDevicesList(data.content);
+        setTotalPages(data.metadata?.totalPages || 1);
+        setCurrentPage(data.metadata?.currentPage || 1);
+      
+      
+    } catch (error) {
+      console.error("Search device error", error);
+      setDevicesList([]);
+
+    }
+  }
+  
   useEffect(() => {
-    // fetchDeviceList(pagination.currentPage, 5);
-    console.log("Message", message);
-  }, [message]);
+    if(searchTerm !== ""){
+      fetchSearchDevice(searchTerm, 1, 5);
+    }else{
+      fetchDeviceList(pagination.currentPage, 5);
+    }
+
+
+
+  }
+  , [searchTerm]);
 
   return (
     <DeviceContext.Provider
@@ -355,7 +394,11 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         updateDevice,
 
         //search device by imei
-    
+        searchTerm,
+        setSearchTerm,
+
+        //fetch device by imei
+        fetchSearchDevice
       }}
     >
       {children}

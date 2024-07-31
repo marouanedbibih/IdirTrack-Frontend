@@ -115,14 +115,15 @@ export const filterDeviceApi = async (filter: string): Promise<BasicResponse> =>
 }
 
 //search device by imei
-export const searchDeviceApi = async (imei: string): Promise<BasicResponse> => {
+export const searchDeviceApi = async (imei: string, page: number, size: number): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/devices/search?imei=${imei}`);
+        const { data } = await axiosClient.get(`/stock-api/devices/search?imei=${imei}&page=${page}&size=${size}`);
         console.error("Search device data ", data);
         return data;
+    
     } catch (error: any) {
         const data = error.response.data;
         console.error("Search device error", data);
         throw data;
     }
-}
+}   
