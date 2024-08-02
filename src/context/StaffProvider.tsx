@@ -3,6 +3,7 @@
 // Chnage the word "My" by your context name
 "use client";
 
+import { searchStaffsAPI } from "@/services/StaffServices";
 import { Pagination } from "@/types/Basics";
 import { Staff } from "@/types/StaffTypes";
 import React, {
@@ -20,8 +21,16 @@ interface StaffContextProps {
   setStaffList: (staffList: Staff[]) => void;
 
   // Pagination state
-    pagination: Pagination;
-    setPagination: (pagination: Pagination) => void;
+  pagination: Pagination;
+  setPagination: (pagination: Pagination) => void;
+
+  // Search state
+  search: string;
+  setSearch: (search: string) => void;
+
+  // Table loading state
+  tableLoading: boolean;
+  setTableLoading: (tableLoading: boolean) => void;
 }
 
 // Create the context
@@ -33,20 +42,35 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [staffList, setStaffList] = useState<Staff[]>([]);
 
   // State to hold the pagination
-    const [pagination, setPagination] = useState<Pagination>({
-        currentPage: 1,
-        totalPages: 1,
-        size: 5,
-        totalElements: 0,
-    });
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    size: 5,
+    totalElements: 0,
+  });
+
+  // State to hold the search
+  const [search, setSearch] = useState<string>("");
+
+  // Table loading state
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+
 
   return (
-    <StaffContext.Provider value={{ 
-        staffList, 
+    <StaffContext.Provider
+      value={{
+        staffList,
         setStaffList,
         pagination,
         setPagination,
-     }}>
+
+        search,
+        setSearch,
+
+        tableLoading,
+        setTableLoading,
+      }}
+    >
       {children}
     </StaffContext.Provider>
   );

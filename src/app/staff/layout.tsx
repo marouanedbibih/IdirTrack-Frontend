@@ -20,7 +20,7 @@ export default function VehicleLayout({
       <React.Fragment>
         <div className="flex min-h-screen bg-blue-gray-50 w-full h-screen p-4 gap-4">
           <SidebarWithContentSeparator />
-          <div className="flex-1 w-full">
+          <div className="flex flex-col w-full gap-8">
             {/* <Navbar /> */}
             <ComplexNavbar />
             <main className="px-16">{children}</main>

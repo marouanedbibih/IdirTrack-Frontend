@@ -13,7 +13,7 @@ const StaffTableFooter: React.FC<IStaffTableFooterProps> = ({
   onPageChange,
 }) => {
   const getPageNumbers = () => {
-    const range = 8;
+    const range = 10;
     const halfRange = Math.floor(range / 2);
     let start = Math.max(1, currentPage - halfRange);
     let end = Math.min(totalPages, currentPage + halfRange);
