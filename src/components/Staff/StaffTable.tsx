@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import StaffTableFooter from "./StaffTableFooter";
 
 export interface IStaffTableProps {}
@@ -23,14 +23,26 @@ const TABLE_HEAD = [
   "Actions",
 ];
 export default function StaffTable(props: IStaffTableProps) {
-  const { staffList, setStaffList, pagination, setPagination } =
-    useStaffContext();
+  // Staff list state management
+  const { staffList, setStaffList } = useStaffContext();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  // Loading state management
+  const { tableLoading, setTableLoading } = useStaffContext();
 
-  // HandelFetchStaffList
+  // Pagination state management
+  const { pagination, setPagination } = useStaffContext();
+
+  // Search state management
+  const { search } = useStaffContext();
+
+  /**
+   * This function is used to fetch the staff list from the service and update the state
+   * of the staff list, the pagination and the loading state
+   * @param page 
+   * @param size 
+   */
   const fetchStaffList = (page: number, size: number) => {
-    setLoading(true);
+    setTableLoading(true);
     getAllStaffsListAPI(page, size)
       .then((data) => {
         setStaffList(data.content);
@@ -45,21 +57,21 @@ export default function StaffTable(props: IStaffTableProps) {
         console.log(error);
       })
       .finally(() => {
-        setLoading(false);
+        setTableLoading(false);
       });
   };
 
+  // Use effect to fetch the staff list when the page changes
   useEffect(() => {
-    fetchStaffList(pagination.currentPage, 5);
+    if (search === "") {
+      fetchStaffList(pagination.currentPage, 5);
+    }
   }, [pagination.currentPage]);
 
-  useEffect(() => {
-    console.log("Pagination", pagination);
-  }, [pagination]);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      {loading ? (
+      {tableLoading ? (
         <Spinner
           className="h-8 w-8"
           onPointerEnterCapture={undefined}
@@ -215,7 +227,9 @@ export default function StaffTable(props: IStaffTableProps) {
           <StaffTableFooter
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
-            onPageChange={(page) => setPagination({ ...pagination, currentPage: page })}
+            onPageChange={(page) =>
+              setPagination({ ...pagination, currentPage: page })
+            }
           />
         </Card>
       ) : (
