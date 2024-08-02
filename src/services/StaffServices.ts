@@ -40,3 +40,22 @@ export const searchStaffsAPI = async (search: string, page: number, size: number
         throw data;
     }
 }
+
+/**
+ * @api {delete} /staff/:id Delete a staff
+ * This function is used to call the api in the user microservice to delete a staff by her id.
+ * 
+ * @param {number} id The id of the staff to delete
+ */
+
+export const deleteStaffAPI = async (id: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.delete(`${STAFF_API}/${id}/`);
+        console.info("Delet staff Data", data);
+        return data;
+    } catch (error: any) {
+        const { data } = error.response.data;
+        console.error("Staff List Error", data);
+        throw data;
+    }
+}
