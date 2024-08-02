@@ -3,6 +3,7 @@ import React from "react";
 
 import { Typography } from "@material-tailwind/react";
 import StaffTable from "@/components/Staff/StaffTable";
+import { DefaultPagination } from "@/components/pagination/DefaultPagination";
 
 const StaffPage: React.FC = () => {
   return (

@@ -3,7 +3,8 @@
 export interface MetaData {
   currentPage: number;
   totalPages: number;
-  totalItems?: number;
+  totalElements?: number;
+  size: number;
 }
 
 export enum MessageType {
@@ -22,7 +23,7 @@ export interface BasicResponse {
   messageType: MessageType;
   redirectUrl?: string;
   status?: string;
-  metadata?: MetaData;
+  metaData?: MetaData;
 }
 
 export interface MessageInterface {
@@ -37,4 +38,6 @@ export interface MessageInterface {
 export interface Pagination {
   currentPage: number;
   totalPages: number;
+  totalElements: number;
+  size: number;
 }

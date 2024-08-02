@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
+import StaffTableFooter from "./StaffTableFooter";
 
 export interface IStaffTableProps {}
 
@@ -22,7 +23,8 @@ const TABLE_HEAD = [
   "Actions",
 ];
 export default function StaffTable(props: IStaffTableProps) {
-  const { staffList, setStaffList } = useStaffContext();
+  const { staffList, setStaffList, pagination, setPagination } =
+    useStaffContext();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -32,6 +34,12 @@ export default function StaffTable(props: IStaffTableProps) {
     getAllStaffsListAPI(page, size)
       .then((data) => {
         setStaffList(data.content);
+        setPagination({
+          currentPage: data.metaData?.currentPage ?? 1,
+          totalPages: data.metaData?.totalPages ?? 1,
+          size: data.metaData?.size ?? 5,
+          totalElements: data.metaData?.totalElements ?? 0,
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -42,8 +50,12 @@ export default function StaffTable(props: IStaffTableProps) {
   };
 
   useEffect(() => {
-    fetchStaffList(1, 5);
-  }, []);
+    fetchStaffList(pagination.currentPage, 5);
+  }, [pagination.currentPage]);
+
+  useEffect(() => {
+    console.log("Pagination", pagination);
+  }, [pagination]);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -200,6 +212,11 @@ export default function StaffTable(props: IStaffTableProps) {
               </tbody>
             </table>
           </CardBody>
+          <StaffTableFooter
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={(page) => setPagination({ ...pagination, currentPage: page })}
+          />
         </Card>
       ) : (
         <Typography

@@ -3,6 +3,7 @@
 // Chnage the word "My" by your context name
 "use client";
 
+import { Pagination } from "@/types/Basics";
 import { Staff } from "@/types/StaffTypes";
 import React, {
   createContext,
@@ -17,6 +18,10 @@ interface StaffContextProps {
   // Staff state
   staffList: Staff[];
   setStaffList: (staffList: Staff[]) => void;
+
+  // Pagination state
+    pagination: Pagination;
+    setPagination: (pagination: Pagination) => void;
 }
 
 // Create the context
@@ -27,10 +32,20 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // State to hold the staff list
   const [staffList, setStaffList] = useState<Staff[]>([]);
 
+  // State to hold the pagination
+    const [pagination, setPagination] = useState<Pagination>({
+        currentPage: 1,
+        totalPages: 1,
+        size: 5,
+        totalElements: 0,
+    });
+
   return (
     <StaffContext.Provider value={{ 
         staffList, 
-        setStaffList
+        setStaffList,
+        pagination,
+        setPagination,
      }}>
       {children}
     </StaffContext.Provider>
