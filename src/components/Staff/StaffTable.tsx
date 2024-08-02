@@ -1,5 +1,5 @@
 import { useStaffContext } from "@/context/StaffProvider";
-import { getAllStaffsListAPI } from "@/services/StaffServices";
+import { deleteStaffAPI, getAllStaffsListAPI } from "@/services/StaffServices";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   Card,
@@ -9,8 +9,16 @@ import {
   Tooltip,
   Typography,
 } from "@material-tailwind/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import StaffTableFooter from "./StaffTableFooter";
+
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+} from "@material-tailwind/react";
 
 export interface IStaffTableProps {}
 
@@ -35,11 +43,62 @@ export default function StaffTable(props: IStaffTableProps) {
   // Search state management
   const { search } = useStaffContext();
 
+  // Dialog state management
+  const [openDialog, setOpenDialog] = useState(false);
+
+  // Staff Id local state management
+  const [staffId, setStaffId] = useState<number | null>(null);
+
+  // Loading delete local staff state management
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
+  // Message state management
+  const { setMessage, message } = useStaffContext();
+
+  // Alert state management
+  const { alertOpen, setAlertOpen } = useStaffContext();
+
+  // Function to handle the delete staff dialog
+  const handelDeleteStaffDialog = (id: number | null) => {
+    if (id) {
+      setStaffId(id);
+    }
+    setOpenDialog(!openDialog);
+  };
+
+  /**
+   * This function is used to delete a staff member by calling the deleteStaffAPI
+   * and then updating the staff list state
+   */
+
+  const deleteStaff = () => {
+    if (staffId) {
+      setLoadingDelete(true);
+      deleteStaffAPI(staffId)
+        .then((data) => {
+          fetchStaffList(pagination.currentPage, 5);
+          setMessage({
+            message: data.message,
+            messageType: data.messageType,
+          });
+
+          setAlertOpen(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          handelDeleteStaffDialog(null);
+          setLoadingDelete(false);
+        });
+    }
+  };
+
   /**
    * This function is used to fetch the staff list from the service and update the state
    * of the staff list, the pagination and the loading state
-   * @param page 
-   * @param size 
+   * @param page
+   * @param size
    */
   const fetchStaffList = (page: number, size: number) => {
     setTableLoading(true);
@@ -67,7 +126,6 @@ export default function StaffTable(props: IStaffTableProps) {
       fetchStaffList(pagination.currentPage, 5);
     }
   }, [pagination.currentPage]);
-
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -212,6 +270,7 @@ export default function StaffTable(props: IStaffTableProps) {
                               onPointerEnterCapture={undefined}
                               onPointerLeaveCapture={undefined}
                               color="red"
+                              onClick={(event) => handelDeleteStaffDialog(id)}
                             >
                               <TrashIcon className="h-4 w-4" />
                             </IconButton>
@@ -242,6 +301,67 @@ export default function StaffTable(props: IStaffTableProps) {
           No Staff Found
         </Typography>
       )}
+
+      <Dialog
+        open={openDialog}
+        handler={handelDeleteStaffDialog}
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
+        <DialogHeader
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          Confirm Deletion
+        </DialogHeader>
+        <DialogBody
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          Are you sure you want to delete this staff member? This action cannot
+          be undone.
+        </DialogBody>
+        {loadingDelete ? (
+          <div className="flex flex-1 justify-center items-center p-4">
+            <Spinner
+              className="h-8 w-8"
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            />
+          </div>
+        ) : (
+          <DialogFooter
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <Button
+              variant="text"
+              color="red"
+              onClick={() => handelDeleteStaffDialog(null)}
+              className="mr-1"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              variant="gradient"
+              color="green"
+              onClick={() => deleteStaff()}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              <span>Confirm</span>
+            </Button>
+          </DialogFooter>
+        )}
+      </Dialog>
     </div>
   );
 }
