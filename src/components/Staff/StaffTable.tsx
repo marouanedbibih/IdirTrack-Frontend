@@ -58,6 +58,8 @@ export default function StaffTable(props: IStaffTableProps) {
   // Alert state management
   const { setAlertOpen } = useStaffContext();
 
+
+
   // Function to handle the delete staff dialog
   const handelDeleteStaffDialog = (id: number | null) => {
     if (id) {

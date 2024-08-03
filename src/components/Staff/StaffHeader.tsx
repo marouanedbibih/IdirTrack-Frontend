@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   ArrowDownTrayIcon,
   MagnifyingGlassIcon,
+  PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import {
   Card,
@@ -26,6 +27,9 @@ export default function StaffHeader(props: IStaffHeaderProps) {
 
   // Loading state management
   const { tableLoading, setTableLoading } = useStaffContext();
+
+  // Handel open form
+  const { handleOpenForm } = useStaffContext();
 
   /**
    * Fetch the searched staff list
@@ -59,7 +63,6 @@ export default function StaffHeader(props: IStaffHeaderProps) {
         setTableLoading(false);
       });
   };
-
 
   return (
     <Card
@@ -116,8 +119,10 @@ export default function StaffHeader(props: IStaffHeaderProps) {
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              color="green"
+              onClick={handleOpenForm}
             >
-              <ArrowDownTrayIcon strokeWidth={2} className="h-4 w-4" /> Download
+              <PlusCircleIcon strokeWidth={2} className="h-4 w-4" /> New Staff
             </Button>
           </div>
         </div>

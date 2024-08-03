@@ -5,8 +5,8 @@
 
 import { DynamicAlert } from "@/components/alert/DynamicAlert";
 import { searchStaffsAPI } from "@/services/StaffServices";
-import { MessageInterface, MessageType, Pagination } from "@/types/Basics";
-import { Staff } from "@/types/StaffTypes";
+import { ErrorInterface, MessageInterface, MessageType, Pagination } from "@/types/Basics";
+import { Staff, StaffRequest } from "@/types/StaffTypes";
 import React, {
   createContext,
   useState,
@@ -40,6 +40,21 @@ interface StaffContextProps {
   // Message state
   message: MessageInterface;
   setMessage: (message: MessageInterface) => void;
+
+  // Staff Request state
+  staffRequest: StaffRequest;
+  setStaffRequest: (request: StaffRequest) => void;
+
+  // Modal Form state
+  openForm: boolean;
+  setOpenForm: (openForm: boolean) => void;
+
+  // Handle open form
+  handleOpenForm: () => void;
+
+  // Errors
+  errors : ErrorInterface[];
+  setErrors : (errors: ErrorInterface[]) => void;
 }
 
 // Create the context
@@ -74,6 +89,25 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     messagesObject: null,
   });
 
+  // Staff Request 
+  const [staffRequest,setStaffRequest] = useState<StaffRequest>({
+    name: "",
+    phone: "",
+    position: "",
+    clientId: 0,
+  });
+
+  // Modal Form state
+  const [openForm, setOpenForm] = useState<boolean>(false);
+  
+  // Handel open form
+  const handleOpenForm = () => {
+    setOpenForm(!openForm);
+  }
+
+  // Errors state
+  const [errors, setErrors] = useState<ErrorInterface[]>([]);
+
   return (
     <StaffContext.Provider
       value={{
@@ -95,6 +129,21 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         // Message state
         message,
         setMessage,
+
+        // Staff Request state
+        staffRequest,
+        setStaffRequest,
+
+        // Modal Form state
+        openForm,
+        setOpenForm,
+
+        // Handle open form
+        handleOpenForm,
+
+        // Errors
+        errors,
+        setErrors,
       }}
     >
       {children}

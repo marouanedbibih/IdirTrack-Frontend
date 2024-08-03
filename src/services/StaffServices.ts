@@ -1,5 +1,6 @@
 import axiosClient from "@/api/axiosClient";
 import { BasicResponse } from "@/types/Basics";
+import { StaffRequest } from "@/types/StaffTypes";
 
 const STAFF_API = process.env.NEXT_PUBLIC_STAFF_API
 
@@ -57,5 +58,25 @@ export const deleteStaffAPI = async (id: number): Promise<BasicResponse> => {
         const { data } = error.response.data;
         console.error("Staff List Error", data);
         throw data;
+    }
+}
+
+/**
+ * @api {post} /staff/ Create a staff
+ * This function is used to call the api in the user microservice to create a new staff.
+ * 
+ * @param {StaffRequest} staff The staff object to create
+ * @returns {Promise<BasicResponse>} The response from the server
+ */
+
+export const createStaffAPI = async (staff: StaffRequest): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.post(`${STAFF_API}`, staff);
+        console.info("Create staff Data", data);
+        return data;
+    } catch (error: any) {
+        const errorData: BasicResponse = error.response.data;
+        console.error("Create staff Error", errorData);
+        throw errorData;
     }
 }
