@@ -11,3 +11,12 @@ export interface Staff {
     clientName: string;
     clientCompany: string;
 }
+
+// Staff Request
+
+export interface StaffRequest {
+    name: string;
+    phone: string;
+    position: string;
+    clientId: number;
+}

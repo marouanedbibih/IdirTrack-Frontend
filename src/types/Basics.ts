@@ -24,6 +24,10 @@ export interface BasicResponse {
   redirectUrl?: string;
   status?: string;
   metaData?: MetaData;
+
+  // Errors
+  error?: any;
+  errorsList?: ErrorInterface[] | null;
 }
 
 export interface MessageInterface {
@@ -40,4 +44,10 @@ export interface Pagination {
   totalPages: number;
   totalElements: number;
   size: number;
+}
+
+// Errors Interface
+export interface ErrorInterface {
+  key: string;
+  message: string;
 }
