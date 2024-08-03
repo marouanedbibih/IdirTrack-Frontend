@@ -20,10 +20,51 @@ import {
   InboxIcon,
   PowerIcon,
   BuildingStorefrontIcon,
-  TruckIcon
+  TruckIcon,
+  UsersIcon
 } from "@heroicons/react/24/solid";
-import { ChevronRightIcon, ChevronDownIcon} from "@heroicons/react/24/outline";
+import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+
+const menuItems = [
+  {
+    title: "Dashboard",
+    icon: PresentationChartBarIcon,
+    items: [
+      { title: "Analytics", path: "/analytics" },
+      { title: "Reporting", path: "/reporting" },
+      { title: "Projects", path: "/projects" },
+    ],
+  },
+  {
+    title: "Users",
+    icon: UsersIcon,
+    items: [
+      { title: "Client", path: "/client" },
+      { title: "Staff", path: "/staff" },
+    ],
+  },
+  {
+    title: "Stock",
+    icon: BuildingStorefrontIcon,
+    items: [
+      { title: "Sims", path: "/sim" },
+      { title: "Devices", path: "/device" },
+    ],
+  },
+  {
+    title: "Vehicles",
+    icon: TruckIcon,
+    items: [
+      { title: "Vehicles", path: "/vehicle" },
+      { title: "Boitiers", path: "/boitier" },
+    ],
+  },
+  { title: "Inbox", icon: InboxIcon, path: "/inbox", badge: 14 },
+  { title: "Profile", icon: UserCircleIcon, path: "/profile" },
+  { title: "Settings", icon: Cog6ToothIcon, path: "/settings" },
+  { title: "Log Out", icon: PowerIcon, path: "/logout" },
+];
 
 export function SidebarWithContentSeparator() {
   const [open, setOpen] = React.useState(0);
@@ -39,383 +80,72 @@ export function SidebarWithContentSeparator() {
     setIsMounted(true);
   }, []);
 
-  const handleSimClick = () => {
+  const handleClick = (path) => {
     if (isMounted) {
-      router.push("/sim");
-    }
-  };
-  const handleDeviceClick = () => {
-    if (isMounted) {
-      router.push("/device");
+      router.push(path);
     }
   };
 
   return (
-    <Card
-      className="h-[calc(100vh-2rem)] w-1/2 max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 "
-      placeholder={undefined}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
-    >
+    <Card className="h-[calc(100vh-2rem)] w-1/2 max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
       <div className="mb-2 p-4">
-        <Typography
-          variant="h5"
-          color="blue-gray"
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
+        <Typography variant="h5" color="blue-gray">
           Sidebar
         </Typography>
       </div>
-      <List
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      >
-        <Accordion
-          open={open === 1}
-          icon={
-            <ChevronDownIcon
-              strokeWidth={2.5}
-              className={`mx-auto h-4 w-4 transition-transform ${
-                open === 1 ? "rotate-180" : ""
-              }`}
-            />
-          }
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <ListItem
-            className="p-0"
-            selected={open === 1}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <AccordionHeader
-              onClick={() => handleOpen(1)}
-              className="border-b-0 p-3"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
+      <List>
+        {menuItems.map((item, index) => (
+          item.items ? (
+            <Accordion
+              key={index + 1}
+              open={open === index + 1}
+              icon={
+                <ChevronDownIcon
+                  strokeWidth={2.5}
+                  className={`mx-auto h-4 w-4 transition-transform ${open === index + 1 ? "rotate-180" : ""}`}
+                />
+              }
             >
-              <ListItemPrefix
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <PresentationChartBarIcon className="h-5 w-5" />
+              <ListItem className="p-0" selected={open === index + 1}>
+                <AccordionHeader
+                  onClick={() => handleOpen(index + 1)}
+                  className="border-b-0 p-3"
+                >
+                  <ListItemPrefix>
+                    <item.icon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  <Typography color="blue-gray" className="mr-auto font-normal">
+                    {item.title}
+                  </Typography>
+                </AccordionHeader>
+              </ListItem>
+              <AccordionBody className="py-1">
+                <List className="p-0">
+                  {item.items.map((subItem, subIndex) => (
+                    <ListItem key={subIndex + 1} onClick={() => handleClick(subItem.path)}>
+                      <ListItemPrefix>
+                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      {subItem.title}
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionBody>
+            </Accordion>
+          ) : (
+            <ListItem key={index + 1} onClick={() => handleClick(item.path)}>
+              <ListItemPrefix>
+                <item.icon className="h-5 w-5" />
               </ListItemPrefix>
-              <Typography
-                color="blue-gray"
-                className="mr-auto font-normal"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                Dashboard
-              </Typography>
-            </AccordionHeader>
-          </ListItem>
-          <AccordionBody className="py-1">
-            <List
-              className="p-0"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <ListItem
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <ListItemPrefix
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Analytics
-              </ListItem>
-              <ListItem
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <ListItemPrefix
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Reporting
-              </ListItem>
-              <ListItem
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <ListItemPrefix
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Projects
-              </ListItem>
-            </List>
-          </AccordionBody>
-        </Accordion>
-        <Accordion
-          open={open === 2}
-          icon={
-            <ChevronDownIcon
-              strokeWidth={2.5}
-              className={`mx-auto h-4 w-4 transition-transform ${
-                open === 2 ? "rotate-180" : ""
-              }`}
-            />
-          }
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <ListItem
-            className="p-0"
-            selected={open === 2}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <AccordionHeader
-              onClick={() => handleOpen(2)}
-              className="border-b-0 p-3"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <ListItemPrefix
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <BuildingStorefrontIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              <Typography
-                color="blue-gray"
-                className="mr-auto font-normal"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                Stock
-              </Typography>
-            </AccordionHeader>
-          </ListItem>
-          <AccordionBody className="py-1">
-            <List
-              className="p-0"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <ListItem
-                onClick={handleSimClick}
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <ListItemPrefix
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Sims
-              </ListItem>
-              <ListItem
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                onClick={handleDeviceClick}
-              >
-                <ListItemPrefix
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Devices
-              </ListItem>
-            </List>
-          </AccordionBody>
-        </Accordion>
-        {
-          // Vehicle service routes
-        }
-        <Accordion
-          open={open === 3}
-          icon={
-            <ChevronDownIcon
-              strokeWidth={2.5}
-              className={`mx-auto h-4 w-4 transition-transform ${
-                open === 3 ? "rotate-180" : ""
-              }`}
-            />
-          }
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <ListItem
-            className="p-0"
-            selected={open === 3}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <AccordionHeader
-              onClick={() => handleOpen(3)}
-              className="border-b-0 p-3"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <ListItemPrefix
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <TruckIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              <Typography
-                color="blue-gray"
-                className="mr-auto font-normal"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                Vehicles
-              </Typography>
-            </AccordionHeader>
-          </ListItem>
-          <AccordionBody className="py-1">
-            <List
-              className="p-0"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <ListItem
-                onClick={handleSimClick}
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <ListItemPrefix
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Vehicles
-              </ListItem>
-              <ListItem
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                onClick={handleDeviceClick}
-              >
-                <ListItemPrefix
-                  placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Boitiers
-              </ListItem>
-            </List>
-          </AccordionBody>
-        </Accordion>
-        <hr className="my-2 border-blue-gray-50" />
-        <ListItem
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <ListItemPrefix
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <InboxIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Inbox
-          <ListItemSuffix
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <Chip
-              value="14"
-              size="sm"
-              variant="ghost"
-              color="blue-gray"
-              className="rounded-full"
-            />
-          </ListItemSuffix>
-        </ListItem>
-        <ListItem
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <ListItemPrefix
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <UserCircleIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Profile
-        </ListItem>
-        <ListItem
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <ListItemPrefix
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <Cog6ToothIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Settings
-        </ListItem>
-        <ListItem
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <ListItemPrefix
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <PowerIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Log Out
-        </ListItem>
+              {item.title}
+              {item.badge && (
+                <ListItemSuffix>
+                  <Chip value={item.badge} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                </ListItemSuffix>
+              )}
+            </ListItem>
+          )
+        ))}
       </List>
     </Card>
   );
