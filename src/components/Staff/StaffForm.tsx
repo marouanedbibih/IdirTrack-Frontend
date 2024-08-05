@@ -16,7 +16,18 @@ import { useStaffContext } from "@/context/StaffProvider";
 import { DefaultInput } from "../inputs/DefaultInput";
 import { createStaffAPI } from "@/services/StaffServices";
 import { BasicResponse } from "@/types/Basics";
+import SelectWithSearch, { SelectableItem } from "../form/SelectWithSearch";
+import { getClientForSelect } from "@/services/ClientService";
 
+import { Select, Option } from "@material-tailwind/react";
+import { Client } from "@/types/StaffTypes";
+import { SelectClient } from "./SelectClient";
+
+export interface ClientItem extends SelectableItem {
+  id: number;
+  name: string;
+  company: string;
+}
 export interface IStaffFormProps {}
 
 export default function StaffForm(props: IStaffFormProps) {
@@ -32,8 +43,17 @@ export default function StaffForm(props: IStaffFormProps) {
   // Loading local state management
   const [loading, setLoading] = React.useState<boolean>(false as boolean);
 
+  // Alert provider state management
+  const { alertOpen, setAlertOpen } = useStaffContext();
+
+  // Message provider state management
+  const { message, setMessage } = useStaffContext();
+
+  // Reset the staff request
+  const { resetStaffRequest } = useStaffContext();
+
   // Handel change function
-  const handleChange = (key: string, value: string) => {
+  const handleChange = (key: string, value: string | number) => {
     // Update the staff request state
     setStaffRequest({ ...staffRequest, [key]: value });
 
@@ -47,13 +67,32 @@ export default function StaffForm(props: IStaffFormProps) {
     return error ? error.message : "";
   };
 
-  // Function to crate new staff
+  /**
+   * Create a new staff
+   * @returns void
+   */
   const createStaff = () => {
     // Set the loading to true
     setLoading(true);
+    console.log(staffRequest);
     createStaffAPI(staffRequest)
       .then((data) => {
         console.log(data);
+
+        // Reset the staff request
+        resetStaffRequest();
+
+        // Close the form
+        handleOpenForm();
+
+        // Set the message
+        setMessage({
+          message: data.message,
+          messageType: data.messageType,
+        });
+
+        // Set the alert open
+        setAlertOpen(true);
       })
       .catch((data: BasicResponse) => {
         setErrors(data.errorsList ?? []);
@@ -62,6 +101,10 @@ export default function StaffForm(props: IStaffFormProps) {
         setLoading(false);
       });
   };
+
+  React.useEffect(() => {
+    console.log("Error list", errors);
+  }, [errors]);
 
   return (
     <>
@@ -115,6 +158,8 @@ export default function StaffForm(props: IStaffFormProps) {
                 >
                   Enter your staff details to save in the database
                 </Typography>
+
+                <SelectClient error={getError("clientId")} />
                 <DefaultInput
                   label="Name"
                   placeholder="Enter the staff name"
