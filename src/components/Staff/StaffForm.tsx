@@ -14,13 +14,17 @@ import {
 } from "@material-tailwind/react";
 import { useStaffContext } from "@/context/StaffProvider";
 import { DefaultInput } from "../inputs/DefaultInput";
-import { createStaffAPI } from "@/services/StaffServices";
+import {
+  createStaffAPI,
+  getStaffByIdAPI,
+  updateStaffAPI,
+} from "@/services/StaffServices";
 import { BasicResponse } from "@/types/Basics";
 import SelectWithSearch, { SelectableItem } from "../form/SelectWithSearch";
 import { getClientForSelect } from "@/services/ClientService";
 
 import { Select, Option } from "@material-tailwind/react";
-import { Client } from "@/types/StaffTypes";
+import { Client, StaffRequest } from "@/types/StaffTypes";
 import { SelectClient } from "./SelectClient";
 
 export interface ClientItem extends SelectableItem {
@@ -32,7 +36,7 @@ export interface IStaffFormProps {}
 
 export default function StaffForm(props: IStaffFormProps) {
   // Open Modal Form provider state
-  const { openForm, setOpenForm, handleOpenForm } = useStaffContext();
+  const { openForm, handleOpenForm } = useStaffContext();
 
   // Staff Request provider state
   const { staffRequest, setStaffRequest } = useStaffContext();
@@ -51,6 +55,12 @@ export default function StaffForm(props: IStaffFormProps) {
 
   // Reset the staff request
   const { resetStaffRequest } = useStaffContext();
+
+  // Staff ID provider state management
+  const { staffId, setStaffId } = useStaffContext();
+
+  // Fetch the fetch staff list provider state
+  const { fetchStaffList } = useStaffContext();
 
   // Handel change function
   const handleChange = (key: string, value: string | number) => {
@@ -78,21 +88,19 @@ export default function StaffForm(props: IStaffFormProps) {
     createStaffAPI(staffRequest)
       .then((data) => {
         console.log(data);
-
         // Reset the staff request
         resetStaffRequest();
-
         // Close the form
         handleOpenForm();
-
         // Set the message
         setMessage({
           message: data.message,
           messageType: data.messageType,
         });
-
         // Set the alert open
         setAlertOpen(true);
+        // Fetch the staff list
+        fetchStaffList(1, 5);
       })
       .catch((data: BasicResponse) => {
         setErrors(data.errorsList ?? []);
@@ -102,9 +110,93 @@ export default function StaffForm(props: IStaffFormProps) {
       });
   };
 
+  /**
+   * GET STAFF BY ID
+   *
+   * This function handel the get staff by id
+   *
+   * @param {number} id The id of the staff to get
+   */
+  const getStaffById = (id: number) => {
+    setLoading(true);
+    getStaffByIdAPI(id)
+      .then((data) => {
+        console.log(data);
+        setStaffRequest({
+          name: data.content.name,
+          phone: data.content.phone,
+          position: data.content.position,
+          clientId: data.content.clientId,
+        });
+      })
+      .catch((data: BasicResponse) => {
+        setErrors(data.errorsList ?? []);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  /**
+   * UPDATE STAFF
+   *
+   * This function handel the update staff
+   * @param {number} id The id of the staff to update
+   * @param {StaffRequest} staff The staff request object
+   * @returns void
+   * @throws BasicResponse
+   */
+
+  const updateStaff = (id: number, staff: StaffRequest) => {
+    setLoading(true);
+    updateStaffAPI(id, staff)
+      .then((data) => {
+        console.log(data);
+        // Set message
+        setMessage({
+          message: data.message,
+          messageType: data.messageType,
+        });
+        // Set alert open
+        setAlertOpen(true);
+        // Close the form
+        handleOpenForm();
+        // Fetch the staff list
+        fetchStaffList(1, 5);
+      })
+      .catch((data: BasicResponse) => {
+        setErrors(data.errorsList ?? []);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  /**
+   * Handel submit form function to create or update staff
+   * @returns void
+   * @throws BasicResponse
+   * @see createStaff
+   * @see updateStaff
+   */
+
+  const handleSubmit = () => {
+    if (staffId) {
+      updateStaff(staffId, staffRequest);
+    } else {
+      createStaff();
+    }
+  };
+
   React.useEffect(() => {
     console.log("Error list", errors);
   }, [errors]);
+
+  React.useEffect(() => {
+    if (staffId) {
+      getStaffById(staffId);
+    }
+  }, [staffId]);
 
   return (
     <>
@@ -193,7 +285,7 @@ export default function StaffForm(props: IStaffFormProps) {
               >
                 <Button
                   variant="gradient"
-                  onClick={createStaff}
+                  onClick={handleSubmit}
                   fullWidth
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}

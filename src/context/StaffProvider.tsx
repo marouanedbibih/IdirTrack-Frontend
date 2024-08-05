@@ -4,8 +4,13 @@
 "use client";
 
 import { DynamicAlert } from "@/components/alert/DynamicAlert";
-import { searchStaffsAPI } from "@/services/StaffServices";
-import { ErrorInterface, MessageInterface, MessageType, Pagination } from "@/types/Basics";
+import { getAllStaffsListAPI, searchStaffsAPI } from "@/services/StaffServices";
+import {
+  ErrorInterface,
+  MessageInterface,
+  MessageType,
+  Pagination,
+} from "@/types/Basics";
 import { Staff, StaffRequest } from "@/types/StaffTypes";
 import React, {
   createContext,
@@ -54,8 +59,15 @@ interface StaffContextProps {
   handleOpenForm: () => void;
 
   // Errors
-  errors : ErrorInterface[];
-  setErrors : (errors: ErrorInterface[]) => void;
+  errors: ErrorInterface[];
+  setErrors: (errors: ErrorInterface[]) => void;
+
+  // Stafe ID
+  staffId: number;
+  setStaffId: (staffId: number) => void;
+
+  // Fetch all staffs
+  fetchStaffList: (page: number, size: number) => void;
 }
 
 // Create the context
@@ -90,8 +102,8 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     messagesObject: null,
   });
 
-  // Staff Request 
-  const [staffRequest,setStaffRequest] = useState<StaffRequest>({
+  // Staff Request
+  const [staffRequest, setStaffRequest] = useState<StaffRequest>({
     name: "",
     phone: "",
     position: "",
@@ -106,18 +118,49 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       position: "",
       clientId: 0,
     });
-  }
+  };
 
   // Modal Form state
   const [openForm, setOpenForm] = useState<boolean>(false);
-  
+
   // Handel open form
   const handleOpenForm = () => {
     setOpenForm(!openForm);
-  }
+    resetStaffRequest();
+  };
 
   // Errors state
   const [errors, setErrors] = useState<ErrorInterface[]>([]);
+
+  // Staff ID state
+  const [staffId, setStaffId] = useState<number>(0);
+
+  /**
+   * This function is used to fetch the staff list from the service and update the state
+   * of the staff list, the pagination and the loading state
+   * @param page
+   * @param size
+   */
+
+  const fetchStaffList = (page: number, size: number) => {
+    setTableLoading(true);
+    getAllStaffsListAPI(page, size)
+      .then((data) => {
+        setStaffList(data.content);
+        setPagination({
+          currentPage: data.metaData?.currentPage ?? 1,
+          totalPages: data.metaData?.totalPages ?? 1,
+          size: data.metaData?.size ?? 5,
+          totalElements: data.metaData?.totalElements ?? 0,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setTableLoading(false);
+      });
+  };
 
   return (
     <StaffContext.Provider
@@ -158,6 +201,13 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
         // Reset Staff Request
         resetStaffRequest,
+
+        // Staff ID
+        staffId,
+        setStaffId,
+
+        // Fetch all staffs
+        fetchStaffList,
       }}
     >
       {children}
