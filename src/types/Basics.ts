@@ -51,3 +51,18 @@ export interface ErrorInterface {
   key: string;
   message: string;
 }
+
+
+export interface Response {
+  content?: any;
+  message?: string;
+  messagesList?: { [key: string]: string | null };
+  messageType: MessageType;
+  redirectUrl?: string;
+  status?: string;
+  metaData?: MetaData;
+
+  // Errors
+  error?: any;
+  errorsList?: ErrorInterface[] | null;
+}

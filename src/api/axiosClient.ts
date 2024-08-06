@@ -1,10 +1,18 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axiosRetry from 'axios-retry';
 
 const axiosClient = axios.create({
-
   baseURL: `http://localhost:8000`
+});
 
-
+axiosRetry(axiosClient, {
+  retries: 5, // Number of retries
+  retryCondition: (error:any) => {
+    return error.response.status === 503; // Retry on 503 errors
+  },
+  retryDelay: (retryCount) => {
+    return retryCount * 1000; // Exponential backoff: 1000ms, 2000ms, 3000ms
+  },
 });
 
 axiosClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {

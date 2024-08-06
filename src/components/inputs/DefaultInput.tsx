@@ -20,7 +20,7 @@ export const DefaultInput: React.FC<IDefaultInputProps> = ({
 }) => {
   return (
     <div className="mb-2">
-      <Typography
+      {/* <Typography
         className={`mb-2 ${error ? "text-red-500" : ""}`}
         variant="h6"
         placeholder={undefined}
@@ -28,8 +28,9 @@ export const DefaultInput: React.FC<IDefaultInputProps> = ({
         onPointerLeaveCapture={undefined}
       >
         {label}
-      </Typography>
+      </Typography> */}
       <Input
+      label={label}
         value={value}
         placeholder={placeholder}
         onChange={onChange}

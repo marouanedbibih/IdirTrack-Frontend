@@ -44,6 +44,7 @@ interface StaffContextProps {
   // Staff Request state
   staffRequest: StaffRequest;
   setStaffRequest: (request: StaffRequest) => void;
+  resetStaffRequest: () => void;
 
   // Modal Form state
   openForm: boolean;
@@ -97,6 +98,16 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     clientId: 0,
   });
 
+  // Reset Staff Request
+  const resetStaffRequest = () => {
+    setStaffRequest({
+      name: "",
+      phone: "",
+      position: "",
+      clientId: 0,
+    });
+  }
+
   // Modal Form state
   const [openForm, setOpenForm] = useState<boolean>(false);
   
@@ -144,6 +155,9 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         // Errors
         errors,
         setErrors,
+
+        // Reset Staff Request
+        resetStaffRequest,
       }}
     >
       {children}
