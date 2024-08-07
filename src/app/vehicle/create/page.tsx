@@ -1,21 +1,26 @@
 import { BoitierProvider } from "@/boitier/BoitierProvider";
 import BoitierForm from "@/boitier/components/BoitierForm";
-import VehicleForm from "@/components/vehicle/VehicleForm";
+import VehicleForm from "@/vehicle/components/VehicleForm";
+import { EditVehicleProvider, useEditVehicleContext } from "@/vehicle/contexts/EditVehicleProvider";
 // import { CreateVehicleProvider } from "@/contexts/CreateVehicleProvider";
 import React from "react";
 
 function page() {
   return (
-    <div className="flex flex-row justify-center items-start gap-16 p-4">
-      {/* <CreateVehicleProvider>
+    <EditVehicleProvider>
+      <div className="flex flex-row justify-center items-start gap-16 p-4 h-screen">
+        {/* <CreateVehicleProvider>
         <BoitierForm />
-        <VehicleForm />
+        
       </CreateVehicleProvider> */}
 
-      <BoitierProvider>
-        <BoitierForm />
-      </BoitierProvider>
-    </div>
+        <BoitierProvider>
+          <BoitierForm />
+          <VehicleForm />
+        </BoitierProvider>
+
+      </div>
+    </EditVehicleProvider>
   );
 }
 
