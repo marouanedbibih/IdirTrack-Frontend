@@ -47,7 +47,7 @@ export default function StaffTable(props: IStaffTableProps) {
   const [openDialog, setOpenDialog] = useState(false);
 
   // Staff Id local state management
-  const [staffId, setStaffId] = useState<number | null>(null);
+  // const [staffId, setStaffId] = useState<number | null>(null);
 
   // Loading delete local staff state management
   const [loadingDelete, setLoadingDelete] = useState(false);
@@ -58,7 +58,14 @@ export default function StaffTable(props: IStaffTableProps) {
   // Alert state management
   const { setAlertOpen } = useStaffContext();
 
+  // Stafe ID provider state management
+  const { setStaffId, staffId } = useStaffContext();
 
+  // Open Modal provider state management
+  const { setOpenForm} = useStaffContext();
+
+  // Fetch staff list provider state management
+  const { fetchStaffList } = useStaffContext();
 
   // Function to handle the delete staff dialog
   const handelDeleteStaffDialog = (id: number | null) => {
@@ -69,10 +76,22 @@ export default function StaffTable(props: IStaffTableProps) {
   };
 
   /**
+   * Handel the update staff dialog
+   * @param id
+   * @returns void
+   */
+  const handelUpdateStaffDialog = (id: number) => {
+    setStaffId(id);
+    setOpenForm(true);
+
+  };
+
+  // -------------- APIs functions --------------
+
+  /**
    * This function is used to delete a staff member by calling the deleteStaffAPI
    * and then updating the staff list state
    */
-
   const deleteStaff = () => {
     if (staffId) {
       setLoadingDelete(true);
@@ -96,31 +115,7 @@ export default function StaffTable(props: IStaffTableProps) {
     }
   };
 
-  /**
-   * This function is used to fetch the staff list from the service and update the state
-   * of the staff list, the pagination and the loading state
-   * @param page
-   * @param size
-   */
-  const fetchStaffList = (page: number, size: number) => {
-    setTableLoading(true);
-    getAllStaffsListAPI(page, size)
-      .then((data) => {
-        setStaffList(data.content);
-        setPagination({
-          currentPage: data.metaData?.currentPage ?? 1,
-          totalPages: data.metaData?.totalPages ?? 1,
-          size: data.metaData?.size ?? 5,
-          totalElements: data.metaData?.totalElements ?? 0,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setTableLoading(false);
-      });
-  };
+
 
   // Use effect to fetch the staff list when the page changes
   useEffect(() => {
@@ -262,6 +257,9 @@ export default function StaffTable(props: IStaffTableProps) {
                               onPointerEnterCapture={undefined}
                               onPointerLeaveCapture={undefined}
                               color="green"
+                              onClick={(event) => {
+                                handelUpdateStaffDialog(id);
+                              }}
                             >
                               <PencilIcon className="h-4 w-4" />
                             </IconButton>

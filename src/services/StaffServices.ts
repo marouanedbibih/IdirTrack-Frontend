@@ -80,3 +80,53 @@ export const createStaffAPI = async (staff: StaffRequest): Promise<BasicResponse
         throw errorData;
     }
 }
+
+/**
+ * GET STAFF BY ID
+ * 
+ * This service is used to call the api in the user microservice to get a staff by her id.
+ * 
+ * @api {get} /staff/:id Get a staff by id
+ * @param id
+ * @returns BasicResponse
+ * @throws BasicResponse
+ */
+
+export const getStaffByIdAPI = async (id: number): Promise<BasicResponse> => {
+    // Try to call the api
+    try {
+        const { data } = await axiosClient.get(`${STAFF_API}/${id}/`);
+        console.info("Get staff Data", data);
+        return data;
+    } 
+    // Catch the error
+    catch (error: any) {
+        const errorData: BasicResponse = error.response.data;
+        console.error("Get staff Error", errorData);
+        throw errorData;
+    }
+}
+
+/**
+ * UPDATE STAFF
+ * 
+ * This service is used to call the api in the user microservice to update a staff by her id.
+ * 
+ * @api {put} /staff/:id Update a staff by id
+ * @param id
+ * @param staff
+ * @returns BasicResponse
+ * @throws BasicResponse
+ */
+
+export const updateStaffAPI = async (id: number, staff: StaffRequest): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.put(`${STAFF_API}/${id}/`, staff);
+        console.info("Update staff Data", data);
+        return data;
+    } catch (error: any) {
+        const errorData: BasicResponse = error.response.data;
+        console.error("Update staff Error", errorData);
+        throw errorData;
+    }
+}
