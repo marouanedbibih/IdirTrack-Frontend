@@ -10,3 +10,10 @@ export interface Client {
     name: string;
 
 }
+
+export interface VehicleRequest {
+    matricule: string;
+    type: string;
+    clientId: number;
+    boitiersIds: number[];
+  }

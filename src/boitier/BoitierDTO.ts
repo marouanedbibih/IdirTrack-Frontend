@@ -14,15 +14,17 @@ export interface DeviceBoitier {
   type: string;
 }
 
+export interface BoitierVehicle {
+  id?: number;
+  device: DeviceBoitier;
+  sim: SimBoitier;
+}
+
 
 export interface BoitierRequest {
-  deviceMicroserviceId: number;
-  imei: string;
-  deviceType: string;
-  simMicroserviceId: number;
-  phone: string;
-  operatorName: string;
-  ccid: string;
+  
+  deviceMicroserviceId: number | null;
+  simMicroserviceId: number | null;
   startDate: string;
   endDate: string;
 }
