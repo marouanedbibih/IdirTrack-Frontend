@@ -1,5 +1,6 @@
 import axiosClient from "@/api/axiosClient";
 import { BasicResponse } from "@/types/Basics";
+import { VehicleRequest } from "../types/VehicleDto";
 
 export const getVehicleListApi = async (page: number, size: number): Promise<BasicResponse> => {
     try {
@@ -41,4 +42,26 @@ export const getBoitierNotAssigned = async (page: number, size: number): Promise
         console.error(error);
         throw error;
     }
+}
+
+/**
+ * CREATE NEW VEHICLE
+ *@description
+ * This function is used to call the API to create a new vehicle.
+ * 
+ * @api POST /vehicle-api/vehicles/
+ * @param vehicleRequest VehicleRequest
+ * @returns BasicResponse
+ * @throws Error
+ */
+
+export const createVehicleAPI = async (vehicleRequest: VehicleRequest): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.post(`/vehicle-api/vehicles/`, vehicleRequest);
+        return data;
+    } catch (error:any) {
+        console.error(error);
+        throw error.response.data;
+    }
+
 }

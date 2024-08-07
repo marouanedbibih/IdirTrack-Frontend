@@ -18,6 +18,7 @@ interface EditVehicleContextProps {
   // Vehicle request state
   vehicleRequest: VehicleRequest;
   setVehicleRequest: (value: VehicleRequest) => void;
+  resetVehicleRequest: () => void;
 
   // Boitier request state
   boitierRequest: BoitierRequest;
@@ -76,9 +77,19 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
   const [vehicleRequest, setVehicleRequest] = useState<VehicleRequest>({
     matricule: "",
     type: "",
-    clientId: 0,
+    clientMicroserviceId: null,
     boitiersIds: [],
   });
+
+  // Reset Vehicle Request
+  const resetVehicleRequest = () => {
+    setVehicleRequest({
+      matricule: "",
+      type: "",
+      clientMicroserviceId: null,
+      boitiersIds: [],
+    });
+  };
 
   // Boitier request state
   const [boitierRequest, setBoitierRequest] = useState<BoitierRequest>({
@@ -139,6 +150,11 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
     getBoitierNotAssigned(page, size)
       .then((data) => {
         setBoitiersList(data.content);
+        // set the boitiers is in the boitiers Ids in the vehicle request
+        setVehicleRequest({
+          ...vehicleRequest,
+          boitiersIds: data.content.map((boitier:any) => boitier.id),
+        });
       })
       .catch((error) => {
         console.error(error);
@@ -179,6 +195,7 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
         // Vehicle request state
         vehicleRequest,
         setVehicleRequest,
+        resetVehicleRequest,
         // Boitier request state
         boitierRequest,
         setBoitierRequest,
