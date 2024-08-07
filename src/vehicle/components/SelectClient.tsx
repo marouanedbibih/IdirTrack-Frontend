@@ -59,7 +59,7 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
     // Set the selected client ID
     setVehicleRequest({
       ...vehicleRequest,
-      clientId: client.clientMicroserviceId,
+      clientMicroserviceId: client.clientMicroserviceId,
     });
     // Close the dropdown
     setIsOpen(false);
@@ -149,11 +149,11 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
               : "border-gray-900 text-blue-gray-700"
           }`}
         >
-          {vehicleRequest.clientId === 0
+          {vehicleRequest.clientMicroserviceId === null
             ? `Select a Client`
             : clientsList.find(
                 (option) =>
-                  option.clientMicroserviceId === vehicleRequest.clientId
+                  option.clientMicroserviceId === vehicleRequest.clientMicroserviceId
               )?.name}
         </button>
 
@@ -212,7 +212,7 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
       {error ? (
         <Typography
           variant="small"
-          className="flex justify-center font-bold text-red-500 "
+          className="flex justify-start font-bold text-red-500 "
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
