@@ -118,3 +118,41 @@ export const updateSimApi = async (simId: number | null, payload: Sim): Promise<
         throw data;
     }
 }
+
+
+/**
+ * Search SIMs API
+ * @param term 
+ * @param page 
+ * @param size 
+ * @returns 
+ */
+export const searchSimApi = async (searchTerm: string, page: number, size: number): Promise<BasicResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/stock-api/sim/search?term=${searchTerm}&page=${page}&size=${size}`);
+        console.log("Search SIM response", data);
+        return data;
+    } catch (error: any) {
+        console.error("Search SIM error", error);
+        if (error.response) {
+            const data = error.response.data;
+            console.error("Search SIM error response data", data);
+            throw data;
+        } else {
+            throw new Error("Network Error");
+        }
+    }
+}
+
+// // Search SIM API
+// export const searchSimApi = async (searchTerm: string,page:number,size:number): Promise<BasicResponse> => {
+//     try {
+//         const { data } = await axiosClient.get(`/stock-api/sim/search?term=${searchTerm}&page=${page}&size=${size}`);
+//         console.log("Search SIM response", data);
+//         return data;
+//     } catch (error: any) {
+//         const data = error.response.data;
+//         console.error("Search SIM error", data);
+//         throw data;
+//     }
+// }

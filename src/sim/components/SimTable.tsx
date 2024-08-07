@@ -9,10 +9,12 @@ import SimTableBody from "./table/SimTableBody";
 import SimTableHeader from "./table/SimTableHeader";
 import SimTableFooter from "./table/SimTableFooter";
 
-const tableHead = ["SIM Infos", "Operator", "Created At", "Status", "Actions"];
+const tableHead = ["Phone Num", "Operator","Ccid","Pin" ,"Puk", "Created At", "Status", "Actions"];
 
 export function SimTable() {
-  const { fetchSimList, simList, pagination, setCurrentPage } = useSimContext();
+  const { fetchSimList, simList, pagination, setCurrentPage,searchTerm,setSearchTerm,fetchSearchedSims } = useSimContext();
+  
+
 
   useEffect(() => {
     fetchSimList(pagination.currentPage, 5);
@@ -29,9 +31,22 @@ export function SimTable() {
         <SimTableHeader
           title="SIMs List"
           subtitle="Here is a list of all sims"
-          onSearch={(event) => console.log(event.target.value)}
+          onSearch={(event) => {
+            setSearchTerm(event.target.value);
+            fetchSearchedSims(event.target.value, 1, 5);
+          }}
           onDownload={() => console.log("Download")}
         />
+        {/* <SimTableHeader
+          title="SIMs List"+
+          subtitle="Here is a list of all sims"
+          onSearch={(event) =>  {
+            // console.log("Search term: ",event.target.value)
+            setSearchTerm(event.target.value);
+            fetchSearchedSims(event.target.value,1,5);
+          }}
+          onDownload={() => console.log("Download")}
+        /> */}
         <SimTableBody tableRows={simList} tableHead={tableHead} />
         <SimTableFooter
           currentPage={pagination.currentPage}
