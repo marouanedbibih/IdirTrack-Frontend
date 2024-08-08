@@ -4,7 +4,7 @@ import { Card, CardBody, Typography } from "@material-tailwind/react";
 interface VehicleBoitierDetailsProps {
   boitier: BoitierInterface;
 }
-function VehicleBoitierDetails({ boitier }: VehicleBoitierDetailsProps) {
+function VehicleBoitierCard({ boitier }: VehicleBoitierDetailsProps) {
   return (
     <Card
       className="mt-6 w-96"
@@ -42,14 +42,14 @@ function VehicleBoitierDetails({ boitier }: VehicleBoitierDetailsProps) {
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          {boitier?.sim.type}
+          {boitier?.sim.operatorName}
         </Typography>
         <Typography
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          {boitier?.sim.phoneNumber}
+          {boitier?.sim.phone}
         </Typography>
         <Typography
           variant="h5"
@@ -80,4 +80,4 @@ function VehicleBoitierDetails({ boitier }: VehicleBoitierDetailsProps) {
   );
 }
 
-export default VehicleBoitierDetails;
+export default VehicleBoitierCard;

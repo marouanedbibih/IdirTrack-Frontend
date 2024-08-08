@@ -23,7 +23,7 @@ export interface BasicResponse {
   messageType: MessageType;
   redirectUrl?: string;
   status?: string;
-  metaData?: MetaData;
+  metadata?: MetaData;
 
   // Errors
   error?: any;

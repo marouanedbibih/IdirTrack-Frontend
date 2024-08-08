@@ -27,9 +27,9 @@ export type VehicleType = {
   export type SimType = {
     id?: number;
     simMicroserviceId?: number;
-    phoneNumber?: string;
+    phone?: string;
     ccid?: string;
-    type?: string;
+    operatorName?: string;
   }
   
   export interface BoitierInterface {

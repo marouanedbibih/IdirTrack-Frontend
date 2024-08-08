@@ -1,58 +1,85 @@
 "use client";
 
-import React, { createContext, useState, ReactNode, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useContext,
+  useEffect,
+} from "react";
 import { Pagination, VehicleInterface } from "../VehicleTypes";
-import { getVehicleById, getVehicleListApi } from "../services/vehicleService";
+import { getVehicleListApi } from "../services/vehicleService";
 import { vehicleDetailstemplate } from "../templates/VehicleTemplates";
-import { BasicResponse } from "@/types/Basics";
 
 interface VehicleContextProps {
+  // Vehicle List state
   vehiclesList: VehicleInterface[];
-  fetchVehiclesList: (page: number, size: number) => void;
+  setVehiclesList: (vehicles: VehicleInterface[]) => void;
+
+  // Vehicle Pagination
   vehiclePagination: Pagination;
-  setCurrentPage: (page: number) => void;
-  fetchVehicleById: (id: number) => void;
+  setVehiclePagination: (pagination: Pagination) => void;
+
+  // Vehicle Details
   vehicleDetails: VehicleInterface;
+  setVehicleDetails: (vehicle: VehicleInterface) => void;
+
+  // Vehicle ID
+  vehicleId: number | null;
+  setVehicleId: (id: number | null) => void;
+
+  // Open Vehicle Details Dialog
+  openVehicleDetailsDialog: boolean;
+  setOpenVehicleDetailsDialog: (open: boolean) => void;
+  handleOpenVehicleDetailsDialog: () => void;
 }
 
-const VehicleContext = createContext<VehicleContextProps | undefined>(undefined);
+const VehicleContext = createContext<VehicleContextProps | undefined>(
+  undefined
+);
 
 const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Vehicle List state
   const [vehiclesList, setVehiclesList] = useState<VehicleInterface[]>([]);
+
+  // Vehicle Pagination
   const [vehiclePagination, setVehiclePagination] = useState<Pagination>({
     currentPage: 1,
     totalPages: 1,
-    totalItems: 1,
   });
 
-  const setCurrentPage = (page: number) => {
-    setVehiclePagination({ ...vehiclePagination, currentPage: page });
+  // Open Vehicle Details Dialog
+  const [openVehicleDetailsDialog, setOpenVehicleDetailsDialog] = useState<boolean>(
+    false
+  );
+
+  // Handle Open Vehicle Details Dialog
+  const handleOpenVehicleDetailsDialog = () => {
+    setOpenVehicleDetailsDialog(!openVehicleDetailsDialog);
   };
 
-  const fetchVehiclesList = async (page: number, size: number) => {
-    try {
-      const data = await getVehicleListApi(page, size);
-      setVehiclesList(data.content);
-      setVehiclePagination({
-        currentPage: data.metadata?.currentPage || 1,
-        totalPages: data.metadata?.totalPages || 1,
-        totalItems: data.metadata?.totalItems || 1,
-      });
-    } catch (error) {
-      console.error("Error fetching vehicles list:", error);
-    }
-  };
 
-  const [vehicleDetails, setVehicleDetails] = useState<VehicleInterface>(vehicleDetailstemplate);
+  // const fetchVehiclesList = async (page: number, size: number) => {
+  //   try {
+  //     const data = await getVehicleListApi(page, size);
+  //     setVehiclesList(data.content);
+  //     setVehiclePagination({
+  //       currentPage: data.metaData?.currentPage || 1,
+  //       totalPages: data.metaData?.totalPages || 1,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching vehicles list:", error);
+  //   }
+  // };
 
-  const fetchVehicleById = async (id: number) => {
-    try {
-      const data = await getVehicleById(id);
-      setVehicleDetails(data.content);
-    } catch (error) {
-      console.error("Error fetching vehicle details:", error);
-    }
-  };
+  // Vehicle Details
+  const [vehicleDetails, setVehicleDetails] = useState<VehicleInterface>(
+    vehicleDetailstemplate
+  );
+
+  // Vehicle ID
+  const [vehicleId, setVehicleId] = useState<number | null>(null);
+
 
   useEffect(() => {
     console.log("Vehicle Details", vehicleDetails);
@@ -61,12 +88,22 @@ const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <VehicleContext.Provider
       value={{
+        // Vehicle List state
         vehiclesList,
-        fetchVehiclesList,
+        setVehiclesList,
+        // Vehicle Pagination
         vehiclePagination,
-        setCurrentPage,
-        fetchVehicleById,
+        setVehiclePagination,
+        // Vehicle Details
         vehicleDetails,
+        setVehicleDetails,
+        // Vehicle ID
+        vehicleId,
+        setVehicleId,
+        // Open Vehicle Details Dialog
+        openVehicleDetailsDialog,
+        setOpenVehicleDetailsDialog,
+        handleOpenVehicleDetailsDialog,
       }}
     >
       {children}

@@ -5,6 +5,7 @@ import { VehicleRequest } from "../types/VehicleDto";
 export const getVehicleListApi = async (page: number, size: number): Promise<BasicResponse> => {
     try {
         const { data } = await axiosClient.get(`/vehicle-api/vehicles/?page=${page}&size=${size}`);
+        console.log("Vehicle list:", data);
         return data;
     } catch (error) {
         console.error(error);
@@ -12,9 +13,10 @@ export const getVehicleListApi = async (page: number, size: number): Promise<Bas
     }
 }
 
-export const getVehicleById = async (id: number): Promise<BasicResponse> => {
+export const getVehicleByIdAPI = async (id: number): Promise<BasicResponse> => {
     try {
         const { data } = await axiosClient.get(`/vehicle-api/vehicles/${id}/`);
+        console.log("Vehicle by id:", data);
         return data;
     } catch (error) {
         console.error(error);
@@ -63,5 +65,23 @@ export const createVehicleAPI = async (vehicleRequest: VehicleRequest): Promise<
         console.error(error);
         throw error.response.data;
     }
+}
 
+/**
+ * GET BOITIERS ASSIGNED TO A VEHICLE
+ * 
+ */
+export const getBoitiersAssignedToVehicle = async (vehicleId: number | null): Promise<BasicResponse> => {
+    if (!vehicleId) {
+        throw new Error("Vehicle id is required");
+    }
+    else{
+        try {
+            const { data } = await axiosClient.get(`/vehicle-api/vehicles/${vehicleId}/boities/`);
+            return data;
+        } catch (error:any) {
+            console.error(error);
+            throw error.response.data;
+        }
+    }
 }
