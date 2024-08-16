@@ -7,7 +7,7 @@ const axiosClient = axios.create({
 
 axiosRetry(axiosClient, {
   retries: 5, // Number of retries
-  retryCondition: (error:any) => {
+  retryCondition: (error: any) => {
     return error.response.status === 503; // Retry on 503 errors
   },
   retryDelay: (retryCount) => {
@@ -16,10 +16,15 @@ axiosRetry(axiosClient, {
 });
 
 axiosClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('JWT_TOKEN');
+  const token = localStorage.getItem("token");
+  console.log("Token in axios: ", token);
   if (token && config.headers) {
     config.headers.set('Authorization', `Bearer ${token}`);
   }
+
+  // if (config.headers && config.headers["Authorization"]) {
+  //   delete config.headers["Authorization"];
+  // }
   return config;
 }, error => {
   return Promise.reject(error);

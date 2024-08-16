@@ -41,6 +41,7 @@ const menuItems = [
     icon: UsersIcon,
     items: [
       { title: "Client", path: "/client" },
+      { title: "Manager", path: "/manager" },
       { title: "Staff", path: "/staff" },
     ],
   },
@@ -86,8 +87,13 @@ export function SidebarWithContentSeparator() {
     }
   };
 
+  {
+    // bg-[#06367E] text-white
+  }
+
   return (
-    <Card className="h-[calc(100vh-2rem)] w-1/2 max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+
+    <Card className="h-[calc(100vh-2rem)] w-1/2 max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 ">
       <div className="mb-2 p-4">
         <Typography variant="h5" color="blue-gray">
           Sidebar

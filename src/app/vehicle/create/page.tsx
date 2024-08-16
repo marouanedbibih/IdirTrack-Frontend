@@ -8,10 +8,6 @@ function page() {
   return (
     <EditVehicleProvider>
       <div className="flex flex-row justify-center items-start gap-16 p-4 h-screen">
-        {/* <CreateVehicleProvider>
-        <BoitierForm />
-        
-      </CreateVehicleProvider> */}
 
         <BoitierProvider>
           <BoitierForm />

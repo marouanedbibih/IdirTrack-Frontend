@@ -8,10 +8,15 @@ import React, {
   useEffect,
 } from "react";
 import { VehicleRequest } from "../types/VehicleDto";
-import { BoitierRequest, BoitierVehicle } from "@/boitier/BoitierDTO";
+import {
+  BoitierRequest,
+  BoitierVehicle,
+  SimBoitier,
+} from "@/boitier/BoitierDTO";
 import { ErrorInterface, MessageInterface, MessageType } from "@/types/Basics";
 import { DynamicAlert } from "@/components/alert/DynamicAlert";
 import { getBoitierNotAssigned } from "../services/vehicleService";
+import { getSimByIdApi } from "@/sim/SimServices";
 
 // Define the type for the context state
 interface EditVehicleContextProps {
@@ -52,7 +57,7 @@ interface EditVehicleContextProps {
   // Delete Boitier Dialog
   deleteBoitierDialogOpen: boolean;
   setDeleteBoitierDialogOpen: (value: boolean) => void;
-  handelBoitierDeleteDialog: (id: number| null) => void;
+  handelBoitierDeleteDialog: (id: number | null) => void;
 
   // Select deleted Boitier ID
   selectedBoitierId: number | null;
@@ -62,6 +67,18 @@ interface EditVehicleContextProps {
   isLost: boolean;
   setIsLost: (value: boolean) => void;
 
+  // Select updated Boitier ID
+  selectedUpdatedBoitierId: number | null;
+  setSelectedUpdatedBoitierId: (value: number | null) => void;
+
+  // Sim list
+  simsList: SimBoitier[];
+  setSimsList: (value: SimBoitier[]) => void;
+
+  // SIM boitier in update
+  simBoitierToUpdate: SimBoitier;
+  setSimBoitierToUpdate: (simBoitier: SimBoitier) => void;
+  retrieveSimById: (id: number) => void;
 }
 
 // Create the context
@@ -153,7 +170,7 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
         // set the boitiers is in the boitiers Ids in the vehicle request
         setVehicleRequest({
           ...vehicleRequest,
-          boitiersIds: data.content.map((boitier:any) => boitier.id),
+          boitiersIds: data.content.map((boitier: any) => boitier.id),
         });
       })
       .catch((error) => {
@@ -168,17 +185,19 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
   // Delete Boitier Dialog
   const [deleteBoitierDialogOpen, setDeleteBoitierDialogOpen] =
     useState<boolean>(false);
-  
+
   // Select deleted Boitier ID
-  const [selectedBoitierId, setSelectedBoitierId] = useState<number | null>(null);
+  const [selectedBoitierId, setSelectedBoitierId] = useState<number | null>(
+    null
+  );
 
   // Handel Delete Boitier Dialog
   const handelBoitierDeleteDialog = (id: number | null) => {
-    if(id){
+    if (id) {
       setSelectedBoitierId(id);
     }
     setDeleteBoitierDialogOpen(!deleteBoitierDialogOpen);
-  }
+  };
 
   // Is Boitier Lost
   const [isLost, setIsLost] = useState<boolean>(false);
@@ -187,7 +206,52 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     console.log("Selected Boitier ID: ", selectedBoitierId);
     console.log("Delete Boitier Dialog Open: ", deleteBoitierDialogOpen);
-  }, [selectedBoitierId,deleteBoitierDialogOpen]);
+  }, [selectedBoitierId, deleteBoitierDialogOpen]);
+
+  // Select updated Boitier ID
+  const [selectedUpdatedBoitierId, setSelectedUpdatedBoitierId] = useState<
+    number | null
+  >(null);
+
+  // SIM boitier in update
+  const [simBoitierToUpdate, setSimBoitierToUpdate] = useState<SimBoitier>({
+    simMicroserviceId: 0,
+    phone: "",
+    ccid: "",
+    operatorName: "",
+  });
+
+  // Sim list
+  const [simsList, setSimsList] = useState<SimBoitier[]>([]);
+
+  /**
+   * RETRIEVE SIM BY ID
+   *
+   * This function is used to fetch a sim by ID
+   */
+
+  const retrieveSimById = async (id: number) => {
+    getSimByIdApi(id)
+      .then((data) => {
+        // set the fetched sim to the sim boitier
+        const fetchedSimBoitier = {
+          simMicroserviceId: data.content.id,
+          phone: data.content.phone,
+          ccid: data.content.ccid,
+          operatorName: data.content.operatorName,
+        };
+        // set the sim boitier to the simBoitierToUpdate
+        setSimBoitierToUpdate(fetchedSimBoitier);
+        // add the sim to the sim list
+        setSimsList((prevSimsList) => [...prevSimsList, fetchedSimBoitier]);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        console.log("Sim fetched successfully.");
+      });
+  };
 
   return (
     <EditVehicleContext.Provider
@@ -229,6 +293,16 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
         // Is Boitier Lost
         isLost,
         setIsLost,
+        // Select updated Boitier ID
+        selectedUpdatedBoitierId,
+        setSelectedUpdatedBoitierId,
+        // SIM boitier in update
+        simBoitierToUpdate,
+        setSimBoitierToUpdate,
+        retrieveSimById,
+        // Sim list
+        simsList,
+        setSimsList,
       }}
     >
       {children}

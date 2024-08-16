@@ -47,6 +47,10 @@ interface BoitierProviderProps {
   totalSimPages: number;
   setTotalSimPages: (pages: number) => void;
 
+  // Sim Boitier in update
+  simBoitierToUpdate: SimBoitier;
+  setSimBoitierToUpdate: (simBoitier: SimBoitier) => void;
+
   // ------ Devices Props ------
 
   // Device Boitier list
@@ -257,6 +261,8 @@ const BoitierProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   // Alert state
   const [alertOpen, setAlertOpen] = useState<boolean>(true);
+
+
 
   return (
     <BoitierContext.Provider

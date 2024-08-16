@@ -8,6 +8,7 @@ export interface IDefaultInputProps {
   error?: string;
   smallMessage: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
 }
 
 export const DefaultInput: React.FC<IDefaultInputProps> = ({
@@ -17,6 +18,7 @@ export const DefaultInput: React.FC<IDefaultInputProps> = ({
   error,
   smallMessage,
   onChange,
+  type = "text",
 }) => {
   return (
     <div className="mb-2">
@@ -40,6 +42,7 @@ export const DefaultInput: React.FC<IDefaultInputProps> = ({
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
         crossOrigin={undefined}
+        type={type}
       />
       {error ? (
         <Typography
