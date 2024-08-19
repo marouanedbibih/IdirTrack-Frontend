@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Button, CardFooter, IconButton } from "@material-tailwind/react";
 
-export interface IDefaultPaginationProps {
+export interface IManagerTableFooterProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 }
 
-const DefaultPagination: React.FC<IDefaultPaginationProps> = ({
+const ManagerTableFooter: React.FC<IManagerTableFooterProps> = ({
   currentPage,
   totalPages,
   onPageChange,
@@ -90,4 +90,4 @@ const DefaultPagination: React.FC<IDefaultPaginationProps> = ({
   );
 };
 
-export default DefaultPagination;
+export default ManagerTableFooter;

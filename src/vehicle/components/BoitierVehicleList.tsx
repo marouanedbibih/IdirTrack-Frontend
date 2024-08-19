@@ -23,10 +23,8 @@ export const BoitierVehicleList: React.FC<BoitierVehicleListProps> = ({}) => {
   } = useEditVehicleContext();
 
   // Delete Boitier Dialog provider state
-  const {
-    setDeleteBoitierDialogOpen,
-    setSelectedBoitierId,
-  } = useEditVehicleContext();
+  const { setDeleteBoitierDialogOpen, setSelectedBoitierId } =
+    useEditVehicleContext();
 
   // Handle Delete Boitier Dialog
   const handleDeleteBoitierDialog = (id: number) => {
@@ -34,9 +32,23 @@ export const BoitierVehicleList: React.FC<BoitierVehicleListProps> = ({}) => {
     setDeleteBoitierDialogOpen(true);
   };
 
+  // Selected Updated Boitier ID provider state
+  const { setSelectedUpdatedBoitierId,selectedUpdatedBoitierId } = useEditVehicleContext();
+
+  // Handle Update Boitier
+  const handleUpdateBoitier = (id: number) => {
+    console.log("Update Boitier:", id);
+    setSelectedUpdatedBoitierId(id);
+  };
+
   useEffect(() => {
     fetchBoitierNotAttachedList(1, 10);
   }, []);
+
+  // Use Effect for console log
+  useEffect(() => {
+    console.log("Selected Updated Boitier ID:", setSelectedUpdatedBoitierId);
+  }, [selectedUpdatedBoitierId]);
 
   return (
     <Card
@@ -90,7 +102,19 @@ export const BoitierVehicleList: React.FC<BoitierVehicleListProps> = ({}) => {
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
+                  className="flex gap-2"
                 >
+                  <Tooltip content="Update Staff">
+                    <IconButton
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                      color="green"
+                      onClick={() => handleUpdateBoitier(boitier.id)}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </IconButton>
+                  </Tooltip>
                   <Tooltip content="Delete Staff">
                     <IconButton
                       placeholder={undefined}

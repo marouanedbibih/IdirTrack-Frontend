@@ -8,6 +8,7 @@ interface FormFieldProps {
   value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   error?: string | null;
+  smallMessage?: string;
 }
 
 const FormField: FC<FormFieldProps> = ({
@@ -17,6 +18,7 @@ const FormField: FC<FormFieldProps> = ({
   value,
   onChange,
   error,
+  smallMessage,
 }) => {
   return (
     <div className="mb-1 flex flex-col gap-4">
@@ -45,7 +47,30 @@ const FormField: FC<FormFieldProps> = ({
         crossOrigin={undefined}
         error={error ? true : false}
       />
-      <small className="text-red-500">{error}</small>
+      {error ? (
+        <Typography
+          variant="small"
+          className="flex justify-start font-bold text-red-500 "
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          {error}
+        </Typography>
+      ) : (
+        <Typography
+          variant="small"
+          className="flex justify-start font-bold text-blue-gray-500"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          {
+            // smallMessage
+            smallMessage
+          }
+        </Typography>
+      )}
     </div>
   );
 };

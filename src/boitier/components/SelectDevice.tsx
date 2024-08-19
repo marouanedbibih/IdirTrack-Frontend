@@ -13,9 +13,11 @@ import {
   getNotInstalledDevices,
   searchNotInstalledDevices,
 } from "../BoitierService";
+import { getDeviceByIdApi } from "@/device/DeviceService";
 
 export interface ISelectDeviceProps {
   error?: string | null;
+  simId?: number;
 }
 
 export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
@@ -41,6 +43,20 @@ export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
   const [searchMessage, setSearchMessage] = React.useState<string | undefined>(
     ""
   );
+
+  // Device Boitiert local state
+  const [deviceBoitier, setDeviceBoitier] = React.useState<DeviceBoitier>({
+    deviceMicroserviceId: 0,
+    imei: "",
+    type: "",
+  });
+
+  // Selected Updated Boitier ID provider state
+  const { setSelectedUpdatedBoitierId, selectedUpdatedBoitierId } =
+    useEditVehicleContext();
+
+  // Device Microservice ID
+  const { deviceMicroserviceId } = boitierRequest;
 
   /**
    * Fetch Device list with status pending
@@ -125,6 +141,47 @@ export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
       fetchDeviceList(1, 10);
     }
   }, [searchTerm]);
+
+  /**
+   * RETRIEVE DEVICE BY ID
+   */
+
+  const retrieveDeviceById = async (id: number) => {
+    getDeviceByIdApi(id)
+      .then((data) => {
+        // Set the fetched device
+        const fetchedDevice: DeviceBoitier = {
+          deviceMicroserviceId: data.content.id,
+          imei: data.content.imei,
+          type: data.content.deviceType,
+        };
+        setDeviceBoitier(fetchedDevice);
+        // add the device to the device list
+        setDevicesList((prev) => [...prev, fetchedDevice]);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        console.log("Device retrieved successfully");
+      });
+  };
+
+  /**
+   * HANDLE DEVICE IN UPDATE
+   */
+  const handleDeviceInUpdate = async () => {
+    if (deviceMicroserviceId) {
+      retrieveDeviceById(deviceMicroserviceId);
+    }
+  };
+
+  // UseEffect to handle device in update
+  React.useEffect(() => {
+    if (selectedUpdatedBoitierId) {
+      handleDeviceInUpdate();
+    }
+  }, [selectedUpdatedBoitierId]);
 
   return (
     <div className="mb-1 flex flex-col gap-2 ">

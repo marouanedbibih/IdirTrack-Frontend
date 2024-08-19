@@ -6,7 +6,12 @@ import DateField from "@/components/form/DateFiled";
 import { SelectSim } from "./SelectSim";
 import { SelectDevice } from "./SelectDevice";
 import { useEditVehicleContext } from "@/vehicle/contexts/EditVehicleProvider";
-import { createBoitierApi, deleteBoitierApi } from "../BoitierService";
+import {
+  createBoitierApi,
+  deleteBoitierApi,
+  getBoitierByIdAPI,
+  updateBoitierApi,
+} from "../BoitierService";
 
 import {
   Dialog,
@@ -14,6 +19,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
+import { BoitierRequest } from "../BoitierDTO";
 
 const BoitierForm: React.FC = () => {
   // Boitier Request provider state
@@ -48,9 +54,14 @@ const BoitierForm: React.FC = () => {
   // Lost Dialog provider state
   const [lostDialogOpen, setLostDialogOpen] = useState<boolean>(false);
 
-
-  // Select deleted Boitier ID provider state
+  // Selected Delete Boitier ID provider state
   const { selectedBoitierId } = useEditVehicleContext();
+
+  // Selected UpdatedBoitier ID provider state
+  const { selectedUpdatedBoitierId } = useEditVehicleContext();
+
+  // Retrieve Sim by ID provider state
+  const { retrieveSimById } = useEditVehicleContext();
 
   // Handel Start Date Change
   const handleStartDateChange = (startDate: string) => {
@@ -134,7 +145,7 @@ const BoitierForm: React.FC = () => {
    * @description
    */
 
-  const handleDeleteBoitier = async (isLost:boolean) => {
+  const handleDeleteBoitier = async (isLost: boolean) => {
     // Set the loading state
     setLoadingDelete(true);
     deleteBoitierApi(selectedBoitierId, isLost)
@@ -161,6 +172,90 @@ const BoitierForm: React.FC = () => {
       });
   };
 
+  /**
+   * HANDLE RETRIEVE BOITIER BY ID
+   */
+
+  const handleRetrieveBoitierById = async () => {
+    setLoading(true);
+    getBoitierByIdAPI(selectedUpdatedBoitierId)
+      .then((response) => {
+        console.log("Response from retrieveBoitierById", response);
+        setBoitierRequest(response.content);
+        // Retrieve and set the sim and device by their IDs
+        if (response.content.simMicroserviceId) {
+          retrieveSimById(response.content.simMicroserviceId);
+        }
+        // if (response.content.deviceMicroserviceId) {
+        //   retrieveDeviceById(response.content.deviceMicroserviceId);
+        // }
+      })
+      .catch((error) => {
+        console.error("Error from retrieveBoitierById", error);
+        // setErrors(error.errorsList);
+      })
+      .finally(() => {
+        console.log("Finally from retrieveBoitierById");
+        setLoading(false);
+      });
+  };
+
+  // UseEffect to retrieve the boitier by ID
+  useEffect(() => {
+    if (selectedUpdatedBoitierId) {
+      handleRetrieveBoitierById();
+    }
+  }, [selectedUpdatedBoitierId]);
+
+  /**
+   * HANDLE UPDATE BOITIER
+   * @description
+   * @param id number
+   * @param boitierRequest BoitierRequest
+   * @returns void
+   * @throws Error
+   */
+
+  const handleUpdateBoitier = async (id: number, boitierRequest: BoitierRequest) => {
+    updateBoitierApi(id, boitierRequest)
+      .then((response) => {
+        console.log("Response from updateBoitier", response);
+        // Set the message
+        setMessage({
+          messageType: response.messageType,
+          message: response.message,
+        });
+        // Set the alert open
+        setAlertOpen(true);
+        // Fetch the boitier not attached list
+        fetchBoitierNotAttachedList(1, 10);
+      })
+      .catch((error) => {
+        console.error("Error from updateBoitier", error);
+        setErrors(error.errorsList);
+      })
+      .finally(() => {
+        console.log("Finally from updateBoitier");
+        setLoading(false);
+      });
+  }
+
+
+  // Handle the form submission
+  const handleSubmit = (ev: React.FormEvent) => {
+    ev.preventDefault();
+    setLoading(true);
+    // Check if the boitier is being updated
+    if (selectedUpdatedBoitierId) {
+      handleUpdateBoitier(selectedUpdatedBoitierId, boitierRequest);
+    } else {
+      // Create a new boitier
+      handleCreateNewBoitier(ev);
+    }
+  };
+
+  
+
   return (
     <Card
       color="white"
@@ -178,7 +273,7 @@ const BoitierForm: React.FC = () => {
           />
         </div>
       ) : (
-        <form className="w-full" onSubmit={handleCreateNewBoitier}>
+        <form className="w-full" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
             <SelectDevice error={getError("device")} />
             <SelectSim error={getError("sim")} />

@@ -125,6 +125,55 @@ export const deleteBoitierApi = async (id: number | null, isLost: boolean): Prom
             throw error.response.data;
         }
     }
-
 }
+
+/**
+ * SERVICE TO RETRIEVE A BOITIER BY ID
+ * 
+ * @param id: number  | null
+ */
+
+export const getBoitierByIdAPI = async (id: number | null): Promise<BasicResponse> => {
+    if (!id) {
+        throw new Error('Boitier ID is required');
+    }
+    else {
+        try {
+            const { data } = await axiosClient.get(`/vehicle-api/boitier/${id}/`);
+            console.log('Boitier retrieved successfully:', data);
+            return data;
+        } catch (error: any) {
+            console.error('Error retrieving boitier:', error);
+            throw error.response.data;
+        }
+    }
+}
+
+
+/**
+ * SERVICE TO UPDATE A BOITIER BY ID
+ * 
+ * @param id: number
+ * @param boitierRequest: BoitierRequest
+ * @returns Promise<BasicResponse>
+ * @throws Error
+ */
+
+export const updateBoitierApi = async (id: number | null, boitierRequest: BoitierRequest): Promise<BasicResponse> => {
+    if (!id) {
+        throw new Error('Boitier ID is required');
+    }
+    else {
+        try {
+            const { data } = await axiosClient.put(`/vehicle-api/boitier/${id}/`, boitierRequest);
+            console.log('Boitier updated successfully:', data);
+            return data;
+        } catch (error: any) {
+            console.error('Error updating boitier:', error);
+            throw error.response.data;
+        }
+    }
+}
+
+
 

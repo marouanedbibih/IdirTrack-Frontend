@@ -10,6 +10,7 @@ import { Spinner, Typography } from "@material-tailwind/react";
 import * as React from "react";
 import { SimBoitier } from "../BoitierDTO";
 import { getPendingSims, searchPendingSims } from "../BoitierService";
+import { getSimByIdApi } from "@/sim/SimServices";
 
 export interface ISelectSimProps {
   error?: string | null;
@@ -28,8 +29,11 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
     setIsOpen(!isOpen);
   };
 
+  // Sim list provider state
+  const {simsList,setSimsList} = useEditVehicleContext();
+
   // Client list state
-  const [simsList, setSimsList] = React.useState<SimBoitier[]>([]);
+  // const [simsList, setSimsList] = React.useState<SimBoitier[]>([]);
 
   // Search loading local state
   const [searchLoading, setSearchLoading] = React.useState<boolean>(false);
@@ -38,6 +42,24 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
   const [searchMessage, setSearchMessage] = React.useState<string | undefined>(
     ""
   );
+
+  // Retrieve Sim By ID provider state
+  const { retrieveSimById } = useEditVehicleContext();
+
+  // Sim Boitier local state
+  // const [simBoitier, setSimBoitier] = React.useState<SimBoitier>({
+  //   simMicroserviceId: 0,
+  //   phone: "",
+  //   ccid: "",
+  //   operatorName: "",
+  // });
+
+  // Selected Updated Boitier ID provider state
+  const { setSelectedUpdatedBoitierId, selectedUpdatedBoitierId } =
+    useEditVehicleContext();
+
+  // Sim Microservice ID
+  const { simMicroserviceId } = boitierRequest;
 
   /**
    *
@@ -137,6 +159,57 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
       fetchSimList(1, 10);
     }
   }, [searchTerm]);
+
+  /**
+   * RETRIEVE SIM BY ID
+   *
+   * This function is used to fetch a sim by ID
+   */
+
+  // const retrieveSimById = async (id: number) => {
+  //   getSimByIdApi(id)
+  //     .then((data) => {
+  //       // set the fetched sim to the sim boitier
+  //       const fetchedSimBoitier = {
+  //         simMicroserviceId: data.content.id,
+  //         phone: data.content.phone,
+  //         ccid: data.content.ccid,
+  //         operatorName: data.content.operatorName,
+  //       };
+  //       setSimBoitier(fetchedSimBoitier);
+  //       // add the sim to the sim list
+  //       setSimsList((prevSimsList) => [...prevSimsList, fetchedSimBoitier]);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     })
+  //     .finally(() => {
+  //       console.log("Sim fetched successfully.");
+  //     });
+  // };
+
+  /**
+   * HANDLER SIM IN UPDATE BOITIER
+   *
+   * @description
+   * This function in used to handel the sim list in the update boitier
+   * First he get the sim by id , then add this sime to the sim list
+   */
+
+  const handelSimInUpdateBoitier = () => {
+    if (simMicroserviceId) {
+      retrieveSimById(simMicroserviceId);
+    }
+  };
+
+
+  // UseEffect to fetch the sim list
+  React.useEffect(() => {
+    if (selectedUpdatedBoitierId && boitierRequest.simMicroserviceId) {
+      retrieveSimById(boitierRequest.simMicroserviceId);
+    }
+  }, [selectedUpdatedBoitierId, boitierRequest.simMicroserviceId]);
+  
 
   return (
     <div className="mb-1 flex flex-col gap-2 ">
@@ -238,3 +311,5 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
     </div>
   );
 };
+
+
