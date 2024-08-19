@@ -18,15 +18,15 @@ export default function VehicleLayout({
 }) {
   return (
     <DeviceProvider>
-        <React.Fragment>
-          <div className="flex min-h-screen bg-blue-gray-50 w-full h-screen p-4 gap-4">
-            <SidebarWithContentSeparator />
-            <div className="flex-1 w-full">
-              <ComplexNavbar />
-              <main className="px-16">{children}</main>
-            </div>
+      <React.Fragment>
+        <div className="flex min-h-screen bg-blue-gray-50 w-full h-auto p-4 gap-4">
+          <SidebarWithContentSeparator />
+          <div className="flex-1 ml-64 p-4">
+            <ComplexNavbar />
+            <main className="px-16">{children}</main>
           </div>
-        </React.Fragment>
+        </div>
+      </React.Fragment>
     </DeviceProvider>
   );
 }
