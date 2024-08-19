@@ -28,6 +28,7 @@ export interface BasicResponse {
   // Errors
   error?: any;
   errorsList?: ErrorInterface[] | null;
+  errors?: ErrorInterface[] | null;
 }
 
 export interface MessageInterface {
@@ -61,6 +62,21 @@ export interface Response {
   redirectUrl?: string;
   status?: string;
   metaData?: MetaData;
+
+  // Errors
+  error?: any;
+  errorsList?: ErrorInterface[] | null;
+}
+
+
+export interface IResponse {
+  content?: any;
+  message?: string;
+  messagesList?: { [key: string]: string | null };
+  messageType: MessageType;
+  redirectUrl?: string;
+  status?: string;
+  metadata?: MetaData;
 
   // Errors
   error?: any;

@@ -12,67 +12,75 @@ import {
   DeviceInterface,
   DeviceTypeInterface,
 } from "../DeviceTypeScript";
+
 import {
-  createDeviceApi,
-  deleteDeviceApi,
-  getDeviceByIdApi,
-  getDeviceListApi,
-  getDeviceTypeListApi,
-  searchDeviceApi,
-  updateDeviceApi,
-} from "../DeviceService";
-import { BasicResponse, MessageInterface, MessageType } from "@/types/Basics";
+  BasicResponse,
+  IResponse,
+  MessageInterface,
+  MessageType,
+} from "@/types/Basics";
 import { DynamicAlert } from "@/components/alert/DynamicAlert";
+import { IDevice, IDeviceFilter, IDeviceRequest } from "../types/Device";
+import { getDeviceListAPI } from "../services/DeviceService";
+import { IDisplayStatus, IError, IPagination } from "../types";
+import { ISelectDeviceType } from "../types/DeviceType";
 
 interface DeviceContextProps {
-  devicesList: DeviceInterface[];
-  fetchDeviceList: (page: number, size: number) => void;
-  pagination: Pagination;
-  setCurrentPage: (page: number) => void;
-  setTotalPages: (totalPages: number) => void;
-  // deviceDetails: DeviceInterface;
-  // setDeviceDetails: (device: DeviceInterface) => void;
-
-  // Device Form Data State and functions
-  deviceFormData: DeviceFormData;
-  setDeviceFormData: (device: DeviceFormData) => void;
-
-  // Fetch Device Types List
-  deviceTypes: DeviceTypeInterface[];
-  fetchDeviceTypes: (page: number, size: number) => void;
-
-  // Create new device
-  createDevice: (device: DeviceFormData) => void;
-
-
-  
+  // Devices List State
+  devicesList: IDevice[];
+  setDevicesList: (devicesList: IDevice[]) => void;
+  // Fetch Device List
+  // fetchDeviceList: (page: number, size: number) => void;
+  // Pagination state
+  pagination: IPagination;
+  setPagination: (pagination: IPagination) => void;
+  resetPagination: () => void;
   // Message
   message: MessageInterface;
   setMessage: (message: MessageInterface) => void;
   resetMessage: () => void;
-
-  // Create device form modal state
-  isCreateDeviceModalOpen: boolean;
-  setIsCreateDeviceModalOpen: (isOpen: boolean) => void;
-
-  // Delete device
-  deleteDevice: (id: number) => void;
-
-  // Update device
-  fetchDeviceById: (id: number) => void;
-  updateDevice: (id:number,payload:DeviceFormData) => void;
-
+  // Device id
   deviceId: number;
   setDeviceId: (id: number) => void;
-
-  //search device by imei
+  //search device state
   searchTerm: string;
   setSearchTerm: (searchTerm: string) => void;
-  fetchSearchDevice: (searchTerm: string, page: number, size: number) => void;
+  // Table loading state
+  tableLoading: boolean;
+  setTableLoading: (tableLoading: boolean) => void;
+  // Alert state
+  alertOpen: boolean;
+  setAlertOpen: (alertOpen: boolean) => void;
+  // Open Form
+  openForm: boolean;
+  setOpenForm: (openForm: boolean) => void;
+  handleOpenForm: () => void;
+  // Device Request
+  deviceRequest: IDeviceRequest;
+  setDeviceRequest: (request: IDeviceRequest) => void;
+  resetDeviceRequest: () => void;
+  // Errors state
+  errors: IError[];
+  setErrors: (errors: IError[]) => void;
+  // Reset errors
+  resetErrors: () => void;
+  // Select Device Type
+  deviceTypes: ISelectDeviceType[];
+  setDeviceTypes: (deviceTypes: ISelectDeviceType[]) => void;
 
-  //fetch device by imei
-  fetchDeviceByImei: (imei: string) => void;
+  // Device Filter
+  deviceFilter: IDeviceFilter;
+  setDeviceFilter: (filter: IDeviceFilter) => void;
+  resetDeviceFilter: () => void;
+  // Open Filter Form
+  openFilterForm: boolean;
+  setOpenFilterForm: (openFilterForm: boolean) => void;
+  handleOpenFilterForm: () => void;
 
+  // Display Status
+  displayStatus: IDisplayStatus;
+  setDisplayStatus: (displayStatus: IDisplayStatus) => void;
+  onChangeDisplayStatus: (status: string) => void;
 }
 
 const DeviceContext = createContext<DeviceContextProps | undefined>(undefined);
@@ -97,262 +105,123 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Alert State
   const [alertOpen, setAlertOpen] = useState(false);
 
-  // Create device form modal state
-  const [isCreateDeviceModalOpen, setIsCreateDeviceModalOpen] = useState(false);
+  // Open Form
+  const [openForm, setOpenForm] = useState(false);
 
   // Devices List State
-  const [devicesList, setDevicesList] = useState<DeviceInterface[]>([]);
+  const [devicesList, setDevicesList] = useState<IDevice[]>([]);
+
+  // Search term
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Pagination
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<IPagination>({
     currentPage: 1,
     totalPages: 1,
+    size: 5,
   });
 
-  const setCurrentPage = (page: number) => {
-    setPagination((prev) => ({ ...prev, currentPage: page }));
-  };
-
-  const setTotalPages = (totalPages: number) => {
-    setPagination((prev) => ({ ...prev, totalPages }));
-  };
-
-  const fetchDeviceList = (page: number, size: number) => {
-    getDeviceListApi(page, size)
-      .then((data: BasicResponse) => {
-        setDevicesList(data.content);
-        setTotalPages(data.metadata?.totalPages || 1);
-        setCurrentPage(data.metadata?.currentPage || 1);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  // Device Form Data State and functions
-  const [deviceFormData, setDeviceFormData] = useState<DeviceFormData>({
-    imei: null,
-    deviceTypeId: null,
-    remarque: null,
-  });
-
-  // Reset Device Form Data
-  const resetDeviceFormData = () => {
-    setDeviceFormData({
-      imei: null,
-      deviceTypeId: null,
-      remarque: null,
+  // Reset Pagination
+  const resetPagination = () => {
+    setPagination({
+      currentPage: 1,
+      totalPages: 1,
+      size: 5,
     });
-  };
-
-  // Device Types State
-  const [deviceTypes, setDeviceTypes] = useState<DeviceTypeInterface[]>([]);
-
-  /**
-   * Function to fetch Device Types
-   * @param page
-   * @param size
-   */
-  const fetchDeviceTypes = (page: number, size: number) => {
-    getDeviceTypeListApi(page, size)
-      .then((data: BasicResponse) => {
-        setDeviceTypes(data.content);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        console.log("Device Types", deviceTypes);
-      });
-  };
-
-  /**
-   * Create new device function
-   * @param devicePayload
-   */
-  const createDevice = (devicePayload: DeviceFormData) => {
-    console.log("Create Device Payload", devicePayload);
-    createDeviceApi(devicePayload)
-      .then((data: BasicResponse) => {
-        console.log("Create Device Response", data);
-        // Set message state
-        setMessage({
-          message: data.message,
-          messageType:
-            MessageType[data.messageType as keyof typeof MessageType], // Convert string to enum
-          messagesObject: data.messagesObject,
-        });
-
-        // Open alert
-        setAlertOpen(true);
-
-        // Reset Device Form Data
-        resetDeviceFormData();
-
-        // Close the create device form modal
-        setIsCreateDeviceModalOpen(false);
-
-        // Set device id to 0
-        setDeviceId(0);
-      })
-      .catch((error) => {
-        console.error(error);
-
-        // Set message state
-        setMessage({
-          message: error.message,
-          messageType: MessageType.ERROR,
-          messagesObject: error.messagesObject,
-        });
-
-        // Open alert
-        setAlertOpen(true);
-      });
-  };
-
-  /**
-   * Delete device function
-   * @param id
-   */
-
-  const deleteDevice = (id: number) => {
-    console.log("Delete Device Id", id);
-    deleteDeviceApi(id)
-      .then((data: BasicResponse) => {
-        console.log("Delete Device Response", data);
-        // Set message state
-        setMessage({
-          message: data.message,
-          messageType:
-            MessageType[data.messageType as keyof typeof MessageType], // Convert string to enum
-          messagesObject: data.messagesObject,
-        });
-
-        // Open alert
-        setAlertOpen(true);
-
-        // Fetch Device List
-        fetchDeviceList(pagination.currentPage, 5);
-      })
-      .catch((error) => {
-        console.error(error);
-
-        // Set message state
-        setMessage({
-          message: error.message,
-          messageType: MessageType.ERROR,
-          messagesObject: error.messagesObject,
-        });
-
-        // Open alert
-        setAlertOpen(true);
-      });
   };
 
   // Update device
   const [deviceId, setDeviceId] = useState<number>(0);
-  /**
-   * Handle fetch device by id
-   * @param id
-   */
-  const fetchDeviceById = (id: number) => {
-    getDeviceByIdApi(id)
-      .then((data: BasicResponse) => {
-        console.log("Get Device by Id", data);
-        setDeviceFormData(data.content);
-        console.log("Device Form Data", deviceFormData);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        console.log("Device Id", deviceId);
+
+  // Table loading state
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+
+  // Device Request
+  const [deviceRequest, setDeviceRequest] = useState<IDeviceRequest>({
+    imei: "",
+    deviceTypeId: 0,
+    remarque: "",
+  });
+
+  // Reset Device Request
+  const resetDeviceRequest = () => {
+    setDeviceRequest({
+      imei: "",
+      deviceTypeId: 0,
+      remarque: "",
+    });
+  };
+  // Handle Open Form
+  const handleOpenForm = () => {
+    setOpenForm(!openForm);
+    resetDeviceRequest();
+    resetErrors();
+    setDeviceId(0);
+  };
+  // Errors state
+  const [errors, setErrors] = useState<IError[]>([]);
+  // Reset Errors
+  const resetErrors = () => {
+    setErrors([]);
+  };
+
+  // Select Device Type
+  const [deviceTypes, setDeviceTypes] = useState<ISelectDeviceType[]>([]);
+
+  // Device Filter
+  const [deviceFilter, setDeviceFilter] = useState<IDeviceFilter>({
+    status: "",
+    type: 0,
+    createdFrom: "",
+    createdTo: "",
+  });
+
+  // Reset Device Filter
+  const resetDeviceFilter = () => {
+    setDeviceFilter({
+      status: "",
+      type: 0,
+      createdFrom: "",
+      createdTo: "",
+    });
+  };
+
+  // Open Filter Form
+  const [openFilterForm, setOpenFilterForm] = useState(false);
+  const handleOpenFilterForm = () => {
+    setOpenFilterForm(!openFilterForm);
+  };
+
+  // Display Status
+  const [displayStatus, setDisplayStatus] = useState<IDisplayStatus>({
+    filter: false,
+    search: false,
+    normal: true,
+  });
+
+  // On Change Display Status
+  const onChangeDisplayStatus = (status: string) => {
+    resetPagination();
+    if (status === "filter") {
+      setDisplayStatus({
+        filter: true,
+        search: false,
+        normal: false,
       });
-  };
-  /**
-   * Update device function
-   */
-
-  const updateDevice = (id: number, payload: DeviceFormData) => {
-    updateDeviceApi(id, payload)
-      .then((data: BasicResponse) => {
-        console.log("Update Device Response", data);
-        // Set message state
-        setMessage({
-          message: data.message,
-          messageType:
-            MessageType[data.messageType as keyof typeof MessageType], // Convert string to enum
-          messagesObject: data.messagesObject,
-        });
-
-        // Open alert
-        setAlertOpen(true);
-
-        // Close the create device form modal
-        setIsCreateDeviceModalOpen(false);
-
-        // Fetch Device List
-        fetchDeviceList(pagination.currentPage, 5);
-        
-        // Reset Device Form Data
-        resetDeviceFormData();
-
-        // Set device id to 0
-        setDeviceId(0);
-      }
-      )
-      .catch((error) => {
-        console.error(error);
-
-        // Set message state
-        setMessage({
-          message: error.message,
-          messageType: MessageType.ERROR,
-          messagesObject: error.messagesObject,
-        });
-
-        // Open alert
-        setAlertOpen(true);
-      })
-      .finally(() => {
-        console.log("Device Id", deviceId);
-      }
-      );
-  };
-
-  //search device by imei
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const fetchSearchDevice = async(
-    searchTerm: string,
-    page : number,
-    size : number
-  ) => {
-    try {
-      const data = await searchDeviceApi(searchTerm, page, size);
-      console.log("Search device data", data);
-        setDevicesList(data.content);
-        setTotalPages(data.metadata?.totalPages || 1);
-        setCurrentPage(data.metadata?.currentPage || 1);
-      
-      
-    } catch (error) {
-      console.error("Search device error", error);
-      setDevicesList([]);
-
+    } else if (status === "search") {
+      setDisplayStatus({
+        filter: false,
+        search: true,
+        normal: false,
+      });
+    } else {
+      setDisplayStatus({
+        filter: false,
+        search: false,
+        normal: true,
+      });
     }
-  }
-  
-  useEffect(() => {
-    if(searchTerm !== ""){
-      fetchSearchDevice(searchTerm, 1, 5);
-    }else{
-      fetchDeviceList(pagination.currentPage, 5);
-    }
-
-
-
-  }
-  , [searchTerm]);
+  };
 
   return (
     <DeviceContext.Provider
@@ -361,44 +230,56 @@ const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         message,
         resetMessage,
         setMessage,
-
         // Devices List
         devicesList,
-        fetchDeviceList,
+        setDevicesList,
+        // fetchDeviceList,
+        // Pagination
         pagination,
-        setCurrentPage,
-        setTotalPages,
-
-        // Device Form Data
-        deviceFormData,
-        setDeviceFormData,
-
-        // Device Types
-        deviceTypes,
-        fetchDeviceTypes,
-
-        // Create new device
-        createDevice,
-
-        // Create device form modal state
-        isCreateDeviceModalOpen,
-        setIsCreateDeviceModalOpen,
-
-        // Delete device
-        deleteDevice,
-
-        // Update device
-        fetchDeviceById,
+        setPagination,
+        resetPagination,
+        // Device id
         setDeviceId,
         deviceId,
-        updateDevice,
-
-        //search device by imei
+        // Search device by imei
         searchTerm,
         setSearchTerm,
-
-        //fetch device by imei
-        fetchSearchDevice
+        // Table loading state
+        tableLoading,
+        setTableLoading,
+        // Alert state
+        alertOpen,
+        setAlertOpen,
+        // Open Form
+        openForm,
+        setOpenForm,
+        // Handle Open Form
+        handleOpenForm,
+        // Device Request
+        deviceRequest,
+        setDeviceRequest,
+        resetDeviceRequest,
+        // Errors state
+        errors,
+        setErrors,
+        // Reset Errors
+        resetErrors,
+        // Select Device Type
+        deviceTypes,
+        setDeviceTypes,
+        // Device Filter
+        deviceFilter,
+        setDeviceFilter,
+        resetDeviceFilter,
+        // Open Filter Form
+        openFilterForm,
+        setOpenFilterForm,
+        handleOpenFilterForm,
+        // Display Status
+        displayStatus,
+        setDisplayStatus,
+        // On Change Display Status
+        onChangeDisplayStatus,
       }}
     >
       {children}
@@ -424,8 +305,3 @@ export const useDeviceContext = () => {
 };
 
 export { DeviceProvider };
-
-export interface Pagination {
-  currentPage: number;
-  totalPages: number;
-}
