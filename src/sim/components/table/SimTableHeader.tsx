@@ -1,7 +1,9 @@
 import React from "react";
 import {
+  AdjustmentsVerticalIcon,
   ArrowDownTrayIcon,
   MagnifyingGlassIcon,
+  PlusCircleIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import {
@@ -9,91 +11,67 @@ import {
   Typography,
   Button,
   Input,
+  Card,
 } from "@material-tailwind/react";
-import { useSimContext } from "@/sim/SimProvider";
+import { useSimContext } from "@/sim/context/SimProvider";
+import SimSearch from "../form/SimSearch";
 
 interface SimTableHeaderProps {
-  title: string;
-  subtitle: string;
-  onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onDownload: () => void;
+ 
 }
 
 const SimTableHeader: React.FC<SimTableHeaderProps> = ({
-  title,
-  subtitle,
-  onSearch,
-  onDownload,
-}) => {
-  const { isCreateSimModalOpen, setIsCreateSimModalOpen } = useSimContext();
 
-  // Hande create device modal open
-  const handleCreateSimModalOpen = () => {
-    setIsCreateSimModalOpen(true);
-  };
+}) => {
+
+  // Import the handleOpenForm from the SimProvider
+  const { handleOpenForm } = useSimContext();
+
   return (
-    <CardHeader
-      floated={false}
-      shadow={false}
-      className="rounded-none"
+    <Card
+      className="h-full w-full rounded-b-none "
       placeholder={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
     >
-      <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
-        <div>
-          <Typography
-            variant="h5"
-            color="blue-gray"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            {title}
-          </Typography>
-          <Typography
-            color="gray"
-            className="mt-1 font-normal"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            {subtitle}
-          </Typography>
-        </div>
-        <div className="flex w-full shrink-0 gap-2 md:w-max">
-          <div className="w-full md:w-72">
-            <Input
-              label="Search"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              onChange={onSearch}
+      <CardHeader
+        floated={false}
+        shadow={false}
+        className="rounded-none"
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
+        <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
+          <div className="flex w-full shrink-0 gap-2 md:w-max justify-end flex-1">
+            {/* Sim Search */}
+            <SimSearch />
+            <Button
+              className="flex items-center gap-2"
+              color="black"
+              placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
-              crossOrigin={undefined}
-            />
+              // onClick={handleOpenFilterForm}
+            >
+              Filter
+              <AdjustmentsVerticalIcon strokeWidth={3} className="w-3 h-3" />
+            </Button>
+            <Button
+              className="flex items-center gap-3"
+              size="sm"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              color="green"
+              onClick={handleOpenForm}
+            >
+              <PlusCircleIcon strokeWidth={2} className="h-4 w-4" /> New Sim
+            </Button>
           </div>
-          <Button
-            className="flex items-center gap-3"
-            onClick={onDownload}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <ArrowDownTrayIcon strokeWidth={2} className="h-4 w-4" /> Download
-          </Button>
-          <Button
-            className="flex items-center gap-3"
-            onClick={handleCreateSimModalOpen}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-            color="green"
-          >
-            <PlusIcon strokeWidth={2} className="h-4 w-4" /> New
-          </Button>
         </div>
-      </div>
-    </CardHeader>
+      </CardHeader>
+    </Card>
   );
 };
 

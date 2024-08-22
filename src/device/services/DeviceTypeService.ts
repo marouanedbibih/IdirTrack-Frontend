@@ -7,7 +7,7 @@ import { IDeviceTypeRequest } from "../types/DeviceType";
  * 
  * This function is used to get all device types with pagination
  * 
- * @api GET /stock-api/device/type/?page=1&size=10
+ * @api GET /api/device/type/?page=1&size=10
  * @param {number} page
  * @param {number} size
  * @returns {Promise<BasicResponse[]>}
@@ -16,7 +16,7 @@ import { IDeviceTypeRequest } from "../types/DeviceType";
 
 export const getAllDeviceTypesListAPI = async (page: number, size: number): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/type/?page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/device/type/?page=${page}&size=${size}`);
         console.log("Get all device types with pagination Response", data);
         return data;
     } catch (error: any) {
@@ -30,14 +30,14 @@ export const getAllDeviceTypesListAPI = async (page: number, size: number): Prom
  * 
  * This function is used to create a new device type
  * 
- * @api POST /stock-api/device/type/
+ * @api POST /api/device/type/
  * @param {IDeviceTypeRequest} payload
  * @returns {Promise<BasicResponse>}
  * @throws {Promise<BasicResponse>}
  */
 export const createDeviceTypeAPI = async (payload: IDeviceTypeRequest): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.post(`/stock-api/device/type/`, payload);
+        const { data } = await axiosClient.post(`/api/device/type/`, payload);
         console.log("Create a new device type Response", data);
         return data;
     } catch (error: any) {
@@ -51,14 +51,14 @@ export const createDeviceTypeAPI = async (payload: IDeviceTypeRequest): Promise<
  * 
  * This function is used to get device type by id
  * 
- * @api GET /stock-api/device/type/{id}/
+ * @api GET /api/device/type/{id}/
  * @param {number} id
  * @returns {Promise<BasicResponse>}
  * @throws {Promise<BasicResponse>}
  */
 export const getDeviceTypeByIdAPI = async (id: number): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/type/${id}/`);
+        const { data } = await axiosClient.get(`/api/device/type/${id}/`);
         console.log("Get device type by id Response", data);
         return data;
     } catch (error: any) {
@@ -72,7 +72,7 @@ export const getDeviceTypeByIdAPI = async (id: number): Promise<IResponse> => {
  * 
  * This function is used to update device type by id
  * 
- * @api PUT /stock-api/device/type/{id}/
+ * @api PUT /api/device/type/{id}/
  * @param {number} id
  * @param {IDeviceTypeRequest} payload
  * @returns {Promise<BasicResponse>}
@@ -80,7 +80,7 @@ export const getDeviceTypeByIdAPI = async (id: number): Promise<IResponse> => {
  */
 export const updateDeviceTypeAPI = async (id: number, payload: IDeviceTypeRequest): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.put(`/stock-api/device/type/${id}/`, payload);
+        const { data } = await axiosClient.put(`/api/device/type/${id}/`, payload);
         console.log("Update device type by id Response", data);
         return data;
     } catch (error: any) {
@@ -94,14 +94,14 @@ export const updateDeviceTypeAPI = async (id: number, payload: IDeviceTypeReques
  * 
  * This function is used to delete device type by id
  * 
- * @api DELETE /stock-api/device/type/{id}/
+ * @api DELETE /api/device/type/{id}/
  * @param {number} id
  * @returns {Promise<BasicResponse>}
  * @throws {Promise<BasicResponse>}
  */
 export const deleteDeviceTypeAPI = async (id: number): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.delete(`/stock-api/device/type/${id}/`);
+        const { data } = await axiosClient.delete(`/api/device/type/${id}/`);
         console.log("Delete device type by id Response", data);
         return data;
     } catch (error: any) {
@@ -115,14 +115,14 @@ export const deleteDeviceTypeAPI = async (id: number): Promise<IResponse> => {
  * 
  * This function is used to get all device types list
  * 
- * @api GET /stock-api/device/type/all/
+ * @api GET /api/device/type/all/
  * @returns {Promise<BasicResponse>}
  * @throws {Promise<BasicResponse>}
  */
 
 export const getListOfAllDeviceTypesAPI = async (): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/type/all/`);
+        const { data } = await axiosClient.get(`/api/device/type/all/`);
         console.log("Get all device types list Response", data);
         return data;
     } catch (error: any) {

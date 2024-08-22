@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'ax
 import axiosRetry from 'axios-retry';
 
 const axiosClient = axios.create({
-  baseURL: `http://localhost:8000`
+  baseURL: `http://localhost:8080`
 });
 
 axiosRetry(axiosClient, {

@@ -1,6 +1,8 @@
 import axiosClient from "@/api/axiosClient";
 import { BasicResponse } from "@/types/Basics";
 import { Sim } from "./SimDTOs";
+import { IMyResponse } from "@/operators/types";
+import { ISimRequest } from "./types/type";
 
 /**
  * Get SIM list API
@@ -8,14 +10,14 @@ import { Sim } from "./SimDTOs";
  * @param size 
  * @returns 
  */
-export const getSimListApi = async (page: number, size: number): Promise<BasicResponse> => {
+export const getSimListApi = async (page: number, size: number): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/sim/?page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/sim/?page=${page}&size=${size}`);
         console.log("Fetch SIM list response", data);
         return data;
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        throw error;
+        throw error.response.data;
     }
 }
 
@@ -26,17 +28,17 @@ export const getSimListApi = async (page: number, size: number): Promise<BasicRe
  * @throws Error
  */
 
-export const deleteSimApi = async (simId: number | null): Promise<BasicResponse> => {
+export const deleteSimApi = async (simId: number | null): Promise<IMyResponse> => {
     if (simId === null) {
         throw new Error("SIM ID cannot be null");
     }
     try {
-        const { data } = await axiosClient.delete(`/stock-api/sim/${simId}/`);
+        const { data } = await axiosClient.delete(`/api/sim/${simId}/`);
         console.log("Delete SIM response", data);
         return data;
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        throw error;
+        throw error.response.data;
     }
 }
 
@@ -47,15 +49,13 @@ export const deleteSimApi = async (simId: number | null): Promise<BasicResponse>
  * @throws Error
  */
 
-export const createSimApi = async (payload: Sim): Promise<BasicResponse> => {
+export const createSimAPI = async (req: ISimRequest): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.post(`/stock-api/sim/`, payload);
+        const { data } = await axiosClient.post(`/api/sim/`, req);
         console.log("Create SIM response", data);
         return data;
     } catch (error: any) {
-        const data = error.response.data;
-        console.error("Create new sim error", data);
-        throw data;
+        throw error.response.data;
     }
 }
 
@@ -64,7 +64,7 @@ export const createSimApi = async (payload: Sim): Promise<BasicResponse> => {
  */
 export const fetchOperatorsApi = async (): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/operators/`);
+        const { data } = await axiosClient.get(`/api/operators/`);
         console.log("Fetch Operator list response", data);
         return data;
     } catch (error: any) {
@@ -81,18 +81,17 @@ export const fetchOperatorsApi = async (): Promise<BasicResponse> => {
  * @throws Error
  */
 
-export const getSimByIdApi = async (simId: number | null): Promise<BasicResponse> => {
+export const getSimByIdAPI = async (simId: number | null): Promise<IMyResponse> => {
     if (simId === null) {
         throw new Error("SIM ID cannot be null");
     }
     try {
-        const { data } = await axiosClient.get(`/stock-api/sim/${simId}/`);
+        const { data } = await axiosClient.get(`/api/sim/${simId}/`);
         console.log("Fetch SIM response", data);
         return data;
     } catch (error: any) {
-        const data = error.response.data;
-        console.error("Update device error", data);
-        throw data;
+        console.error(error);
+        throw error.response.data;
     }
 }
 
@@ -104,18 +103,17 @@ export const getSimByIdApi = async (simId: number | null): Promise<BasicResponse
  * @throws Error
  */
 
-export const updateSimApi = async (simId: number | null, payload: Sim): Promise<BasicResponse> => {
+export const updateSimAPI = async (simId: number | null, payload: ISimRequest): Promise<IMyResponse> => {
     if (simId === null) {
         throw new Error("SIM ID cannot be null");
     }
     try {
-        const { data } = await axiosClient.put(`/stock-api/sim/${simId}/`, payload);
+        const { data } = await axiosClient.put(`/api/sim/${simId}/`, payload);
         console.log("Update SIM response", data);
         return data;
     } catch (error: any) {
-        const data = error.response.data;
-        console.error("Update device error", data);
-        throw data;
+        console.error(error);
+        throw error.response.data;
     }
 }
 
@@ -127,32 +125,51 @@ export const updateSimApi = async (simId: number | null, payload: Sim): Promise<
  * @param size 
  * @returns 
  */
-export const searchSimApi = async (searchTerm: string, page: number, size: number): Promise<BasicResponse> => {
+export const searchSimAPI = async (term: string, page: number, size: number): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/sim/search?term=${searchTerm}&page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/sim/search/?term=${term}&page=${page}&size=${size}`);
         console.log("Search SIM response", data);
         return data;
     } catch (error: any) {
-        console.error("Search SIM error", error);
-        if (error.response) {
-            const data = error.response.data;
-            console.error("Search SIM error response data", data);
-            throw data;
-        } else {
-            throw new Error("Network Error");
-        }
+        console.error(error);
+        throw error.response.data;
     }
 }
 
-// // Search SIM API
-// export const searchSimApi = async (searchTerm: string,page:number,size:number): Promise<BasicResponse> => {
-//     try {
-//         const { data } = await axiosClient.get(`/stock-api/sim/search?term=${searchTerm}&page=${page}&size=${size}`);
-//         console.log("Search SIM response", data);
-//         return data;
-//     } catch (error: any) {
-//         const data = error.response.data;
-//         console.error("Search SIM error", data);
-//         throw data;
-//     }
-// }
+/**
+ * Call API to get total SIM count
+ * @api /api/sim/statistiques/total-sims/
+ * 
+ * @returns Promise<IMyResponse>
+ * @throws Error
+ */
+
+export const getTotalSimCountAPI = async (): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/sim/statistiques/total-sims/`);
+        console.log("Fetch total SIM count response", data);
+        return data;
+    } catch (error: any) {
+        console.error(error);
+        throw error.response.data;
+    }
+}
+
+/**
+ * Call API to get SIM total count by status
+ * @api /api/sim/statistiques/total-sims-by-status/
+ * @returns Promise<IMyResponse>
+ * @throws Error
+ */
+
+export const getTotalSimCountByStatusAPI = async (): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/sim/statistiques/total-sims-by-status/`);
+        console.log("Fetch SIM count by status response", data);
+        return data;
+    } catch (error: any) {
+        console.error(error);
+        throw error.response.data;
+    }
+}
+

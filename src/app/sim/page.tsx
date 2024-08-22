@@ -1,21 +1,30 @@
 "use client";
-import { SimForm } from "@/sim/components/SimForm";
+import OperatorForm from "@/operators/components/OperatorForm";
+import OperatorTable from "@/operators/components/OperatorTable";
+import { OperatorProvider } from "@/operators/context/OperatorProvider";
+import SimForm from "@/sim/components/form/SimForm";
+import SimStatistiques from "@/sim/components/SimStatistiques";
 import { SimTable } from "@/sim/components/SimTable";
-import { useSimContext } from "@/sim/SimProvider";
+import { SimFunctionsProvider } from "@/sim/context/SimFunctionsProvider";
+import { SimProvider, useSimContext } from "@/sim/context/SimProvider";
 import React, { useEffect } from "react";
 
 const SimHome: React.FC = () => {
-  const { simList, fetchSimList,isCreateSimModalOpen } = useSimContext();
-
-  useEffect(() => {
-    fetchSimList(1, 5);
-  }, []);
   return (
-    <div className="flex flex-col justify-center items-center mx-auto p-4 ">
-      <h1>Sim Home Page</h1>
-      <p>This is a simple page to show how to use the device context.</p>
-      <SimTable />
-      {isCreateSimModalOpen && <SimForm />}
+    <div className="flex flex-col justify-center items-center mx-auto p-4 gap-4 ">
+      <OperatorProvider>
+        <div className="flex flex-row justify-between items-start w-full">
+          <OperatorTable />
+          <SimStatistiques />
+          <OperatorForm />
+        </div>
+        <SimProvider>
+          <SimFunctionsProvider>
+            <SimTable />
+            <SimForm />
+          </SimFunctionsProvider>
+        </SimProvider>
+      </OperatorProvider>
     </div>
   );
 };

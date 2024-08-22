@@ -13,7 +13,7 @@ import {
   getNotInstalledDevices,
   searchNotInstalledDevices,
 } from "../BoitierService";
-import { getDeviceByIdApi } from "@/device/DeviceService";
+// import { getDeviceByIdApi } from "@/device/DeviceService";
 
 export interface ISelectDeviceProps {
   error?: string | null;
