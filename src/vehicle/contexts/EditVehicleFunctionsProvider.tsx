@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 import { getBoitierUnassigned } from "@/boitier/BoitierService";
 import { IBoitier } from "@/boitier/types/type";

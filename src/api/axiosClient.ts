@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'ax
 import axiosRetry from 'axios-retry';
 
 const axiosClient = axios.create({
-  baseURL: `http://localhost:8080`
+  baseURL: `http://13.38.108.124:8080`
 });
 
 axiosRetry(axiosClient, {
@@ -21,10 +21,6 @@ axiosClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (token && config.headers) {
     config.headers.set('Authorization', `Bearer ${token}`);
   }
-
-  // if (config.headers && config.headers["Authorization"]) {
-  //   delete config.headers["Authorization"];
-  // }
   return config;
 }, error => {
   return Promise.reject(error);

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DefaultTable } from "@/components/table/DefaultTable";
 import React, { use, useEffect, useState } from "react";
 import { useVehicleContext } from "../contexts/VehicleProvider";

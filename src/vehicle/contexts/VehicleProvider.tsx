@@ -8,7 +8,6 @@ import React, {
   useEffect,
 } from "react";
 import { Pagination, VehicleInterface } from "../VehicleTypes";
-import { getVehicleListApi } from "../services/VehicleService";
 import { vehicleDetailstemplate } from "../templates/VehicleTemplates";
 
 interface VehicleContextProps {
