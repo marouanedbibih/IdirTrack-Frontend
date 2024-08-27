@@ -15,8 +15,6 @@ import {
 } from "@/boitier/BoitierDTO";
 import { ErrorInterface, MessageInterface, MessageType } from "@/types/Basics";
 import { DynamicAlert } from "@/components/alert/DynamicAlert";
-import { getBoitierNotAssigned } from "../services/vehicleService";
-import { getSimByIdApi } from "@/sim/SimServices";
 
 // Define the type for the context state
 interface EditVehicleContextProps {
@@ -24,11 +22,6 @@ interface EditVehicleContextProps {
   vehicleRequest: VehicleRequest;
   setVehicleRequest: (value: VehicleRequest) => void;
   resetVehicleRequest: () => void;
-
-  // Boitier request state
-  boitierRequest: BoitierRequest;
-  setBoitierRequest: (value: BoitierRequest) => void;
-  resetBoitierRequest: () => void;
 
   // Errors state
   errors: ErrorInterface[];
@@ -79,6 +72,13 @@ interface EditVehicleContextProps {
   simBoitierToUpdate: SimBoitier;
   setSimBoitierToUpdate: (simBoitier: SimBoitier) => void;
   retrieveSimById: (id: number) => void;
+
+  // Boitier ID
+  boitierId: number | null;
+  setBoitierId: (value: number | null) => void;
+
+  unassignedLoading: boolean;
+  setUnassignedLoading: (loading: boolean) => void;
 }
 
 // Create the context
@@ -94,7 +94,7 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
   const [vehicleRequest, setVehicleRequest] = useState<VehicleRequest>({
     matricule: "",
     type: "",
-    clientMicroserviceId: null,
+    clientId: null,
     boitiersIds: [],
   });
 
@@ -103,7 +103,7 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
     setVehicleRequest({
       matricule: "",
       type: "",
-      clientMicroserviceId: null,
+      clientId: null,
       boitiersIds: [],
     });
   };
@@ -112,8 +112,8 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
   const [boitierRequest, setBoitierRequest] = useState<BoitierRequest>({
     startDate: "",
     endDate: "",
-    deviceMicroserviceId: null,
-    simMicroserviceId: null,
+    deviceId: null,
+    simId: null,
   });
 
   // Reset Boitier Request
@@ -121,8 +121,8 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
     setBoitierRequest({
       startDate: "",
       endDate: "",
-      deviceMicroserviceId: null,
-      simMicroserviceId: null,
+      deviceId: null,
+      simId: null,
     });
   };
 
@@ -253,6 +253,12 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
       });
   };
 
+  // Boitier ID
+  const [boitierId, setBoitierId] = useState<number | null>(null);
+
+  // Unassigned Loading
+  const [unassignedLoading, setUnassignedLoading] = useState<boolean>(false);
+
   return (
     <EditVehicleContext.Provider
       value={{
@@ -303,6 +309,11 @@ const EditVehicleProvider: React.FC<{ children: ReactNode }> = ({
         // Sim list
         simsList,
         setSimsList,
+        // Boitier ID
+        boitierId,
+        setBoitierId,
+        unassignedLoading,
+        setUnassignedLoading,
       }}
     >
       {children}

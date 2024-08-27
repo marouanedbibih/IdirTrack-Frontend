@@ -4,14 +4,14 @@
 "use client";
 
 import { DynamicAlert } from "@/components/alert/DynamicAlert";
-import { getAllStaffsListAPI, searchStaffsAPI } from "@/services/StaffServices";
+import { getAllStaffsListAPI, searchStaffsAPI } from "@/staff/StaffServices";
 import {
   ErrorInterface,
   MessageInterface,
   MessageType,
   Pagination,
 } from "@/types/Basics";
-import { Staff, StaffRequest } from "@/types/StaffTypes";
+import { Staff, StaffRequest } from "@/staff/type";
 import React, {
   createContext,
   useState,
@@ -148,10 +148,10 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       .then((data) => {
         setStaffList(data.content);
         setPagination({
-          currentPage: data.metaData?.currentPage ?? 1,
-          totalPages: data.metaData?.totalPages ?? 1,
-          size: data.metaData?.size ?? 5,
-          totalElements: data.metaData?.totalElements ?? 0,
+          currentPage: data.metadata?.currentPage ?? 1,
+          totalPages: data.metadata?.totalPages ?? 1,
+          size: data.metadata?.size ?? 5,
+          totalElements: data.metadata?.totalElements ?? 0,
         });
       })
       .catch((error) => {

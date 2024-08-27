@@ -7,6 +7,7 @@ interface DateFieldProps {
   className?: string;
   label: string;
   error?: string | null;
+  small: string;
 }
 
 const DateField: React.FC<DateFieldProps> = ({
@@ -15,6 +16,7 @@ const DateField: React.FC<DateFieldProps> = ({
   className,
   label,
   error,
+  small,
 }) => {
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
@@ -43,16 +45,27 @@ const DateField: React.FC<DateFieldProps> = ({
           } ${className}`}
         />
       </div>
-      {error && (
+      {error ? (
+        <div className="flex flex-1 justify-start items-center">
+          <Typography
+            variant="small"
+            className="flex justify-center font-bold text-red-500 "
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            {error}
+          </Typography>
+        </div>
+      ) : (
         <Typography
           variant="small"
-          color="red"
-          className="mt-1"
+          className="flex justify-start font-bold text-blue-gray-500"
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          {error}
+          {small}
         </Typography>
       )}
     </div>

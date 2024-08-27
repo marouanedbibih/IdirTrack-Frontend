@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
@@ -5,49 +6,46 @@ import {
   Typography,
   IconButton,
   Card,
-  Button,
   Tooltip,
   CardFooter,
   Spinner,
 } from "@material-tailwind/react";
-import { Car } from "../Car";
+
+import {
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Button,
+} from "@material-tailwind/react";
 import { useVehicleContext } from "@/vehicle/contexts/VehicleProvider";
 import DefaultPagination from "@/components/pagination/DefaultPagination";
-import { getVehicleListApi } from "@/vehicle/services/vehicleService";
+import {
+  deleteVehicleAPI,
+  getVehicleListAPI,
+} from "@/vehicle/services/VehicleService";
+import { IMyResponse } from "@/operators/types";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { MessageType } from "@/types/Basics";
+import DeleteConfirmationDialog from "@/components/dialog/DeleteConfirmationDialog";
 
 const TABLE_HEAD = ["MATRICULE", "CLIENT", "COMPANY", "TYPE", "ACTIONS"];
 
 export function VehicleTable({ className }: { className?: string }) {
-  // Vehicle List provider state
   const { vehiclesList, setVehiclesList } = useVehicleContext();
-
-  // Vehicle Pagination provider state
   const { vehiclePagination, setVehiclePagination } = useVehicleContext();
-
-  // Vehicle ID provider state
   const { vehicleId, setVehicleId } = useVehicleContext();
-
-  // Table loading local state
   const [loading, setLoading] = React.useState(false);
 
-  // Handle Open Vehicle Details Dialog provider state
-  const { handleOpenVehicleDetailsDialog } = useVehicleContext();
-
-  /**
-   * FETCH VEHICLE LIST
-   *
-   * @param {number} page - Current page
-   * @param {number} size - Number of items per page
-   *
-   */
+  // Fetch list of vehicles
   const fetchVehiclesList = async (page: number, size: number) => {
     setLoading(true);
-    getVehicleListApi(page, size)
-      .then((data) => {
-        setVehiclesList(data.content);
+    getVehicleListAPI(page, size)
+      .then((res: IMyResponse) => {
+        setVehiclesList(res.data);
         setVehiclePagination({
-          currentPage: data.metadata?.currentPage || 1,
-          totalPages: data.metadata?.totalPages || 1,
+          currentPage: res.metadata?.currentPage || 1,
+          totalPages: res.metadata?.totalPages || 1,
         });
       })
       .catch((error) => {
@@ -60,17 +58,83 @@ export function VehicleTable({ className }: { className?: string }) {
   };
 
   useEffect(() => {
-    fetchVehiclesList(vehiclePagination.currentPage, 5); // Fetch 5 vehicles per page
+    fetchVehiclesList(vehiclePagination.currentPage, 5);
   }, [vehiclePagination.currentPage]);
 
-  const handleViewVehicleDetails = (id: number | null) => {
+  const OnViewVehicle = (id: number | null) => {
     if (id === null) {
       return;
     }
     setVehicleId(id);
-    handleOpenVehicleDetailsDialog();
   };
 
+  /**
+   * Delete vehicle
+   */
+
+  const { setAlertOpen, setMessage } = useGlobalContext();
+
+  const { vehicleDeleteId, setVehicleDeleteId } = useVehicleContext();
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] =
+    React.useState<boolean>(false);
+
+  const [isLostDialogOpen, setIsLostDialogOpen] =
+    React.useState<boolean>(false);
+
+  const [deleteLoading, setDeleteLoading] = React.useState<boolean>(false);
+
+  const openDeleteDialog = (id: number) => {
+    setVehicleDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setVehicleDeleteId(null);
+    setIsDeleteDialogOpen(false);
+  };
+
+  const confirmDeleteBoitier = () => {
+    setIsDeleteDialogOpen(false);
+    setIsLostDialogOpen(true);
+  };
+
+  const closeLostDialog = () => {
+    setVehicleDeleteId(null);
+    setIsLostDialogOpen(false);
+  };
+
+  const lostBoitier = () => {
+    onDeleteVehicle(vehicleDeleteId, true);
+  };
+
+  const notLostBoitier = () => {
+    onDeleteVehicle(vehicleDeleteId, false);
+  };
+
+  const onDeleteVehicle = (id: number | null, isLost: boolean) => {
+    setDeleteLoading(true);
+    deleteVehicleAPI(id, isLost)
+      .then((res) => {
+        fetchVehiclesList(vehiclePagination.currentPage, 5);
+        setMessage({
+          message: res.message,
+          messageType: MessageType.INFO,
+        });
+        setAlertOpen(true);
+        closeLostDialog();
+      })
+      .catch((err) => {
+        setMessage({
+          message: err.message,
+          messageType: MessageType.ERROR,
+        });
+        setAlertOpen(true);
+      })
+      .finally(() => {
+        setDeleteLoading(false);
+      });
+  };
   return (
     <div className="flex flex-col justify-center items-start w-2/3">
       {loading ? (
@@ -123,8 +187,11 @@ export function VehicleTable({ className }: { className?: string }) {
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
 
+                  const rowClass =
+                    vehicleId === vehicle.id ? "bg-blue-gray-50/50" : "";
+
                   return (
-                    <tr key={index}>
+                    <tr key={index} className={rowClass}>
                       <td className={classes}>
                         <Typography
                           variant="small"
@@ -182,7 +249,7 @@ export function VehicleTable({ className }: { className?: string }) {
                               onPointerLeaveCapture={undefined}
                               color="blue"
                               onClick={() =>
-                                handleViewVehicleDetails(vehicle.id)
+                                OnViewVehicle(vehicle.id ? vehicle.id : null)
                               }
                             >
                               <EyeIcon className="h-4 w-4" />
@@ -204,6 +271,7 @@ export function VehicleTable({ className }: { className?: string }) {
                               onPointerEnterCapture={undefined}
                               onPointerLeaveCapture={undefined}
                               color="red"
+                              onClick={() => vehicle.id && openDeleteDialog(vehicle.id)}
                             >
                               <TrashIcon className="h-4 w-4" />
                             </IconButton>
@@ -232,6 +300,96 @@ export function VehicleTable({ className }: { className?: string }) {
               }}
             />
           </CardFooter>
+
+          <DeleteConfirmationDialog
+            handleClose={closeDeleteDialog}
+            handleConfirm={confirmDeleteBoitier}
+            open={isDeleteDialogOpen}
+            message="Are you sure you want to delete this Vehicle?"
+            loading={deleteLoading}
+          />
+          {/* Is Lost Dialog */}
+          <Dialog
+            open={isLostDialogOpen}
+            handler={closeLostDialog}
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+            className="min-h-20"
+          >
+            {deleteLoading ? (
+              <div className="flex justify-center items-center p-4 ">
+                <Spinner
+                  className="h-8 w-8"
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                />
+              </div>
+            ) : (
+              <div>
+                <DialogHeader
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  Lost Vehicle
+                </DialogHeader>
+                <DialogBody
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  <Typography
+                    color="gray"
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  >
+                    Are you sure you want to mark this vehicle as lost?
+                  </Typography>
+                </DialogBody>
+                <DialogFooter
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  <Button
+                    variant="text"
+                    color="red"
+                    onClick={closeLostDialog}
+                    className="mr-1"
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  >
+                    <span>Cancel</span>
+                  </Button>
+                  <div className="flex flex-row gap-4">
+                    <Button
+                      variant="gradient"
+                      color="blue-gray"
+                      onClick={notLostBoitier}
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      <span>Not Lost</span>
+                    </Button>
+                    <Button
+                      variant="gradient"
+                      color="red"
+                      onClick={lostBoitier}
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      <span>Lost</span>
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </div>
+            )}
+          </Dialog>
         </Card>
       ) : (
         <div className="flex flex-1 w-full justify-center items-center">

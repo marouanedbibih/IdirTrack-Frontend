@@ -173,3 +173,44 @@ export const getTotalSimCountByStatusAPI = async (): Promise<IMyResponse> => {
     }
 }
 
+
+/**
+ * Call API to get SIMs of status non-installed with pagination
+ * @api /api/sim/non-installed/?page=1&size=10
+ * @param {number} page
+ * @param {number} size
+ * @returns Promise<IMyResponse>
+ */
+
+export const getNonInstalledSimsAPI = async (page: number, size: number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/sim/non-installed/?page=${page}&size=${size}`);
+        console.log("Fetch non-installed SIMs response", data);
+        return data;
+    } catch (error: any) {
+        console.error(error);
+        throw error.response.data;
+    }
+}
+
+/**
+ * Call API to search sim in non-installed sims
+ * @api /api/sim/non-installed/search/?query=query&page=1&size=10
+ * @param {string} query
+ * @param {number} page
+ * @param {number} size
+ * @returns Promise<IMyResponse>
+ * @throws
+ */
+
+export const searchNonInstalledSimsAPI = async (query: string, page: number, size: number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/sim/non-installed/search/?query=${query}&page=${page}&size=${size}`);
+        console.log("Search non-installed SIMs response", data);
+        return data;
+    } catch (error: any) {
+        console.error(error);
+        throw error.response.data;
+    }
+}
+

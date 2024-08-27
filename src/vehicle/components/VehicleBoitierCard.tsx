@@ -1,8 +1,8 @@
 import React from "react";
-import { BoitierInterface } from "../VehicleTypes";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
+import { IBoitier } from "@/boitier/types/type";
 interface VehicleBoitierDetailsProps {
-  boitier: BoitierInterface;
+  boitier: IBoitier;
 }
 function VehicleBoitierCard({ boitier }: VehicleBoitierDetailsProps) {
   return (
@@ -25,7 +25,7 @@ function VehicleBoitierCard({ boitier }: VehicleBoitierDetailsProps) {
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          {boitier?.device.type}
+          {boitier?.device.deviceType}
         </Typography>
         <Typography
           placeholder={undefined}

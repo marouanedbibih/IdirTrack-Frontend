@@ -12,20 +12,20 @@ import {
   Checkbox,
   Spinner,
 } from "@material-tailwind/react";
-import { useStaffContext } from "@/context/StaffProvider";
-import { DefaultInput } from "../inputs/DefaultInput";
+import { useStaffContext } from "@/staff/StaffProvider";
 import {
   createStaffAPI,
   getStaffByIdAPI,
   updateStaffAPI,
-} from "@/services/StaffServices";
+} from "@/staff/StaffServices";
 import { BasicResponse } from "@/types/Basics";
-import SelectWithSearch, { SelectableItem } from "../form/SelectWithSearch";
 import { getClientForSelect } from "@/services/ClientService";
 
 import { Select, Option } from "@material-tailwind/react";
-import { Client, StaffRequest } from "@/types/StaffTypes";
+import { Client, StaffRequest } from "@/staff/type";
 import { SelectClient } from "./SelectClient";
+import { SelectableItem } from "@/components/form/SelectWithSearch";
+import { DefaultInput } from "@/components/inputs/DefaultInput";
 
 export interface ClientItem extends SelectableItem {
   id: number;

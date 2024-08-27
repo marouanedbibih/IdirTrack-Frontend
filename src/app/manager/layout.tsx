@@ -1,6 +1,6 @@
 import { ComplexNavbar } from "@/components/navbar/ComplexNavbar";
 import { SidebarWithContentSeparator } from "@/components/sidebar/SidebarWithContentSeparator";
-import { StaffProvider } from "@/context/StaffProvider";
+import { StaffProvider } from "@/staff/StaffProvider";
 import { ManagerProvider } from "@/manager/ManagerProvider";
 import { VehicleProvider } from "@/vehicle/contexts/VehicleProvider";
 import { Metadata } from "next";

@@ -14,6 +14,8 @@ interface DeleteConfirmationDialogProps {
   handleConfirm: () => void;
   loading: boolean;
   message: string;
+  cancelText?: string;
+  confirmText?: string;
 }
 
 const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
@@ -22,6 +24,8 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   handleConfirm,
   loading,
   message,
+  cancelText = "Cancel",
+  confirmText = "Confirm",
 }) => {
   return (
     <Dialog
@@ -68,7 +72,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
           >
-            <span>Cancel</span>
+            <span>{cancelText}</span>
           </Button>
           <Button
             variant="gradient"
@@ -78,7 +82,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
           >
-            <span>Confirm</span>
+            <span>{confirmText}</span>
           </Button>
         </DialogFooter>
       )}

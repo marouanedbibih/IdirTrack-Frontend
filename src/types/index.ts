@@ -21,3 +21,9 @@ export interface IMyErrResponse {
     message: string;
     status: string;
 }
+
+
+export interface IFinallyProps {
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
+}

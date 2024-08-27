@@ -26,3 +26,10 @@ export enum SimStatus {
     PENDING = "PENDING",
     LOST = "LOST",
 }
+
+export interface ISelectSim {
+    id: number;
+    phone: string;
+    ccid: string;
+    operatorName: string;
+}

@@ -1,24 +1,23 @@
-import { useStaffContext } from "@/context/StaffProvider";
+import { useStaffContext } from "@/staff/StaffProvider";
 import {
   getClientForSelect,
   searchClientForSelect,
 } from "@/services/ClientService";
 import { BasicResponse } from "@/types/Basics";
-import { Client } from "@/types/StaffTypes";
-import { useEditVehicleContext } from "@/vehicle/contexts/EditVehicleProvider";
+import { Client } from "@/staff/type";
 import { Spinner, Typography } from "@material-tailwind/react";
 import * as React from "react";
-import { SimBoitier } from "../BoitierDTO";
-import { getPendingSims, searchPendingSims } from "../BoitierService";
-import { getSimByIdApi } from "@/sim/SimServices";
+import { getClientsForDropdown } from "@/client/ClientService";
+import { IMyResponse } from "@/operators/types";
+import { IClientDropdown } from "@/client/type";
 
-export interface ISelectSimProps {
+export interface ISelectClientProps {
   error?: string | null;
 }
 
-export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
-  // Boitier Request provider state
-  const { boitierRequest, setBoitierRequest } = useEditVehicleContext();
+export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
+  // Staff Request provider state
+  const { staffRequest, setStaffRequest } = useStaffContext();
 
   // Open dropdown state
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -29,11 +28,8 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
     setIsOpen(!isOpen);
   };
 
-  // Sim list provider state
-  const {simsList,setSimsList} = useEditVehicleContext();
-
   // Client list state
-  // const [simsList, setSimsList] = React.useState<SimBoitier[]>([]);
+  const [clientsList, setClientsList] = React.useState<IClientDropdown[]>([]);
 
   // Search loading local state
   const [searchLoading, setSearchLoading] = React.useState<boolean>(false);
@@ -43,51 +39,26 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
     ""
   );
 
-  // Retrieve Sim By ID provider state
-  const { retrieveSimById } = useEditVehicleContext();
-
-  // Sim Boitier local state
-  // const [simBoitier, setSimBoitier] = React.useState<SimBoitier>({
-  //   simMicroserviceId: 0,
-  //   phone: "",
-  //   ccid: "",
-  //   operatorName: "",
-  // });
-
-  // Selected Updated Boitier ID provider state
-  const { setSelectedUpdatedBoitierId, selectedUpdatedBoitierId } =
-    useEditVehicleContext();
-
-  // Sim Microservice ID
-  const { simMicroserviceId } = boitierRequest;
-
   /**
-   *
-   * @param client Fetch Sim listwith status pending
-   *
+   * Fetch the client list
    */
-
-  const fetchSimList = async (page: number, size: number) => {
-    setSearchLoading(true);
-    getPendingSims(page, size)
-      .then((data) => {
-        setSimsList(data.content);
+  const fetchClientList = async (page: number, size: number) => {
+    getClientsForDropdown()
+      .then((res:IMyResponse) => {
+        console.log(res.data);
+        setClientsList(res.data);
       })
       .catch((data: BasicResponse) => {
         console.log(data);
-        setSearchMessage(data.message);
-      })
-      .finally(() => {
-        setSearchLoading(false);
       });
   };
 
   // Handle select function
-  const handleSelect = (sim: SimBoitier) => {
-    // Set the selected sim ID
-    setBoitierRequest({
-      ...boitierRequest,
-      simMicroserviceId: sim.simMicroserviceId,
+  const handleSelect = (clientId:number) => {
+    // Set the selected client ID
+    setStaffRequest({
+      ...staffRequest,
+      clientId: clientId
     });
     // Close the dropdown
     setIsOpen(false);
@@ -112,8 +83,9 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
     }
     // Set the search term
     setSearchTerm(e.target.value);
-    // Call the fetchSearchSimList function
-    fetchSearchedSimList(e.target.value, 1, 10);
+    // Call the fetchSearchedClientList function
+    fetchSearchedClientList(e.target.value, 1, 10);
+    
   };
 
   /**
@@ -133,7 +105,7 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
    * @returns void
    * @throws void
    */
-  const fetchSearchedSimList = async (
+  const fetchSearchedClientList = async (
     term: string,
     page: number,
     size: number
@@ -141,14 +113,18 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
     // Set the search loading to true
     setSearchLoading(true);
 
-    searchPendingSims(term, page, size)
+    // Call the search client for select API
+    searchClientForSelect(term, page, size)
       .then((data) => {
-        setSimsList(data.content);
+        // Set Clients list
+        setClientsList(data.content);
       })
       .catch((data: BasicResponse) => {
+        // Set the search message
         setSearchMessage(data.message);
       })
       .finally(() => {
+        // Set the search loading to false
         setSearchLoading(false);
       });
   };
@@ -156,60 +132,9 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
   // UseEffect to fetch the client list
   React.useEffect(() => {
     if (searchTerm === "") {
-      fetchSimList(1, 10);
+      fetchClientList(1, 10);
     }
   }, [searchTerm]);
-
-  /**
-   * RETRIEVE SIM BY ID
-   *
-   * This function is used to fetch a sim by ID
-   */
-
-  // const retrieveSimById = async (id: number) => {
-  //   getSimByIdApi(id)
-  //     .then((data) => {
-  //       // set the fetched sim to the sim boitier
-  //       const fetchedSimBoitier = {
-  //         simMicroserviceId: data.content.id,
-  //         phone: data.content.phone,
-  //         ccid: data.content.ccid,
-  //         operatorName: data.content.operatorName,
-  //       };
-  //       setSimBoitier(fetchedSimBoitier);
-  //       // add the sim to the sim list
-  //       setSimsList((prevSimsList) => [...prevSimsList, fetchedSimBoitier]);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     })
-  //     .finally(() => {
-  //       console.log("Sim fetched successfully.");
-  //     });
-  // };
-
-  /**
-   * HANDLER SIM IN UPDATE BOITIER
-   *
-   * @description
-   * This function in used to handel the sim list in the update boitier
-   * First he get the sim by id , then add this sime to the sim list
-   */
-
-  const handelSimInUpdateBoitier = () => {
-    if (simMicroserviceId) {
-      retrieveSimById(simMicroserviceId);
-    }
-  };
-
-
-  // UseEffect to fetch the sim list
-  React.useEffect(() => {
-    if (selectedUpdatedBoitierId && boitierRequest.simMicroserviceId) {
-      retrieveSimById(boitierRequest.simMicroserviceId);
-    }
-  }, [selectedUpdatedBoitierId, boitierRequest.simMicroserviceId]);
-  
 
   return (
     <div className="mb-1 flex flex-col gap-2 ">
@@ -222,12 +147,12 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
               : "border-gray-900 text-blue-gray-700"
           }`}
         >
-          {boitierRequest.simMicroserviceId === null
-            ? `Select a Sim`
-            : simsList.find(
+          {staffRequest.clientId === 0
+            ? `Select a Client`
+            : clientsList.find(
                 (option) =>
-                  option.simMicroserviceId === boitierRequest.simMicroserviceId
-              )?.phone}
+                  option.id === staffRequest.clientId
+              )?.name}
         </button>
 
         {isOpen && (
@@ -263,20 +188,17 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
               </Typography>
             ) : (
               <ul className="max-h-60 overflow-y-auto">
-                {simsList.map((sim: SimBoitier) => (
+                {clientsList.map((client) => (
                   <li
-                    key={sim.simMicroserviceId}
+                    key={client.id}
                     className="px-3 py-2 hover:bg-gray-200 cursor-pointer"
                     onClick={() => {
-                      handleSelect(sim);
+                      handleSelect(client.id);
                     }}
                   >
-                    <p className="text-base font-semibold">{sim.phone}</p>
+                    <p className="text-base font-semibold">{client.name}</p>
                     <small className="block text-sm text-gray-500">
-                      {sim.ccid}
-                    </small>
-                    <small className="block text-sm text-gray-500">
-                      {sim.operatorName}
+                      {client.company}
                     </small>
                   </li>
                 ))}
@@ -286,17 +208,15 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
         )}
       </div>
       {error ? (
-        <div className="flex flex-1 justify-start items-center">
-          <Typography
-            variant="small"
-            className="flex justify-center font-bold text-red-500 "
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            {error}
-          </Typography>
-        </div>
+        <Typography
+          variant="small"
+          className="flex justify-center font-bold text-red-500 "
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          {error}
+        </Typography>
       ) : (
         <Typography
           variant="small"
@@ -311,5 +231,3 @@ export const SelectSim: React.FC<ISelectSimProps> = ({ error }) => {
     </div>
   );
 };
-
-

@@ -1,5 +1,5 @@
-import { useStaffContext } from "@/context/StaffProvider";
-import { deleteStaffAPI, getAllStaffsListAPI } from "@/services/StaffServices";
+import { useStaffContext } from "@/staff/StaffProvider";
+import { deleteStaffAPI, getAllStaffsListAPI } from "@/staff/StaffServices";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   Card,

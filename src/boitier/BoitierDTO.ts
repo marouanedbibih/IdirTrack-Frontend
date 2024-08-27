@@ -23,8 +23,8 @@ export interface BoitierVehicle {
 
 export interface BoitierRequest {
   
-  deviceMicroserviceId: number | null;
-  simMicroserviceId: number | null;
+  deviceId: number | null;
+  simId: number | null;
   startDate: string;
   endDate: string;
 }

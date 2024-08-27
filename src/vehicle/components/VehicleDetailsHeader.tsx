@@ -1,43 +1,34 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react";
 import { Card, CardBody, Spinner, Typography } from "@material-tailwind/react";
 
 import { useVehicleContext } from "../contexts/VehicleProvider";
-import { getVehicleByIdAPI } from "../services/vehicleService";
+import { getVehicleByIdAPI } from "../services/VehicleService";
+import { IMyResponse } from "@/operators/types";
+import { IMyErrResponse } from "@/types";
 
 interface VehicleDetailsHeaderProps {}
 
 function VehicleDetailsHeader({}: VehicleDetailsHeaderProps) {
-  // Vehicle details provider list
   const { vehicleDetails, setVehicleDetails } = useVehicleContext();
-
-  // Vehicle ID provider state
-  const { vehicleId, setVehicleId } = useVehicleContext();
-
-  // Loading vehicle details local state
+  const { vehicleId } = useVehicleContext();
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  /**
-   * FETCH VEHICLE BY ID
-   *
-   * @param id
-   */
+  // Function to fetch vehicle by id
   const fetchVehicleById = async (id: number) => {
     setLoading(true);
     getVehicleByIdAPI(id)
-      .then((response) => {
-        setVehicleDetails(response.content);
-        console.log("Vehicle Details Response", response.content);
+      .then((res: IMyResponse) => {
+        setVehicleDetails(res.data);
       })
-      .catch((error) => {
-        console.error("Error fetching vehicle by id:", error);
+      .catch((err: IMyErrResponse) => {
+        console.error("Error fetching vehicle by id:", err);
       })
       .finally(() => {
-        console.log("Vehicle fetched successfully");
         setLoading(false);
       });
   };
 
-  // useEffect to fetch vehicle by id
   React.useEffect(() => {
     if (vehicleId) {
       fetchVehicleById(vehicleId);

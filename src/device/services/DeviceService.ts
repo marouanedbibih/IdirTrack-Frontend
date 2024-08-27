@@ -1,6 +1,7 @@
 import axiosClient from "@/api/axiosClient";
 import { IResponse } from "@/types/Basics";
 import { IDeviceFilter, IDeviceRequest } from "../types/Device";
+import { IMyResponse } from "@/operators/types";
 
 /**
  * Call API to get the list of devices
@@ -228,6 +229,31 @@ const buildQueryParams = (params: { [key: string]: any }) => {
     });
     return query.toString();
 };
+
+
+// Get List of devices non installed
+export const getNonInstalledDevices = async (page:number,size:number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/device/non-installed/?page=${page}&size=${size}`);
+        console.log("Get non installed devices Response", data);
+        return data;
+    } catch (error: any) {
+        console.error("Get non installed devices Error", error.response.data);
+        throw error.response.data;
+    }
+}
+
+// Search devices non installed
+export const searchNonInstalledDevices = async (query: string, page: number, size: number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/device/non-installed/search/?query=${query}&page=${page}&size=${size}`);
+        console.log("Search non installed devices Response", data);
+        return data;
+    } catch (error: any) {
+        console.error("Search non installed devices Error", error.response.data);
+        throw error.response.data;
+    }
+}
 
 
 

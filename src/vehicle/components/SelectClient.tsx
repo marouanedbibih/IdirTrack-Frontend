@@ -3,138 +3,80 @@ import {
   searchClientForSelect,
 } from "@/services/ClientService";
 import { BasicResponse } from "@/types/Basics";
-import { Client } from "@/types/StaffTypes";
+import { Client } from "@/staff/type";
 import { Spinner, Typography } from "@material-tailwind/react";
 import * as React from "react";
 import { useEditVehicleContext } from "../contexts/EditVehicleProvider";
+import { ICLientDropdown } from "../types/type";
+import { getClientsForDropdown } from "@/client/ClientService";
+import { IMyResponse } from "@/operators/types";
+import { IMyErrResponse } from "@/types";
 
 export interface ISelectClientProps {
   error?: string | null;
 }
 
 export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
-  // Open dropdown state
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
-  // Handel Toggle Dropdown
+  const [clientsList, setClientsList] = React.useState<ICLientDropdown[]>([]);
+
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const [message, setMessage] = React.useState<string | undefined>("");
+
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsOpen(!isOpen);
   };
 
-  // Client list state
-  const [clientsList, setClientsList] = React.useState<Client[]>([]);
-
-  // Search loading local state
-  const [searchLoading, setSearchLoading] = React.useState<boolean>(false);
-
-  // Search message local state
-  const [searchMessage, setSearchMessage] = React.useState<string | undefined>(
-    ""
-  );
-
-  // Vehicle request provider state
   const { vehicleRequest, setVehicleRequest } = useEditVehicleContext();
 
-  // Reset the client list
   const resetClientList = () => {
     setClientsList([]);
   };
 
-  /**
-   * Fetch the client list
-   */
-  const fetchClientList = async (page: number, size: number) => {
-    getClientForSelect(page, size)
-      .then((data) => {
-        setClientsList(data.content);
+  // Fetch list of clients for select dropdown
+  const fetchClientsList = async () => {
+    setLoading(true);
+    getClientsForDropdown()
+      .then((res: IMyResponse) => {
+        setClientsList(res.data);
       })
-      .catch((data: BasicResponse) => {
-        console.log(data);
+      .catch((err: IMyErrResponse) => {
+        setMessage(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   // Handle select function
-  const handleSelect = (client: Client) => {
-    // Set the selected client ID
+  const handleSelect = (clientId: number) => {
     setVehicleRequest({
       ...vehicleRequest,
-      clientMicroserviceId: client.clientMicroserviceId,
+      clientId: clientId,
     });
-    // Close the dropdown
     setIsOpen(false);
   };
 
   // Search term state
   const [searchTerm, setSearchTerm] = React.useState<string>("");
 
-  /**
-   * HANDLE SEARCH FUNCTION
-   *
-   * This function is handel the search clien in select input
-   * Set the search term
-   * Call the fetchSearchedClientList function
-   *
-   * @param e - The event object of the input field
-   */
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Search client for dropdown list
+  const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     resetClientList();
-
-    // Idf search message is not empty, clear it
-    if (searchMessage) {
-      setSearchMessage("");
+    if (message) {
+      setMessage("");
     }
-    // Set the search term
     setSearchTerm(e.target.value);
-    // Call the fetchSearchedClientList function
-    fetchSearchedClientList(e.target.value, 1, 5);
-  };
-
-  /**
-   * FETCH SEARCHED CLIENT LIST
-   *
-   * This function is handel the search clien in select input
-   * Call the API to search for clients by name or company
-   * Then set loading to true
-   * If the search is successful, set the clients list
-   * If the search is unsuccessful, set the search message
-   * Finally, set the search loading to false
-   *
-   * @api GET /user-api/list-for-create-vehicle/search/
-   * @param term - The search term
-   * @param page - The page number
-   * @param size - The page size
-   * @returns void
-   * @throws void
-   */
-  const fetchSearchedClientList = async (
-    term: string,
-    page: number,
-    size: number
-  ) => {
-    // Set the search loading to true
-    setSearchLoading(true);
-
-    // Call the search client for select API
-    searchClientForSelect(term, page, size)
-      .then((data) => {
-        // Set Clients list
-        setClientsList(data.content);
-      })
-      .catch((data: BasicResponse) => {
-        // Set the search message
-        setSearchMessage(data.message);
-      })
-      .finally(() => {
-        // Set the search loading to false
-        setSearchLoading(false);
-      });
+    // fetchSearchedClientList(e.target.value, 1, 5);
   };
 
   // UseEffect to fetch the client list
   React.useEffect(() => {
     if (searchTerm === "") {
-      fetchClientList(1, 5);
+      fetchClientsList();
     }
   }, [searchTerm]);
 
@@ -149,11 +91,10 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
               : "border-gray-900 text-blue-gray-700"
           }`}
         >
-          {vehicleRequest.clientMicroserviceId === null
+          {vehicleRequest.clientId === null
             ? `Select a Client`
             : clientsList.find(
-                (option) =>
-                  option.clientMicroserviceId === vehicleRequest.clientMicroserviceId
+                (option) => option.id === vehicleRequest.clientId
               )?.name}
         </button>
 
@@ -162,7 +103,7 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
             <input
               type="text"
               value={searchTerm}
-              onChange={handleSearch}
+              onChange={onSearch}
               placeholder="Search..."
               className={`w-full px-3 py-2 border-b ${
                 error
@@ -170,7 +111,7 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
                   : "border-gray-300 placeholder-gray-500"
               }`}
             />
-            {searchLoading ? (
+            {loading ? (
               <div className="w-full h-10 flex flex-1 justify-center items-center">
                 <Spinner
                   className="h-8 w-8"
@@ -178,7 +119,7 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
                   onPointerLeaveCapture={undefined}
                 />
               </div>
-            ) : searchMessage ? (
+            ) : message ? (
               <Typography
                 variant="small"
                 className="flex justify-start font-bold text-red-500 "
@@ -186,16 +127,16 @@ export const SelectClient: React.FC<ISelectClientProps> = ({ error }) => {
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               >
-                {searchMessage}
+                {message}
               </Typography>
             ) : (
               <ul className="max-h-60 overflow-y-auto">
                 {clientsList.map((client) => (
                   <li
-                    key={client.clientMicroserviceId}
+                    key={client.id}
                     className="px-3 py-2 hover:bg-gray-200 cursor-pointer"
                     onClick={() => {
-                      handleSelect(client);
+                      handleSelect(client.id);
                     }}
                   >
                     <p className="text-base font-semibold">{client.name}</p>

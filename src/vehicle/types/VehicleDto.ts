@@ -14,6 +14,6 @@ export interface Client {
 export interface VehicleRequest {
     matricule: string;
     type: string;
-    clientMicroserviceId: number | null;
+    clientId: number | null;
     boitiersIds: number[];
   }

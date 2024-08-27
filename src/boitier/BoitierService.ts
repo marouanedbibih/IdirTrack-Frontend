@@ -1,6 +1,7 @@
 import axiosClient from "@/api/axiosClient";
 import { BasicResponse } from "@/types/Basics";
 import { BoitierRequest } from "./BoitierDTO";
+import { IMyResponse } from "@/operators/types";
 
 
 /**
@@ -52,7 +53,7 @@ export const searchPendingSims = async (query: string, page: number, size: numbe
 
 export const getNotInstalledDevices = async (page: number, size: number): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/devices/not-installed/?page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/devices/not-installed/?page=${page}&size=${size}`);
         console.log("Response from retrievePendingDevices", data);
         return data;
     } catch (error: any) {
@@ -73,7 +74,7 @@ export const getNotInstalledDevices = async (page: number, size: number): Promis
 
 export const searchNotInstalledDevices = async (imei: string, page: number, size: number): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/devices/not-installed/search/?imei=${imei}&page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/devices/not-installed/search/?imei=${imei}&page=${page}&size=${size}`);
         console.log("Response from retrieveSearchDevices", data);
         return data;
     } catch (error: any) {
@@ -90,13 +91,13 @@ export const searchNotInstalledDevices = async (imei: string, page: number, size
  * @throws Error
  */
 
-export const createBoitierApi = async (boitierRequest: BoitierRequest): Promise<BasicResponse> => {
+export const createBoitierApi = async (request: BoitierRequest): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.post('/vehicle-api/boitier/', boitierRequest);
+        const { data } = await axiosClient.post('/api/boitier/', request);
         console.log('Boitier created successfully:', data);
         return data;
     } catch (error: any) {
-        // console.error('Error creating boitier:', error);
+        console.error('Error creating boitier:', error);
         const data = error.response.data;
         throw data;
     }
@@ -111,13 +112,13 @@ export const createBoitierApi = async (boitierRequest: BoitierRequest): Promise<
  * @throws Error
  */
 
-export const deleteBoitierApi = async (id: number | null, isLost: boolean): Promise<BasicResponse> => {
+export const deleteBoitierApi = async (id: number | null, isLost: boolean): Promise<IMyResponse> => {
     if (!id) {
         throw new Error('Boitier ID is required');
     }
     else {
         try {
-            const { data } = await axiosClient.delete(`/vehicle-api/boitier/${id}/?isLost=${isLost}`);
+            const { data } = await axiosClient.delete(`/api/boitier/${id}/?isLost=${isLost}`);
             console.log('Boitier deleted successfully:', data);
             return data;
         } catch (error: any) {
@@ -133,13 +134,13 @@ export const deleteBoitierApi = async (id: number | null, isLost: boolean): Prom
  * @param id: number  | null
  */
 
-export const getBoitierByIdAPI = async (id: number | null): Promise<BasicResponse> => {
+export const getBoitierByIdAPI = async (id: number | null): Promise<IMyResponse> => {
     if (!id) {
         throw new Error('Boitier ID is required');
     }
     else {
         try {
-            const { data } = await axiosClient.get(`/vehicle-api/boitier/${id}/`);
+            const { data } = await axiosClient.get(`/api/boitier/${id}/`);
             console.log('Boitier retrieved successfully:', data);
             return data;
         } catch (error: any) {
@@ -159,19 +160,32 @@ export const getBoitierByIdAPI = async (id: number | null): Promise<BasicRespons
  * @throws Error
  */
 
-export const updateBoitierApi = async (id: number | null, boitierRequest: BoitierRequest): Promise<BasicResponse> => {
+export const updateBoitierAPI = async (id: number | null, boitierRequest: BoitierRequest): Promise<IMyResponse> => {
     if (!id) {
         throw new Error('Boitier ID is required');
     }
     else {
         try {
-            const { data } = await axiosClient.put(`/vehicle-api/boitier/${id}/`, boitierRequest);
+            const { data } = await axiosClient.put(`/api/boitier/${id}/`, boitierRequest);
             console.log('Boitier updated successfully:', data);
             return data;
         } catch (error: any) {
             console.error('Error updating boitier:', error);
             throw error.response.data;
         }
+    }
+}
+
+
+// Fetch boitiers not attached to a vehicle
+export const getBoitierUnassigned = async (): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/boitier/unassigned/`);
+        console.log('Boitiers not assigned fetched successfully:', data);
+        return data;
+    } catch (error: any) {
+        console.error('Error fetching boitiers not assigned:', error);
+        throw error.response.data;
     }
 }
 
