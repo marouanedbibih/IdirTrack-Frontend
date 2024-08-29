@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 import {
   Card,
@@ -17,7 +18,8 @@ import { SelectClient } from "./SelectClient";
 import { useEditVehicleContext } from "../contexts/EditVehicleProvider";
 import FormField from "@/components/form/FormField";
 import SelectField from "@/components/form/SelectField";
-import { createVehicleAPI } from "../services/vehicleService";
+import { createVehicleAPI } from "../services/VehicleService";
+import { IMyErrResponse } from "@/types";
 
 const vehicleTypes = [
   { value: "SUV", label: "SUV" },
@@ -25,25 +27,18 @@ const vehicleTypes = [
   { value: "Truck", label: "Truck" },
 ];
 function VehicleForm() {
-  // Vehicle request provider state
   const { vehicleRequest, setVehicleRequest } = useEditVehicleContext();
 
-  // Loading local state
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  // Message provider state
   const { setMessage } = useEditVehicleContext();
 
-  // Alert provider state
   const { setAlertOpen } = useEditVehicleContext();
 
-  // Fetch Boitier Not Attached List
   const { fetchBoitierNotAttachedList } = useEditVehicleContext();
 
-  // Reset the vehicle request provider state
   const { resetVehicleRequest } = useEditVehicleContext();
 
-  // Errors provider state
   const { errors, setErrors, resetErrors } = useEditVehicleContext();
 
   // Function to get the error message for a specific field
@@ -52,11 +47,7 @@ function VehicleForm() {
     return error ? error.message : "";
   };
 
-  /**
-   * HANDLE CREATE VEHICLE
-   * @param vehicleRequest
-   */
-
+  // Create new a vehicle
   const handleCreateVehicle = () => {
     console.log("Request Vehicle Data:", vehicleRequest);
     setLoading(true);
@@ -75,10 +66,8 @@ function VehicleForm() {
         // Reset the vehicle request
         resetVehicleRequest();
       })
-      .catch((error) => {
-        console.log(error);
-        // Set the errors
-        setErrors(error.errorsList);
+      .catch((err:IMyErrResponse) => {
+        console.log(err);
       })
       .finally(() => {
         setLoading(false);

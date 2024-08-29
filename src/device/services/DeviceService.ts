@@ -1,17 +1,18 @@
 import axiosClient from "@/api/axiosClient";
 import { IResponse } from "@/types/Basics";
 import { IDeviceFilter, IDeviceRequest } from "../types/Device";
+import { IMyResponse } from "@/operators/types";
 
 /**
  * Call API to get the list of devices
- * @api GET /stock-api/device/?page=1&size=10
+ * @api GET /api/device/?page=1&size=10
  * @param page 
  * @param size 
  * @returns {Promise<IResponse>}
  */
 export const getDeviceListAPI = async (page: number, size: number): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/?page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/device/?page=${page}&size=${size}`);
         console.log("Device  list data ", data);
         return data;
     } catch (error: any) {
@@ -25,13 +26,13 @@ export const getDeviceListAPI = async (page: number, size: number): Promise<IRes
  * 
  * This function is used to create a new device
  * 
- * @api POST /stock-api/device/
+ * @api POST /api/device/
  * @param {IDeviceRequest} payload
  * @returns {Promise<IResponse>}
  */
 export const createDeviceAPI = async (payload: IDeviceRequest): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.post("/stock-api/device/", payload);
+        const { data } = await axiosClient.post("/api/device/", payload);
         console.error("Create device data ", data);
         return data;
     } catch (error: any) {
@@ -46,13 +47,13 @@ export const createDeviceAPI = async (payload: IDeviceRequest): Promise<IRespons
  * 
  * This function is used to delete a device by id
  * 
- * @api DELETE /stock-api/device/{id}/
+ * @api DELETE /api/device/{id}/
  * @param {number} id
  * @returns {Promise<IResponse>}
  */
 export const deleteDeviceAPI = async (id: number): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.delete(`/stock-api/device/${id}/`);
+        const { data } = await axiosClient.delete(`/api/device/${id}/`);
         console.error("Delete device data ", data);
         return data;
     } catch (error: any) {
@@ -72,7 +73,7 @@ export const deleteDeviceAPI = async (id: number): Promise<IResponse> => {
  */
 export const getDeviceByIdAPI = async (id: number): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/${id}/`);
+        const { data } = await axiosClient.get(`/api/device/${id}/`);
         console.error("Get device by id data ", data);
         return data;
     } catch (error: any) {
@@ -87,7 +88,7 @@ export const getDeviceByIdAPI = async (id: number): Promise<IResponse> => {
  * 
  * This function is used to update a device by id
  * 
- * @api PUT /stock-api/device/{id}/
+ * @api PUT /api/device/{id}/
  * @param {number} id
  * @param {IDeviceRequest} payload
  * @returns {Promise<IResponse>}
@@ -95,7 +96,7 @@ export const getDeviceByIdAPI = async (id: number): Promise<IResponse> => {
  */
 export const updateDeviceAPI = async (id: number, payload: IDeviceRequest): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.put(`/stock-api/device/${id}/`, payload);
+        const { data } = await axiosClient.put(`/api/device/${id}/`, payload);
         console.error("Update device data ", data);
         return data;
     } catch (error: any) {
@@ -111,13 +112,13 @@ export const updateDeviceAPI = async (id: number, payload: IDeviceRequest): Prom
  * 
  * This function is used to get the total devices count
  * 
- * @api GET /stock-api/device/type/total
+ * @api GET /api/device/type/total
  * @returns {Promise<number>}
  * @throws {Promise<IResponse>}
  */
 export const getTotalDevicesCountAPI = async (): Promise<number> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/total/`);
+        const { data } = await axiosClient.get(`/api/device/total/`);
         console.log("Get total devices count Response", data);
         return data.content;
     } catch (error: any) {
@@ -131,13 +132,13 @@ export const getTotalDevicesCountAPI = async (): Promise<number> => {
  * 
  * This function is used to get the total device and group by status
  * 
- * @api GET /stock-api/device/quantity-of-status/
+ * @api GET /api/device/quantity-of-status/
  * @returns {Promise<IResponse>}
  * @throws {Promise<IResponse>}
  */
 export const getDeviceQuantityOfStatusAPI = async (): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/quantity-of-status/`);
+        const { data } = await axiosClient.get(`/api/device/quantity-of-status/`);
         console.log("Get device quantity of status Response", data);
         return data;
     } catch (error: any) {
@@ -152,7 +153,7 @@ export const getDeviceQuantityOfStatusAPI = async (): Promise<IResponse> => {
  * 
  * This function is used to search devices by search key
  * 
- * @api GET /stock-api/device/search/?search=abc&page=1&size=10
+ * @api GET /api/device/search/?search=abc&page=1&size=10
  * @param {string} search
  * @param {number} page
  * @param {number} size
@@ -162,7 +163,7 @@ export const getDeviceQuantityOfStatusAPI = async (): Promise<IResponse> => {
 
 export const searchDevicesAPI = async (search: string, page: number, size: number): Promise<IResponse> => {
     try {
-        const { data } = await axiosClient.get(`/stock-api/device/search/?search=${search}&page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/device/search/?search=${search}&page=${page}&size=${size}`);
         console.log("Search devices Response", data);
         return data;
     } catch (error: any) {
@@ -175,7 +176,7 @@ export const searchDevicesAPI = async (search: string, page: number, size: numbe
 /**
  * Call API to filter devices by status, type, createdFrom and createdTo
  * 
- * @api GET /stock-api/device/filter/?status=abc&type=1&createdFrom=2021-09-01&createdTo=2021-09-30&page=1&size=10
+ * @api GET /api/device/filter/?status=abc&type=1&createdFrom=2021-09-01&createdTo=2021-09-30&page=1&size=10
  * 
  * @param {IDeviceFilter} filter
  * @param {number} page
@@ -200,7 +201,7 @@ export const filterDevicesAPI = async (
         });
 
         // Make the API request with the dynamic query string
-        const { data } = await axiosClient.get(`/stock-api/device/filter/?${queryParams}`);
+        const { data } = await axiosClient.get(`/api/device/filter/?${queryParams}`);
         console.log("Filter devices Response", data);
         return data;
     } catch (error: any) {
@@ -228,6 +229,31 @@ const buildQueryParams = (params: { [key: string]: any }) => {
     });
     return query.toString();
 };
+
+
+// Get List of devices non installed
+export const getNonInstalledDevices = async (page:number,size:number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/device/non-installed/?page=${page}&size=${size}`);
+        console.log("Get non installed devices Response", data);
+        return data;
+    } catch (error: any) {
+        console.error("Get non installed devices Error", error.response.data);
+        throw error.response.data;
+    }
+}
+
+// Search devices non installed
+export const searchNonInstalledDevices = async (query: string, page: number, size: number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/device/non-installed/search/?query=${query}&page=${page}&size=${size}`);
+        console.log("Search non installed devices Response", data);
+        return data;
+    } catch (error: any) {
+        console.error("Search non installed devices Error", error.response.data);
+        throw error.response.data;
+    }
+}
 
 
 

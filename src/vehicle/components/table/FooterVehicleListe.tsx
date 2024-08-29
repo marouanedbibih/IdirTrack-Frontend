@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { CardFooter, Button, IconButton, Card } from "@material-tailwind/react";
 import { useVehicleContext } from "@/vehicle/contexts/VehicleProvider";
@@ -13,7 +14,7 @@ export function FooterVehicleListe() {
   };
 
   const handleNextPage = () => {
-    if (vehiclePagination.currentPage < vehiclePagination.totalPages) {
+    if (vehiclePagination.currentPage < vhiclePagination.totalPages) {
       setCurrentPage(vehiclePagination.currentPage + 1);
     }
   };

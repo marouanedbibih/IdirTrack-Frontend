@@ -20,3 +20,11 @@ export interface ISelectDeviceType {
     id: number;
     name: string;
 }
+
+export interface ISelectDevice{
+    id: number;
+    imei: string;
+    deviceType: string;
+    deviceTypeId: number;
+    
+}

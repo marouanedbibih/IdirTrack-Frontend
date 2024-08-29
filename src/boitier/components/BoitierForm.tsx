@@ -1,124 +1,97 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useState } from "react";
 import { Card, Button, Spinner } from "@material-tailwind/react";
 
 import DateField from "@/components/form/DateFiled";
-import { SelectSim } from "./SelectSim";
-import { SelectDevice } from "./SelectDevice";
+
 import { useEditVehicleContext } from "@/vehicle/contexts/EditVehicleProvider";
 import {
   createBoitierApi,
-  deleteBoitierApi,
   getBoitierByIdAPI,
-  updateBoitierApi,
+  updateBoitierAPI,
 } from "../BoitierService";
 
-import {
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-} from "@material-tailwind/react";
 import { BoitierRequest } from "../BoitierDTO";
+import { SelectDevice } from "./select/SelectDevice";
+import { SelectSim } from "./select/SelectSim";
+import { IMyResponse } from "@/operators/types";
+import { IFieldErrors, IMyErrResponse } from "@/types";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { MessageType } from "@/types/Basics";
+import { useBoitierContext } from "../BoitierProvider";
+import { ISelectDevice } from "@/device/types/DeviceType";
+import { ISelectSim } from "@/sim/types/type";
+import { useEditVehicleFunctionsContext } from "@/vehicle/contexts/EditVehicleFunctionsProvider";
 
 const BoitierForm: React.FC = () => {
   // Boitier Request provider state
   const { boitierRequest, setBoitierRequest, resetBoitierRequest } =
-    useEditVehicleContext();
-
-  // Errors provider state
-  const { errors, setErrors, resetErrors } = useEditVehicleContext();
-
+    useBoitierContext();
   // Loading local state
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Alert provider state
-  const { setAlertOpen } = useEditVehicleContext();
-
+  // Alert Open Global provider state
+  const { setAlertOpen } = useGlobalContext();
   // Message provider state
-  const { setMessage } = useEditVehicleContext();
+  const { setMessage } = useGlobalContext();
+  // Field Errors provider state
+  const { fieldErrors, setFieldErrors, removeFieldError, resetFieldErrors } =
+    useBoitierContext();
+  // Get unasigned boitiers list
+  const { fetchBoitierUnassigned } = useEditVehicleFunctionsContext();
+  // Boitier ID provider state
+  const { boitierId, setBoitierId } = useEditVehicleContext();
+  // Device and Sim local state
+  const [device, setDevice] = useState<ISelectDevice | null>(null);
+  const [sim, setSim] = useState<ISelectSim | null>(null);
 
-  // Fetch Boitier Not Attached List provider state
-  const { fetchBoitierNotAttachedList } = useEditVehicleContext();
-
-  // Delete Boitier Dialog provider state
-  const { deleteBoitierDialogOpen, setDeleteBoitierDialogOpen } =
-    useEditVehicleContext();
-
-  // Handel Delete Boitier Dialog provider state
-  const { handelBoitierDeleteDialog } = useEditVehicleContext();
-
-  // Loading Delete local state
-  const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
-
-  // Lost Dialog provider state
-  const [lostDialogOpen, setLostDialogOpen] = useState<boolean>(false);
-
-  // Selected Delete Boitier ID provider state
-  const { selectedBoitierId } = useEditVehicleContext();
-
-  // Selected UpdatedBoitier ID provider state
-  const { selectedUpdatedBoitierId } = useEditVehicleContext();
-
-  // Retrieve Sim by ID provider state
-  const { retrieveSimById } = useEditVehicleContext();
-
-  // Handel Start Date Change
+  // Handle Start Date Change
   const handleStartDateChange = (startDate: string) => {
+    removeFieldError("startDate");
     setBoitierRequest({
       ...boitierRequest,
       startDate,
     });
   };
-
   // Handel End Date Change
   const handleEndDateChange = (endDate: string) => {
+    removeFieldError("endDate");
     setBoitierRequest({
       ...boitierRequest,
       endDate,
     });
   };
 
-  // Handel Lost Dialog Close
-  const handleConfirmClick = () => {
-    setDeleteBoitierDialogOpen(!deleteBoitierDialogOpen);
-    setLostDialogOpen(true);
+  // Function to get the error message for a specific field
+  const getError = (field: string) => {
+    const fieldError = fieldErrors.find((error) => error.field === field);
+    return fieldError ? fieldError.message : "";
   };
 
-  /**
-   * CREATE BOITIER
-   * @description
 
-   * @param boitierRequest
-   * @returns void
-   */
-
-  const handleCreateNewBoitier = async (ev: React.FormEvent) => {
-    // Prevent the default form submission
-    ev.preventDefault();
-    // Set the loading state
+  // Function to create a new boitier
+  const onCreateBoitier = async (request: BoitierRequest) => {
     setLoading(true);
-    // Reset the errors
-    resetErrors();
-    // Create the new boitier
-    createBoitierApi(boitierRequest)
-      .then((response) => {
-        console.log("Response from createNewBoitier", response);
-        // Set the message
+    resetFieldErrors();
+    createBoitierApi(request)
+      .then((res: IMyResponse) => {
         setMessage({
-          messageType: response.messageType,
-          message: response.message,
+          messageType: MessageType.INFO,
+          message: res.message,
         });
-        // Set the alert open
         setAlertOpen(true);
-        // Reset the form
         resetBoitierRequest();
-        // Fetch the boitier not attached list
-        fetchBoitierNotAttachedList(1, 10);
+        fetchBoitierUnassigned();
       })
-      .catch((error) => {
-        console.error("Error from createNewBoitier", error);
-        setErrors(error.errorsList);
+      .catch((err: IMyErrResponse) => {
+        if (err.message) {
+          setMessage({
+            messageType: MessageType.ERROR,
+            message: err.message,
+          });
+          setAlertOpen(true);
+        }
+        err.fieldErrors ? setFieldErrors(err.fieldErrors) : setFieldErrors([]);
       })
       .finally(() => {
         console.log("Finally from createNewBoitier");
@@ -126,69 +99,20 @@ const BoitierForm: React.FC = () => {
       });
   };
 
-  // Function to get the error message for a specific field
-  const getError = (key: string) => {
-    const error = errors.find((error) => error.key === key);
-    return error ? error.message : "";
-  };
-
-  useEffect(() => {
-    console.log("Errors list", errors);
-  }, [errors]);
-
-  const handleLostDialogClose = () => {
-    setLostDialogOpen(false);
-  };
-
-  /**
-   * HANDLE DELETE BOITIER
-   * @description
-   */
-
-  const handleDeleteBoitier = async (isLost: boolean) => {
-    // Set the loading state
-    setLoadingDelete(true);
-    deleteBoitierApi(selectedBoitierId, isLost)
-      .then((response) => {
-        console.log("Response from deleteBoitier", response);
-        // Set the message
-        setMessage({
-          messageType: response.messageType,
-          message: response.message,
-        });
-        // Set the alert open
-        setAlertOpen(true);
-        // Fetch the boitier not attached list
-        fetchBoitierNotAttachedList(1, 10);
-      })
-      .catch((error) => {
-        console.error("Error from deleteBoitier", error);
-        setErrors(error.errorsList);
-      })
-      .finally(() => {
-        console.log("Finally from deleteBoitier");
-        setLoadingDelete(false);
-        setLostDialogOpen(false);
-      });
-  };
-
-  /**
-   * HANDLE RETRIEVE BOITIER BY ID
-   */
-
-  const handleRetrieveBoitierById = async () => {
+  // Fetch boitier by ID
+  const fetchBoitierById = async () => {
     setLoading(true);
-    getBoitierByIdAPI(selectedUpdatedBoitierId)
-      .then((response) => {
-        console.log("Response from retrieveBoitierById", response);
-        setBoitierRequest(response.content);
-        // Retrieve and set the sim and device by their IDs
-        if (response.content.simMicroserviceId) {
-          retrieveSimById(response.content.simMicroserviceId);
-        }
-        // if (response.content.deviceMicroserviceId) {
-        //   retrieveDeviceById(response.content.deviceMicroserviceId);
-        // }
+    resetFieldErrors();
+    getBoitierByIdAPI(boitierId)
+      .then((res: IMyResponse) => {
+        setBoitierRequest({
+          deviceId: res.data.device.id,
+          simId: res.data.sim.id,
+          startDate: res.data.subscription.startDate,
+          endDate: res.data.subscription.endDate,
+        });
+        setDevice(res.data.device);
+        setSim(res.data.sim);
       })
       .catch((error) => {
         console.error("Error from retrieveBoitierById", error);
@@ -199,62 +123,53 @@ const BoitierForm: React.FC = () => {
         setLoading(false);
       });
   };
-
-  // UseEffect to retrieve the boitier by ID
-  useEffect(() => {
-    if (selectedUpdatedBoitierId) {
-      handleRetrieveBoitierById();
+  React.useEffect(() => {
+    if (boitierId) {
+      fetchBoitierById();
     }
-  }, [selectedUpdatedBoitierId]);
+  }, [boitierId]);
 
-  /**
-   * HANDLE UPDATE BOITIER
-   * @description
-   * @param id number
-   * @param boitierRequest BoitierRequest
-   * @returns void
-   * @throws Error
-   */
-
-  const handleUpdateBoitier = async (id: number, boitierRequest: BoitierRequest) => {
-    updateBoitierApi(id, boitierRequest)
-      .then((response) => {
-        console.log("Response from updateBoitier", response);
-        // Set the message
+  // Function to update a boitier
+  const onUpdateBoitier = async (
+    id: number,
+    boitierRequest: BoitierRequest
+  ) => {
+    setLoading(true);
+    resetFieldErrors();
+    updateBoitierAPI(id, boitierRequest)
+      .then((res: IMyResponse) => {
         setMessage({
-          messageType: response.messageType,
-          message: response.message,
+          messageType: MessageType.INFO,
+          message: res.message,
         });
-        // Set the alert open
         setAlertOpen(true);
-        // Fetch the boitier not attached list
-        fetchBoitierNotAttachedList(1, 10);
+        resetBoitierRequest();
+        fetchBoitierUnassigned();
       })
-      .catch((error) => {
-        console.error("Error from updateBoitier", error);
-        setErrors(error.errorsList);
+      .catch((err: IMyErrResponse) => {
+        if (err.message) {
+          setMessage({
+            messageType: MessageType.ERROR,
+            message: err.message,
+          });
+          setAlertOpen(true);
+        }
+        err.fieldErrors ? setFieldErrors(err.fieldErrors) : setFieldErrors([]);
       })
       .finally(() => {
-        console.log("Finally from updateBoitier");
         setLoading(false);
       });
-  }
-
+  };
 
   // Handle the form submission
   const handleSubmit = (ev: React.FormEvent) => {
     ev.preventDefault();
-    setLoading(true);
-    // Check if the boitier is being updated
-    if (selectedUpdatedBoitierId) {
-      handleUpdateBoitier(selectedUpdatedBoitierId, boitierRequest);
+    if (boitierId) {
+      onUpdateBoitier(boitierId, boitierRequest);
     } else {
-      // Create a new boitier
-      handleCreateNewBoitier(ev);
+      onCreateBoitier(boitierRequest);
     }
   };
-
-  
 
   return (
     <Card
@@ -275,19 +190,21 @@ const BoitierForm: React.FC = () => {
       ) : (
         <form className="w-full" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
-            <SelectDevice error={getError("device")} />
-            <SelectSim error={getError("sim")} />
+            <SelectDevice error={getError("deviceId")} device={device} />
+            <SelectSim error={getError("simId")} sim={sim} />
             <DateField
               label="Select Start Date"
               date={boitierRequest.startDate}
               onChange={handleStartDateChange}
-              error={getError("dateStart")}
+              error={getError("startDate")}
+              small="Please select the start subscription date of the boitier"
             />
             <DateField
               label="Select End Date"
               date={boitierRequest.endDate}
               onChange={handleEndDateChange}
-              error={getError("dateEnd")}
+              error={getError("endDate")}
+              small="Please select the end subscription date of the boitier"
             />
           </div>
           <Button
@@ -303,121 +220,6 @@ const BoitierForm: React.FC = () => {
           </Button>
         </form>
       )}
-
-      <Dialog
-        open={deleteBoitierDialogOpen}
-        handler={handelBoitierDeleteDialog}
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      >
-        <DialogHeader
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Confirm Deletion
-        </DialogHeader>
-        <DialogBody
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Are you sure you want to delete this Boitier? This action cannot be
-          undone.
-        </DialogBody>
-        <DialogFooter
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <Button
-            variant="text"
-            color="red"
-            onClick={() => handelBoitierDeleteDialog(null)}
-            className="mr-1"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <span>Cancel</span>
-          </Button>
-          <Button
-            variant="gradient"
-            color="green"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-            onClick={handleConfirmClick}
-          >
-            <span>Confirm</span>
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
-      <Dialog
-        open={lostDialogOpen}
-        handler={setLostDialogOpen}
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      >
-        <DialogHeader
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Is the Boitier Lost?
-        </DialogHeader>
-        <DialogBody
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Please choose if the boitier is lost or not.
-        </DialogBody>
-        {loadingDelete ? (
-          <div className="flex flex-1 justify-center items-center p-4">
-            <Spinner
-              className="h-8 w-8"
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            />
-          </div>
-        ) : (
-          <DialogFooter
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <Button
-              variant="text"
-              color="red"
-              onClick={() => {
-                handleDeleteBoitier(false);
-              }}
-              className="mr-1"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <span>Not Lost</span>
-            </Button>
-            <Button
-              variant="gradient"
-              color="green"
-              onClick={() => {
-                handleDeleteBoitier(true);
-              }}
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <span>Lost</span>
-            </Button>
-          </DialogFooter>
-        )}
-      </Dialog>
     </Card>
   );
 };

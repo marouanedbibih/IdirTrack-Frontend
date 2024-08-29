@@ -1,15 +1,13 @@
 "use client";
+import StaffForm from "@/staff/components/StaffForm";
+import StaffHeader from "@/staff/components/StaffHeader";
+import StaffTable from "@/staff/components/StaffTable";
 import React from "react";
 
-import { Typography } from "@material-tailwind/react";
-import StaffTable from "@/components/Staff/StaffTable";
-import { DefaultPagination } from "@/components/pagination/DefaultPagination";
-import StaffHeader from "@/components/Staff/StaffHeader";
-import StaffForm from "@/components/Staff/StaffForm";
 
 const StaffPage: React.FC = () => {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 pt-8">
       <StaffHeader />
       <StaffTable />
       <StaffForm />

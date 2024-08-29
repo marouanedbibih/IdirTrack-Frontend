@@ -73,16 +73,16 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({}) => {
   // Display status provider state
   const { setDisplayStatus, displayStatus } = useDeviceContext();
 
-  // OnFetch Device list
-  const onFetch = () => {
-    setDevicesList([]);
-    setDisplayStatus({
-      filter: false,
-      search: false,
-      normal: true,
-    });
-    setTableLoading(true);
-  };
+  // // OnFetch Device list
+  // const onFetch = () => {
+  //   setDevicesList([]);
+  //   setDisplayStatus({
+  //     filter: false,
+  //     search: false,
+  //     normal: true,
+  //   });
+  //   setTableLoading(true);
+  // };
 
   // Dialog state management
   const [openDialog, setOpenDialog] = useState(false);
@@ -183,7 +183,7 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({}) => {
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          <div className="px-4">
+          <div className="px-4 w-60">
             <DefaultSelect
               label="Select Size"
               value={pagination.size.toString()}
@@ -191,7 +191,7 @@ const DeviceTableBody: React.FC<DeviceTableBodyProps> = ({}) => {
               options={sizes}
               loading={selectLoading}
               smallMessage="Select the Size of the table"
-              className="w-48"
+              className="w-60"
             />
           </div>
           <CardBody

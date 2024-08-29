@@ -24,7 +24,7 @@ export interface IDeviceFilter {
 
 export enum DeviceStatus {
     INSTALLED = "INSTALLED",
-    NOT_INSTALLED = "NOT_INSTALLED",
+    NON_INSTALLED = "NON_INSTALLED",
     PENDING = "PENDING",
     LOST = "LOST",
 }

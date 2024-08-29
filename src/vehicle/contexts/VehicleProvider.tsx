@@ -8,7 +8,6 @@ import React, {
   useEffect,
 } from "react";
 import { Pagination, VehicleInterface } from "../VehicleTypes";
-import { getVehicleListApi } from "../services/vehicleService";
 import { vehicleDetailstemplate } from "../templates/VehicleTemplates";
 
 interface VehicleContextProps {
@@ -32,6 +31,10 @@ interface VehicleContextProps {
   openVehicleDetailsDialog: boolean;
   setOpenVehicleDetailsDialog: (open: boolean) => void;
   handleOpenVehicleDetailsDialog: () => void;
+
+  // Vehicle Delete ID
+  vehicleDeleteId: number | null;
+  setVehicleDeleteId: (id: number | null) => void;
 }
 
 const VehicleContext = createContext<VehicleContextProps | undefined>(
@@ -85,6 +88,9 @@ const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     console.log("Vehicle Details", vehicleDetails);
   }, [vehicleDetails]);
 
+  // Vehicle Delete ID
+  const [vehicleDeleteId, setVehicleDeleteId] = useState<number | null>(null);
+
   return (
     <VehicleContext.Provider
       value={{
@@ -104,6 +110,9 @@ const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         openVehicleDetailsDialog,
         setOpenVehicleDetailsDialog,
         handleOpenVehicleDetailsDialog,
+        // Vehicle Delete ID
+        vehicleDeleteId,
+        setVehicleDeleteId,
       }}
     >
       {children}

@@ -80,7 +80,6 @@ export default function DeviceTableHeader(props: IDeviceTableHeaderProps) {
             </Button>
           </div>
         </div>
-        <DeviceFilter />
       </CardHeader>
     </Card>
   );

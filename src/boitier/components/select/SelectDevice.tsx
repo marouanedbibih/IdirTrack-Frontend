@@ -1,89 +1,63 @@
-import { useStaffContext } from "@/context/StaffProvider";
-import {
-  getClientForSelect,
-  searchClientForSelect,
-} from "@/services/ClientService";
-import { BasicResponse } from "@/types/Basics";
-import { Client } from "@/types/StaffTypes";
 import { useEditVehicleContext } from "@/vehicle/contexts/EditVehicleProvider";
 import { Spinner, Typography } from "@material-tailwind/react";
 import * as React from "react";
-import { DeviceBoitier } from "../BoitierDTO";
+import { ISelectDevice } from "@/device/types/DeviceType";
+import { IMyResponse } from "@/operators/types";
 import {
-  getNotInstalledDevices,
-  searchNotInstalledDevices,
-} from "../BoitierService";
-import { getDeviceByIdApi } from "@/device/DeviceService";
+  getNonInstalledDevices,
+  searchNonInstalledDevices,
+} from "@/device/services/DeviceService";
+import { useBoitierContext } from "@/boitier/BoitierProvider";
 
 export interface ISelectDeviceProps {
   error?: string | null;
-  simId?: number;
+  device?: ISelectDevice | null;
 }
 
-export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
+export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error,device }) => {
   // Boitier Request provider state
-  const { boitierRequest, setBoitierRequest } = useEditVehicleContext();
-
+  const { boitierRequest, setBoitierRequest } = useBoitierContext();
   // Open dropdown state
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-
+  // Field error provider state
+  const { removeFieldError } = useBoitierContext();
   // Handle Toggle Dropdown
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsOpen(!isOpen);
   };
-
   // Device list state
-  const [devicesList, setDevicesList] = React.useState<DeviceBoitier[]>([]);
-
-  // Search loading local state
-  const [searchLoading, setSearchLoading] = React.useState<boolean>(false);
-
+  const [devicesList, setDevicesList] = React.useState<ISelectDevice[]>([]);
+  // Loading local state
+  const [loading, setLoading] = React.useState<boolean>(false);
   // Search message local state
-  const [searchMessage, setSearchMessage] = React.useState<string | undefined>(
-    ""
-  );
+  const [message, setMessage] = React.useState<string | undefined>("");
 
-  // Device Boitiert local state
-  const [deviceBoitier, setDeviceBoitier] = React.useState<DeviceBoitier>({
-    deviceMicroserviceId: 0,
-    imei: "",
-    type: "",
-  });
-
-  // Selected Updated Boitier ID provider state
-  const { setSelectedUpdatedBoitierId, selectedUpdatedBoitierId } =
-    useEditVehicleContext();
-
-  // Device Microservice ID
-  const { deviceMicroserviceId } = boitierRequest;
-
-  /**
-   * Fetch Device list with status pending
-   * @param page Page number
-   * @param size Page size
-   */
+  // Fetch list of devices non installed
   const fetchDeviceList = async (page: number, size: number) => {
-    setSearchLoading(true);
-    getNotInstalledDevices(page, size)
-      .then((data) => {
-        setDevicesList(data.content);
+    setDevicesList([]);
+    setLoading(true);
+    getNonInstalledDevices(page, size)
+      .then((res: IMyResponse) => {
+        res.data === null
+          ? setMessage("No device found")
+          : setDevicesList(res.data);
       })
-      .catch((data: BasicResponse) => {
-        console.log(data);
-        setSearchMessage(data.message);
+      .catch((err) => {
+        console.log("Error fetching devices", err);
       })
       .finally(() => {
-        setSearchLoading(false);
+        setLoading(false);
       });
   };
 
   // Handle select function
-  const handleSelect = (device: DeviceBoitier) => {
+  const handleSelect = (deviceId: number) => {
+    removeFieldError("deviceId");
     // Set the selected device ID
     setBoitierRequest({
       ...boitierRequest,
-      deviceMicroserviceId: device.deviceMicroserviceId,
+      deviceId: deviceId,
     });
     // Close the dropdown
     setIsOpen(false);
@@ -99,89 +73,56 @@ export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
    */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     // If search message is not empty, clear it
-    if (searchMessage) {
-      setSearchMessage("");
+    if (message) {
+      setMessage("");
     }
     // Set the search term
     setSearchTerm(e.target.value);
     // Call the fetchSearchDeviceList function
-    fetchSearchedDeviceList(e.target.value, 1, 10);
+    searchedDeviceList(e.target.value, 1, 10);
   };
 
-  /**
-   * Fetch Searched Device List
-   * Call the API to search for devices by IMEI or type
-   * @param term The search term
-   * @param page The page number
-   * @param size The page size
-   */
-  const fetchSearchedDeviceList = async (
+  // Search non installed devices
+  const searchedDeviceList = async (
     term: string,
     page: number,
     size: number
   ) => {
-    // Set the search loading to true
-    setSearchLoading(true);
-
-    searchNotInstalledDevices(term, page, size)
-      .then((data) => {
-        setDevicesList(data.content);
+    setDevicesList([]);
+    setLoading(true);
+    searchNonInstalledDevices(term, page, size)
+      .then((res: IMyResponse) => {
+        res.data === null
+          ? setMessage("No device found")
+          : setDevicesList(res.data);
       })
-      .catch((data: BasicResponse) => {
-        setSearchMessage(data.message);
+      .catch((err: any) => {
+        console.log("Error fetching devices", err);
       })
       .finally(() => {
-        setSearchLoading(false);
+        setLoading(false);
       });
   };
 
   // UseEffect to fetch the device list
   React.useEffect(() => {
-    if (searchTerm === "") {
-      fetchDeviceList(1, 10);
-    }
+    searchTerm === ""
+      ? fetchDeviceList(1, 10)
+      : searchedDeviceList(searchTerm, 1, 10);
   }, [searchTerm]);
 
-  /**
-   * RETRIEVE DEVICE BY ID
-   */
-
-  const retrieveDeviceById = async (id: number) => {
-    getDeviceByIdApi(id)
-      .then((data) => {
-        // Set the fetched device
-        const fetchedDevice: DeviceBoitier = {
-          deviceMicroserviceId: data.content.id,
-          imei: data.content.imei,
-          type: data.content.deviceType,
-        };
-        setDeviceBoitier(fetchedDevice);
-        // add the device to the device list
-        setDevicesList((prev) => [...prev, fetchedDevice]);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        console.log("Device retrieved successfully");
-      });
-  };
-
-  /**
-   * HANDLE DEVICE IN UPDATE
-   */
-  const handleDeviceInUpdate = async () => {
-    if (deviceMicroserviceId) {
-      retrieveDeviceById(deviceMicroserviceId);
-    }
-  };
-
-  // UseEffect to handle device in update
+  // Update device list
   React.useEffect(() => {
-    if (selectedUpdatedBoitierId) {
-      handleDeviceInUpdate();
+    if (device) {
+      // Check if the device already exists in the list
+      const exists = devicesList.some((d) => d.id === device.id);
+
+      if (!exists) {
+        // Add the device to the list if it doesn't exist
+        setDevicesList((prevList) => [...prevList, device]);
+      }
     }
-  }, [selectedUpdatedBoitierId]);
+  }, [device, devicesList]);
 
   return (
     <div className="mb-1 flex flex-col gap-2 ">
@@ -194,12 +135,10 @@ export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
               : "border-gray-900 text-blue-gray-700"
           }`}
         >
-          {boitierRequest.deviceMicroserviceId === null
+          {boitierRequest.deviceId === null
             ? `Select a Device`
             : devicesList.find(
-                (option) =>
-                  option.deviceMicroserviceId ===
-                  boitierRequest.deviceMicroserviceId
+                (option: ISelectDevice) => option.id === boitierRequest.deviceId
               )?.imei}
         </button>
 
@@ -216,7 +155,7 @@ export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
                   : "border-gray-300 placeholder-gray-500"
               }`}
             />
-            {searchLoading ? (
+            {loading ? (
               <div className="w-full h-10 flex flex-1 justify-center items-center">
                 <Spinner
                   className="h-8 w-8"
@@ -224,7 +163,7 @@ export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
                   onPointerLeaveCapture={undefined}
                 />
               </div>
-            ) : searchMessage ? (
+            ) : message ? (
               <Typography
                 variant="small"
                 className="flex justify-start font-bold text-red-500 "
@@ -232,21 +171,21 @@ export const SelectDevice: React.FC<ISelectDeviceProps> = ({ error }) => {
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               >
-                {searchMessage}
+                {message}
               </Typography>
             ) : (
               <ul className="max-h-60 overflow-y-auto">
-                {devicesList.map((device: DeviceBoitier) => (
+                {devicesList.map((device: ISelectDevice) => (
                   <li
-                    key={device.deviceMicroserviceId}
+                    key={device.id}
                     className="px-3 py-2 hover:bg-gray-200 cursor-pointer"
                     onClick={() => {
-                      handleSelect(device);
+                      handleSelect(device.id);
                     }}
                   >
                     <p className="text-base font-semibold">{device.imei}</p>
                     <small className="block text-sm text-gray-500">
-                      {device.type}
+                      {device.deviceType}
                     </small>
                   </li>
                 ))}

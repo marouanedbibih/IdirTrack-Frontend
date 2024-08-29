@@ -1,95 +1,93 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 
 import {
   Button,
   Dialog,
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
   Typography,
-  Input,
-  Checkbox,
   Spinner,
 } from "@material-tailwind/react";
-import { useStaffContext } from "@/context/StaffProvider";
-import { DefaultInput } from "../inputs/DefaultInput";
+
+import { DefaultInput } from "@/components/inputs/DefaultInput";
+import { useOperatorContext } from "../context/OperatorProvider";
+import { IOperatorRequest } from "../types/type";
 import {
-  createStaffAPI,
-  getStaffByIdAPI,
-  updateStaffAPI,
-} from "@/services/StaffServices";
-import { BasicResponse } from "@/types/Basics";
-import SelectWithSearch, { SelectableItem } from "../form/SelectWithSearch";
-import { getClientForSelect } from "@/services/ClientService";
+  createOperatorAPI,
+  getOperatorByIdAPI,
+  updateOperatorAPI,
+} from "../OperatorService";
+import { IMyErrorResponse, IMyResponse } from "../types";
 
-import { Select, Option } from "@material-tailwind/react";
-import { Client, StaffRequest } from "@/types/StaffTypes";
-import { SelectClient } from "./SelectClient";
+export interface IOperatorFormProps {}
 
-export interface ClientItem extends SelectableItem {
-  id: number;
-  name: string;
-  company: string;
-}
-export interface IStaffFormProps {}
-
-export default function StaffForm(props: IStaffFormProps) {
+export default function OperatorForm(props: IOperatorFormProps) {
   // Open Modal Form provider state
-  const { openForm, handleOpenForm } = useStaffContext();
+  const { openForm, handleOpenForm } = useOperatorContext();
 
-  // Staff Request provider state
-  const { staffRequest, setStaffRequest } = useStaffContext();
+  // Size provider state
+  //   const { size, setSize } = useOperatorContext();
+
+  // Operator Request provider state
+  const { operatorRequest, setOperatorRequest } = useOperatorContext();
 
   // Errors provider state
-  const { errors, setErrors } = useStaffContext();
+  const { errors, setErrors } = useOperatorContext();
 
   // Loading local state management
   const [loading, setLoading] = React.useState<boolean>(false as boolean);
 
   // Alert provider state management
-  const { alertOpen, setAlertOpen } = useStaffContext();
+  const { setAlertOpen } = useOperatorContext();
 
   // Message provider state management
-  const { message, setMessage } = useStaffContext();
+  const { setMessage } = useOperatorContext();
 
-  // Reset the staff request
-  const { resetStaffRequest } = useStaffContext();
+  // Reset the Operator request
+  const { resetOperatorRequest } = useOperatorContext();
 
-  // Staff ID provider state management
-  const { staffId, setStaffId } = useStaffContext();
+  // Operator ID provider state management
+  const { operatorId, setOperatorId } = useOperatorContext();
 
-  // Fetch the fetch staff list provider state
-  const { fetchStaffList } = useStaffContext();
+  // Fetch the fetch Operator list provider state
+  const { fetchOperatorsList } = useOperatorContext();
+
+  // Pagination provider state
+  const { pagination, setPagination } = useOperatorContext();
+
+  // Error provider state
+  const { error, setError } = useOperatorContext();
 
   // Handel change function
-  const handleChange = (key: string, value: string | number) => {
-    // Update the staff request state
-    setStaffRequest({ ...staffRequest, [key]: value });
+  const handleChange = (field: string, value: string | number) => {
+    // Update the Operator request state
+    setOperatorRequest({ ...operatorRequest, [field]: value });
 
     // Clear the error for this field if any
-    setErrors(errors.filter((error) => error.key !== key));
+    setErrors(errors.filter((error) => error.field !== field));
   };
 
   // Function to get the error message for a specific field
-  const getError = (key: string) => {
-    const error = errors.find((error) => error.key === key);
+  const getError = (field: string) => {
+    const error = errors.find((error) => error.field === field);
     return error ? error.message : "";
   };
 
   /**
-   * Create a new staff
+   * Create a new Operator
    * @returns void
    */
-  const createStaff = () => {
+  const createOperator = (payload: IOperatorRequest) => {
     // Set the loading to true
     setLoading(true);
-    console.log(staffRequest);
-    createStaffAPI(staffRequest)
+    console.log(operatorRequest);
+    createOperatorAPI(payload)
       .then((data) => {
         console.log(data);
-        // Reset the staff request
-        resetStaffRequest();
+        // Reset the Operator request
+        resetOperatorRequest();
         // Close the form
         handleOpenForm();
         // Set the message
@@ -99,11 +97,13 @@ export default function StaffForm(props: IStaffFormProps) {
         });
         // Set the alert open
         setAlertOpen(true);
-        // Fetch the staff list
-        fetchStaffList(1, 5);
+        // Fetch the Operator list
+        fetchOperatorsList(1, pagination.size);
       })
-      .catch((data: BasicResponse) => {
-        setErrors(data.errorsList ?? []);
+      .catch((data: IMyErrorResponse) => {
+        if (data.fieldErrors) {
+          setErrors(data.fieldErrors);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -111,26 +111,27 @@ export default function StaffForm(props: IStaffFormProps) {
   };
 
   /**
-   * GET STAFF BY ID
+   * GET Operator BY ID
    *
-   * This function handel the get staff by id
+   * This function handel the get Operator by id
    *
-   * @param {number} id The id of the staff to get
+   * @param {number} id The id of the Operator to get
    */
-  const getStaffById = (id: number) => {
+  const getOperatorById = (id: number) => {
     setLoading(true);
-    getStaffByIdAPI(id)
-      .then((data) => {
-        console.log(data);
-        setStaffRequest({
-          name: data.content.name,
-          phone: data.content.phone,
-          position: data.content.position,
-          clientId: data.content.clientId,
+    getOperatorByIdAPI(id)
+      .then((res:IMyResponse) => {
+        console.log(res);
+        setOperatorRequest({
+          name: res.data.name
         });
       })
-      .catch((data: BasicResponse) => {
-        setErrors(data.errorsList ?? []);
+      .catch((data: IMyErrorResponse) => {
+        if (data.fieldErrors) {
+          setErrors(data.fieldErrors);
+        }
+
+
       })
       .finally(() => {
         setLoading(false);
@@ -138,18 +139,18 @@ export default function StaffForm(props: IStaffFormProps) {
   };
 
   /**
-   * UPDATE STAFF
+   * UPDATE Operator
    *
-   * This function handel the update staff
-   * @param {number} id The id of the staff to update
-   * @param {StaffRequest} staff The staff request object
+   * This function handel the update Operator
+   * @param {number} id The id of the Operator to update
+   * @param {OperatorRequest} Operator The Operator request object
    * @returns void
    * @throws BasicResponse
    */
 
-  const updateStaff = (id: number, staff: StaffRequest) => {
+  const updateOperator = (id: number, payload: IOperatorRequest) => {
     setLoading(true);
-    updateStaffAPI(id, staff)
+    updateOperatorAPI(id, payload)
       .then((data) => {
         console.log(data);
         // Set message
@@ -161,11 +162,13 @@ export default function StaffForm(props: IStaffFormProps) {
         setAlertOpen(true);
         // Close the form
         handleOpenForm();
-        // Fetch the staff list
-        fetchStaffList(1, 5);
+        // Fetch the Operator list
+        fetchOperatorsList(1, pagination.size);
       })
-      .catch((data: BasicResponse) => {
-        setErrors(data.errorsList ?? []);
+      .catch((data: IMyErrorResponse) => {
+        if (data.fieldErrors) {
+          setErrors(data.fieldErrors);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -173,18 +176,18 @@ export default function StaffForm(props: IStaffFormProps) {
   };
 
   /**
-   * Handel submit form function to create or update staff
+   * Handel submit form function to create or update Operator
    * @returns void
    * @throws BasicResponse
-   * @see createStaff
-   * @see updateStaff
+   * @see createOperator
+   * @see updateOperator
    */
 
   const handleSubmit = () => {
-    if (staffId) {
-      updateStaff(staffId, staffRequest);
+    if (operatorId) {
+      updateOperator(operatorId, operatorRequest);
     } else {
-      createStaff();
+      createOperator(operatorRequest);
     }
   };
 
@@ -193,10 +196,10 @@ export default function StaffForm(props: IStaffFormProps) {
   }, [errors]);
 
   React.useEffect(() => {
-    if (staffId) {
-      getStaffById(staffId);
+    if (operatorId) {
+      getOperatorById(operatorId);
     }
-  }, [staffId]);
+  }, [operatorId]);
 
   return (
     <>
@@ -238,7 +241,7 @@ export default function StaffForm(props: IStaffFormProps) {
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                 >
-                  Add new Staff
+                  {operatorId ? "Edit Operator" : "Create Operator"}
                 </Typography>
                 <Typography
                   className="mb-3 font-normal"
@@ -248,33 +251,15 @@ export default function StaffForm(props: IStaffFormProps) {
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                 >
-                  Enter your staff details to save in the database
+                  {operatorId ? "Edit the Operator" : "Create a new Operator"}
                 </Typography>
-
-                <SelectClient error={getError("clientId")} />
                 <DefaultInput
                   label="Name"
-                  placeholder="Enter the staff name"
-                  value={staffRequest.name}
+                  placeholder="Enter the Operator name"
+                  value={operatorRequest.name}
                   error={getError("name")}
-                  smallMessage="Your staff will be unique"
+                  smallMessage="Your Operator will be unique"
                   onChange={(e) => handleChange("name", e.target.value)}
-                />
-                <DefaultInput
-                  label="Phone"
-                  placeholder="Enter the phone number"
-                  value={staffRequest.phone}
-                  error={getError("phone")}
-                  smallMessage="Enter a valid phone number"
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                />
-                <DefaultInput
-                  label="Position"
-                  placeholder="Enter the position"
-                  value={staffRequest.position}
-                  error={getError("position")}
-                  smallMessage="Specify the position of the staff"
-                  onChange={(e) => handleChange("position", e.target.value)}
                 />
               </CardBody>
               <CardFooter
@@ -292,7 +277,7 @@ export default function StaffForm(props: IStaffFormProps) {
                   onPointerLeaveCapture={undefined}
                   color="green"
                 >
-                  Save
+                  {operatorId ? "Update" : "Create "}
                 </Button>
               </CardFooter>
             </div>

@@ -7,7 +7,6 @@ import Pagination from "@/components/pagination/Pagination";
 import { VehicleProvider } from "@/vehicle/contexts/VehicleProvider";
 import VehicleList from "@/vehicle/components/VehicleList";
 import VehicleDetails from "@/vehicle/components/VehicleDetails";
-import { VehicleTableBody } from "@/vehicle/components/table/VehicleTable";
 import { Card } from "@material-tailwind/react";
 import { FooterVehicleListe } from "@/vehicle/components/table/FooterVehicleListe";
 import { HeaderVehicleListe } from "@/vehicle/components/table/HeaderVehicleListe";

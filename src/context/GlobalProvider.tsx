@@ -1,5 +1,7 @@
 "use client";
 
+import { DynamicAlert } from "@/components/alert/DynamicAlert";
+import { MessageInterface, MessageType } from "@/types/Basics";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { createContext } from "react";
 
@@ -13,6 +15,12 @@ interface ProviderProps {
   role: string | null;
   setRoleInLocalStorage: (role: string) => void;
   getRoleFromLocalStorage: () => string | null;
+  // Message state
+  message: MessageInterface;
+  setMessage: (message: MessageInterface) => void;
+  // Alert state
+  alertOpen: boolean;
+  setAlertOpen: (open: boolean) => void;
 }
 
 // Create the context
@@ -62,6 +70,15 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, []);
 
+  // Message state
+  const [message, setMessage] = useState<MessageInterface>({
+    message:"",
+    messageType: MessageType.INIT,
+  });
+
+  // Alert state
+  const [alertOpen, setAlertOpen] = useState(false);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -73,9 +90,25 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         role,
         setRoleInLocalStorage,
         getRoleFromLocalStorage,
+        // Message state
+        message,
+        setMessage,
+        // Alert state
+        alertOpen,
+        setAlertOpen,
       }}
     >
       {children}
+
+      {message.messageType !== MessageType.INIT && (
+        <DynamicAlert
+          open={alertOpen}
+          onClose={() => setAlertOpen(false)}
+          title={message.messageType.toString()}
+          message={message.message ?? ""}
+          type={message.messageType}
+        />
+      )}
     </GlobalContext.Provider>
   );
 };

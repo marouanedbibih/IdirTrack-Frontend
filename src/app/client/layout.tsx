@@ -1,7 +1,6 @@
 import { ComplexNavbar } from "@/components/navbar/ComplexNavbar";
 import { SidebarWithContentSeparator } from "@/components/sidebar/SidebarWithContentSeparator";
 import { ClientByIdProvider } from "@/context/ClientByIdProvider";
-import { VehicleProvider } from "@/vehicle/contexts/VehicleProvider";
 import { Metadata } from "next";
 import React from "react";
 

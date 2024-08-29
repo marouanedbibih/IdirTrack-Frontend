@@ -11,8 +11,8 @@ import {
   Button,
   Input,
 } from "@material-tailwind/react";
-import { useStaffContext } from "@/context/StaffProvider";
-import { searchStaffsAPI } from "@/services/StaffServices";
+import { useStaffContext } from "@/staff/StaffProvider";
+import { searchStaffsAPI } from "@/staff/StaffServices";
 export interface IStaffHeaderProps {}
 
 export default function StaffHeader(props: IStaffHeaderProps) {
@@ -50,10 +50,10 @@ export default function StaffHeader(props: IStaffHeaderProps) {
       .then((data) => {
         setStaffList(data.content);
         setPagination({
-          currentPage: data.metaData?.currentPage ?? 1,
-          totalPages: data.metaData?.totalPages ?? 1,
-          size: data.metaData?.size ?? 5,
-          totalElements: data.metaData?.totalElements ?? 0,
+          currentPage: data.metadata?.currentPage ?? 1,
+          totalPages: data.metadata?.totalPages ?? 1,
+          size: data.metadata?.size ?? 5,
+          totalElements: data.metadata?.totalElements ?? 0,
         });
       })
       .catch((error) => {

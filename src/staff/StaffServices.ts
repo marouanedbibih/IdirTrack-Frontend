@@ -1,16 +1,12 @@
 import axiosClient from "@/api/axiosClient";
 import { BasicResponse } from "@/types/Basics";
-import { StaffRequest } from "@/types/StaffTypes";
+import { StaffRequest } from "@/staff/type";
 
-const STAFF_API = process.env.NEXT_PUBLIC_STAFF_API
 
-/**
- * @api {get} /staffs Get all staffs
- * 
- */
+// Call the API to get list of all staffs
 export const getAllStaffsListAPI = async (page: number, size: number): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.get(`${STAFF_API}?page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/v1/staffs?page=${page}&size=${size}`);
         console.info("Staff List Data", data);
         return data;
     } catch (error: any) {
@@ -20,19 +16,11 @@ export const getAllStaffsListAPI = async (page: number, size: number): Promise<B
     }
 }
 
-/**
- * @api {get} /staff/search Search staffs
- * This function is used to call the api in the user microservice to dearch staff by her name, phone number, 
- * position, client name or client company name.
- * 
- * @param {string} search The value to search for
- * @param {number} page The page number
- * @param {number} size The size of the page
- */
 
+// Call the API to search for staffs
 export const searchStaffsAPI = async (search: string, page: number, size: number): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.get(`${STAFF_API}/search/?search=${search}&page=${page}&size=${size}`);
+        const { data } = await axiosClient.get(`/api/v1/staffs/search?search=${search}&page=${page}&size=${size}`);
         console.info("Staff List Data", data);
         return data;
     } catch (error: any) {
@@ -42,16 +30,10 @@ export const searchStaffsAPI = async (search: string, page: number, size: number
     }
 }
 
-/**
- * @api {delete} /staff/:id Delete a staff
- * This function is used to call the api in the user microservice to delete a staff by her id.
- * 
- * @param {number} id The id of the staff to delete
- */
-
+// Call the API to delete a staff
 export const deleteStaffAPI = async (id: number): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.delete(`${STAFF_API}/${id}/`);
+        const { data } = await axiosClient.delete(`/api/v1/staff/${id}`);
         console.info("Delet staff Data", data);
         return data;
     } catch (error: any) {
@@ -61,17 +43,10 @@ export const deleteStaffAPI = async (id: number): Promise<BasicResponse> => {
     }
 }
 
-/**
- * @api {post} /staff/ Create a staff
- * This function is used to call the api in the user microservice to create a new staff.
- * 
- * @param {StaffRequest} staff The staff object to create
- * @returns {Promise<BasicResponse>} The response from the server
- */
-
+// Call the API to create a staff
 export const createStaffAPI = async (staff: StaffRequest): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.post(`${STAFF_API}`, staff);
+        const { data } = await axiosClient.post(`/api/v1/staff`, staff);
         console.info("Create staff Data", data);
         return data;
     } catch (error: any) {
@@ -81,21 +56,11 @@ export const createStaffAPI = async (staff: StaffRequest): Promise<BasicResponse
     }
 }
 
-/**
- * GET STAFF BY ID
- * 
- * This service is used to call the api in the user microservice to get a staff by her id.
- * 
- * @api {get} /staff/:id Get a staff by id
- * @param id
- * @returns BasicResponse
- * @throws BasicResponse
- */
-
+// Call the API to get a staff by id
 export const getStaffByIdAPI = async (id: number): Promise<BasicResponse> => {
     // Try to call the api
     try {
-        const { data } = await axiosClient.get(`${STAFF_API}/${id}/`);
+        const { data } = await axiosClient.get(`/api/v1/staff/${id}`);
         console.info("Get staff Data", data);
         return data;
     } 
@@ -107,21 +72,10 @@ export const getStaffByIdAPI = async (id: number): Promise<BasicResponse> => {
     }
 }
 
-/**
- * UPDATE STAFF
- * 
- * This service is used to call the api in the user microservice to update a staff by her id.
- * 
- * @api {put} /staff/:id Update a staff by id
- * @param id
- * @param staff
- * @returns BasicResponse
- * @throws BasicResponse
- */
-
+// Call the API to update a staff
 export const updateStaffAPI = async (id: number, staff: StaffRequest): Promise<BasicResponse> => {
     try {
-        const { data } = await axiosClient.put(`${STAFF_API}/${id}/`, staff);
+        const { data } = await axiosClient.put(`/api/v1/staff/${id}`, staff);
         console.info("Update staff Data", data);
         return data;
     } catch (error: any) {

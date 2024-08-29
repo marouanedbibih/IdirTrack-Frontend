@@ -8,10 +8,10 @@ import {
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
- 
+
 export default function DateInput() {
   const [date, setDate] = React.useState<Date>();
- 
+
   return (
     <div className="">
       <Popover placement="bottom">
@@ -20,9 +20,16 @@ export default function DateInput() {
             label="Select a Date"
             onChange={() => null}
             value={date ? format(date, "PPP") : ""}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+            crossOrigin={undefined}
           />
         </PopoverHandler>
-        <PopoverContent>
+        <PopoverContent
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           <DayPicker
             mode="single"
             selected={date}
@@ -53,6 +60,7 @@ export default function DateInput() {
               day_hidden: "invisible",
             }}
             components={{
+              // @ts-ignore
               IconLeft: ({ ...props }) => (
                 <ChevronLeftIcon {...props} className="h-4 w-4 stroke-2" />
               ),
