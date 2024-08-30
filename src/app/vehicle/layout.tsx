@@ -47,7 +47,7 @@ export default function VehicleLayout({
         <SidebarWithContentSeparator />
         <div className="flex-1 ml-64 p-4">
           <ComplexNavbar />
-          <main className="px-16">
+          <main className="px-16 mt-8">
             <VehicleProvider>{children}</VehicleProvider>
           </main>
         </div>

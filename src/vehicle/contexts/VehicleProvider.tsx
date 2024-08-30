@@ -62,19 +62,6 @@ const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
 
-  // const fetchVehiclesList = async (page: number, size: number) => {
-  //   try {
-  //     const data = await getVehicleListApi(page, size);
-  //     setVehiclesList(data.content);
-  //     setVehiclePagination({
-  //       currentPage: data.metaData?.currentPage || 1,
-  //       totalPages: data.metaData?.totalPages || 1,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching vehicles list:", error);
-  //   }
-  // };
-
   // Vehicle Details
   const [vehicleDetails, setVehicleDetails] = useState<VehicleInterface>(
     vehicleDetailstemplate
