@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 
-
 import ManagerTable from "@/manager/components/ManagerTable";
 import ManagerForm from "@/manager/components/ManagerForm";
 import ManagerHeader from "@/manager/components/ManagerHeader";

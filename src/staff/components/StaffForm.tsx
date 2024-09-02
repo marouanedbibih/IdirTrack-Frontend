@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 
 import {
@@ -26,6 +27,7 @@ import { Client, StaffRequest } from "@/staff/type";
 import { SelectClient } from "./SelectClient";
 import { SelectableItem } from "@/components/form/SelectWithSearch";
 import { DefaultInput } from "@/components/inputs/DefaultInput";
+import { useCreateStaff, useFetchStaffById, useUpdateStaff } from "../hooks/StaffHooks";
 
 export interface ClientItem extends SelectableItem {
   id: number;
@@ -35,175 +37,72 @@ export interface ClientItem extends SelectableItem {
 export interface IStaffFormProps {}
 
 export default function StaffForm(props: IStaffFormProps) {
-  // Open Modal Form provider state
-  const { openForm, handleOpenForm } = useStaffContext();
+  // Basics states
+  const { dialog, setDialog } = useStaffContext();
+  const { loading, setLoading } = useStaffContext();
+  const { IID, setIID } = useStaffContext();
 
-  // Staff Request provider state
-  const { staffRequest, setStaffRequest } = useStaffContext();
-
-  // Errors provider state
-  const { errors, setErrors } = useStaffContext();
-
-  // Loading local state management
-  const [loading, setLoading] = React.useState<boolean>(false as boolean);
-
-  // Alert provider state management
-  const { alertOpen, setAlertOpen } = useStaffContext();
-
-  // Message provider state management
-  const { message, setMessage } = useStaffContext();
-
-  // Reset the staff request
-  const { resetStaffRequest } = useStaffContext();
-
-  // Staff ID provider state management
-  const { staffId, setStaffId } = useStaffContext();
-
-  // Fetch the fetch staff list provider state
-  const { fetchStaffList } = useStaffContext();
+  // Staff Editing states
+  const { staffRequest, setStaffRequest,resetStaffRequest } = useStaffContext();
+  const { fieldErrors, setFieldErrors } = useStaffContext();
 
   // Handel change function
-  const handleChange = (key: string, value: string | number) => {
+  const handleChange = (field: string, value: string | number) => {
     // Update the staff request state
-    setStaffRequest({ ...staffRequest, [key]: value });
+    setStaffRequest({ ...staffRequest, [field]: value });
 
     // Clear the error for this field if any
-    setErrors(errors.filter((error) => error.key !== key));
+    setFieldErrors(fieldErrors.filter((fieldError) => fieldError.field !== field));
+  };
+
+  // Handle Open Dialog
+  const handleOpenFormDialog = () => {
+    setDialog({ ...dialog, form: !dialog.form });
+    resetStaffRequest();
+    setFieldErrors([]);
+    if (IID.update) {
+      setIID({ ...IID, update: null });
+    }
   };
 
   // Function to get the error message for a specific field
-  const getError = (key: string) => {
-    const error = errors.find((error) => error.key === key);
-    return error ? error.message : "";
+  const getError = (field: string) => {
+    const fieldError = fieldErrors.find((fieldError) => fieldError.field === field);
+    return fieldError ? fieldError.message : "";
   };
 
-  /**
-   * Create a new staff
-   * @returns void
-   */
-  const createStaff = () => {
-    // Set the loading to true
-    setLoading(true);
-    console.log(staffRequest);
-    createStaffAPI(staffRequest)
-      .then((data) => {
-        console.log(data);
-        // Reset the staff request
-        resetStaffRequest();
-        // Close the form
-        handleOpenForm();
-        // Set the message
-        setMessage({
-          message: data.message,
-          messageType: data.messageType,
-        });
-        // Set the alert open
-        setAlertOpen(true);
-        // Fetch the staff list
-        fetchStaffList(1, 5);
-      })
-      .catch((data: BasicResponse) => {
-        setErrors(data.errorsList ?? []);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  // Hook Function to create a new staff
+  const createStaff = useCreateStaff();
 
-  /**
-   * GET STAFF BY ID
-   *
-   * This function handel the get staff by id
-   *
-   * @param {number} id The id of the staff to get
-   */
-  const getStaffById = (id: number) => {
-    setLoading(true);
-    getStaffByIdAPI(id)
-      .then((data) => {
-        console.log(data);
-        setStaffRequest({
-          name: data.content.name,
-          phone: data.content.phone,
-          position: data.content.position,
-          clientId: data.content.clientId,
-        });
-      })
-      .catch((data: BasicResponse) => {
-        setErrors(data.errorsList ?? []);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  // Hook Functions to get staff by id
+  const fetchStaffById = useFetchStaffById();
 
-  /**
-   * UPDATE STAFF
-   *
-   * This function handel the update staff
-   * @param {number} id The id of the staff to update
-   * @param {StaffRequest} staff The staff request object
-   * @returns void
-   * @throws BasicResponse
-   */
+  // Hook Function to update a staff
+  const updateStaff = useUpdateStaff();
 
-  const updateStaff = (id: number, staff: StaffRequest) => {
-    setLoading(true);
-    updateStaffAPI(id, staff)
-      .then((data) => {
-        console.log(data);
-        // Set message
-        setMessage({
-          message: data.message,
-          messageType: data.messageType,
-        });
-        // Set alert open
-        setAlertOpen(true);
-        // Close the form
-        handleOpenForm();
-        // Fetch the staff list
-        fetchStaffList(1, 5);
-      })
-      .catch((data: BasicResponse) => {
-        setErrors(data.errorsList ?? []);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  /**
-   * Handel submit form function to create or update staff
-   * @returns void
-   * @throws BasicResponse
-   * @see createStaff
-   * @see updateStaff
-   */
-
-  const handleSubmit = () => {
-    if (staffId) {
-      updateStaff(staffId, staffRequest);
+  // On Submit function
+  const onSubmit = () => {
+    if (IID.update) {
+      updateStaff(IID.update, staffRequest);
     } else {
-      createStaff();
+      createStaff(staffRequest);
     }
   };
 
-  React.useEffect(() => {
-    console.log("Error list", errors);
-  }, [errors]);
+
 
   React.useEffect(() => {
-    if (staffId) {
-      getStaffById(staffId);
+    if (IID.update) {
+      fetchStaffById(IID.update);
     }
-  }, [staffId]);
+  }, [IID.update]);
 
   return (
     <>
       <Dialog
         size="xs"
-        open={openForm}
-        handler={handleOpenForm}
+        open={dialog.form}
+        handler={handleOpenFormDialog}
         className="bg-transparent shadow-none"
         placeholder={undefined}
         onPointerEnterCapture={undefined}
@@ -215,7 +114,7 @@ export default function StaffForm(props: IStaffFormProps) {
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          {loading ? (
+          {loading.form ? (
             <div className="w-full h-60 flex flex-1 justify-center items-center">
               <Spinner
                 className="h-8 w-8"
@@ -238,7 +137,7 @@ export default function StaffForm(props: IStaffFormProps) {
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                 >
-                  Add new Staff
+                 {IID.update ? "Edit Staff" : "Add Staff"}
                 </Typography>
                 <Typography
                   className="mb-3 font-normal"
@@ -285,14 +184,14 @@ export default function StaffForm(props: IStaffFormProps) {
               >
                 <Button
                   variant="gradient"
-                  onClick={handleSubmit}
+                  onClick={onSubmit}
                   fullWidth
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                   color="green"
                 >
-                  Save
+                  {IID.update ? "Update" : "Save"}
                 </Button>
               </CardFooter>
             </div>

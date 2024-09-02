@@ -1,19 +1,18 @@
 "use client";
-import { ComplexNavbar } from "@/components/navbar/ComplexNavbar";
-import { SidebarWithContentSeparator } from "@/components/sidebar/SidebarWithContentSeparator";
+import { DefaultNavbar } from "@/components/navbar/DefaultNavbar";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { Metadata } from "next";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Adjust the import path as needed
-import { VehicleProvider } from "@/vehicle/contexts/VehicleProvider";
-import { DeviceProvider } from "@/device/contexts/DeviceProvider";
+import { Spinner } from "@material-tailwind/react";
+import { SideBar } from "@/components/sidebar/SideBar";
 
-export default function VehicleLayout({
+export default function ClientLayout({
   children, // will be a page or nested layout
 }: {
   children: React.ReactNode;
 }) {
-  const { getRoleFromLocalStorage, getTokenFromLocalStorage } = useGlobalContext(); // Access context
+  const { getRoleFromLocalStorage, getTokenFromLocalStorage } =
+    useGlobalContext(); // Access context
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
@@ -23,12 +22,13 @@ export default function VehicleLayout({
     // Fetch token and role from localStorage on the client side
     const fetchedToken = getTokenFromLocalStorage();
     const fetchedRole = getRoleFromLocalStorage();
-    
+
     setToken(fetchedToken);
     setRole(fetchedRole);
 
     // Check if the user is authorized
-    const isAuthorized = fetchedToken && (fetchedRole === "ADMIN" || fetchedRole === "MANAGER");
+    const isAuthorized =
+      fetchedToken && (fetchedRole === "ADMIN" || fetchedRole === "MANAGER");
 
     if (!isAuthorized) {
       router.push("/login"); // Redirect to login page or another appropriate page
@@ -39,20 +39,26 @@ export default function VehicleLayout({
 
   // Show a loading state while checking authorization
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen min-w-full">
+        <Spinner
+          className="w-16 h-16"
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        />
+      </div>
+    );
   }
 
   return (
-    <React.Fragment>
-      <div className="flex min-h-screen bg-blue-gray-50 w-full h-auto p-4 gap-4">
-        <SidebarWithContentSeparator />
-        <div className="flex-1 ml-64 p-4">
-          <ComplexNavbar />
-          <main className="px-16">
-            <DeviceProvider>{children}</DeviceProvider>
-          </main>
+    <div className="flex min-h-screen py-4 pl-4 bg-blue-gray-50 w-full">
+      <SideBar />
+      <main className="flex-1 ml-[20rem] px-16 gap-8">
+        <div className="mb-8 w-full">
+          <DefaultNavbar />
         </div>
-      </div>
-    </React.Fragment>
+        {children}
+      </main>
+    </div>
   );
 }

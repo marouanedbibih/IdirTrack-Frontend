@@ -1,3 +1,5 @@
+import { IBoitier } from "@/boitier/types/type";
+
 export type VehicleType = {
     id?: number | null;
     matricule?: string;
@@ -52,4 +54,25 @@ export type VehicleType = {
     totalPages: number;
     totalItems?: number;
   }
+
+
+export interface IVehicle {
+  id: number;
+  matricule: string;
+  type: string;
+}
+
+export interface IClient {
+  id: number;
+  name: string;
+  company: string;
+}
+
+export interface OBJVehicle {
+  vehicle: IVehicle;
+  client: IClient;
+  boitiersList?: Array<IBoitier>;
+}
+
+
   

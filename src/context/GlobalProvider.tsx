@@ -21,6 +21,10 @@ interface ProviderProps {
   // Alert state
   alertOpen: boolean;
   setAlertOpen: (open: boolean) => void;
+  // Remove Role from localStorage
+  removeRoleFromLocalStorage: () => void;
+  // Remove Token from localStorage
+  removeTokenFromLocalStorage: () => void;
 }
 
 // Create the context
@@ -79,6 +83,18 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Alert state
   const [alertOpen, setAlertOpen] = useState(false);
 
+  // Function to remove the role from localStorage
+  const removeRoleFromLocalStorage = () => {
+    setRole(null);
+    localStorage.removeItem("role");
+  };
+
+  // Function to remove the token from localStorage
+  const removeTokenFromLocalStorage = () => {
+    setToken(null);
+    localStorage.removeItem("token");
+  };
+
   return (
     <GlobalContext.Provider
       value={{
@@ -96,6 +112,10 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         // Alert state
         alertOpen,
         setAlertOpen,
+        // Remove Role from localStorage
+        removeRoleFromLocalStorage,
+        // Remove Token from localStorage
+        removeTokenFromLocalStorage
       }}
     >
       {children}

@@ -77,3 +77,26 @@ export const deleteVehicleAPI = async (id: number | null, isLost: boolean): Prom
         throw error.response.data;
     }
 }
+
+// Call API to search vehicle by query
+export const searchVehicleAPI = async (term: string, page: number, size: number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/vehicles/search?search=${term}&page=${page}&size=${size}`);
+        return data;
+    } catch (error: any) {
+        console.error(error);
+        throw error.response.data;
+    }
+}
+
+
+export const getListOfVehicleAPI = async (page: number, size: number): Promise<IMyResponse> => {
+    try {
+        const { data } = await axiosClient.get(`/api/vehicles/?page=${page}&size=${size}`);
+        console.log("Vehicle list:", data);
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

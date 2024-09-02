@@ -20,6 +20,7 @@ import FormField from "@/components/form/FormField";
 import SelectField from "@/components/form/SelectField";
 import { createVehicleAPI } from "../services/VehicleService";
 import { IMyErrResponse } from "@/types";
+import { useEditVehicleFunctionsContext } from "../contexts/EditVehicleFunctionsProvider";
 
 const vehicleTypes = [
   { value: "SUV", label: "SUV" },
@@ -35,11 +36,12 @@ function VehicleForm() {
 
   const { setAlertOpen } = useEditVehicleContext();
 
-  const { fetchBoitierNotAttachedList } = useEditVehicleContext();
-
   const { resetVehicleRequest } = useEditVehicleContext();
 
   const { errors, setErrors, resetErrors } = useEditVehicleContext();
+  // Refetch unassigned boitiers
+  const [reFetchUnassignedBoitiers, setReFetchUnassignedBoitiers] =
+    React.useState<boolean>(false);
 
   // Function to get the error message for a specific field
   const getError = (key: string) => {
@@ -59,14 +61,11 @@ function VehicleForm() {
           message: data.message,
           messageType: data.messageType,
         });
-        // Set the alert open
         setAlertOpen(true);
-        // Fetch Boitier Not Attached List
-        fetchBoitierNotAttachedList(1, 10);
-        // Reset the vehicle request
         resetVehicleRequest();
+        setReFetchUnassignedBoitiers(!reFetchUnassignedBoitiers);
       })
-      .catch((err:IMyErrResponse) => {
+      .catch((err: IMyErrResponse) => {
         console.log(err);
       })
       .finally(() => {
@@ -150,7 +149,9 @@ function VehicleForm() {
               )}
             </div>
           </div>
-          <BoitierVehicleList />
+          <BoitierVehicleList
+            reFetchUnassignedBoitiers={reFetchUnassignedBoitiers}
+          />
           <Button
             className="mt-6"
             fullWidth
