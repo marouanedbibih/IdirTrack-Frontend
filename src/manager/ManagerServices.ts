@@ -3,7 +3,7 @@ import { IManagerRequest } from "./ManagerTypes";
 import { IMyResponse } from "@/types";
 
 // Get list of managers API
-export const getAllManagersListAPI = async (page: number, size: number): Promise<IMyResponse> => {
+export const getManagersListAPI = async (page: number, size: number): Promise<IMyResponse> => {
     try {
         const { data } = await axiosClient.get(`/api/v1/managers?page=${page}&size=${size}`);
         console.log("Manager List: ", data);

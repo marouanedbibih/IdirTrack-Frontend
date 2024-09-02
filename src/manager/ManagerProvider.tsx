@@ -1,15 +1,7 @@
 "use client";
 
-import { DynamicAlert } from "@/components/alert/DynamicAlert";
-import {
-  ErrorInterface,
-  MessageInterface,
-  MessageType,
-  Pagination,
-} from "@/types/Basics";
 import React, { createContext, useState, ReactNode, useContext } from "react";
 import { IManager, IManagerRequest } from "./ManagerTypes";
-import { getAllManagersListAPI } from "./ManagerServices";
 import { IDialog, IID, ILoading, IMyFieldError, IPagination } from "@/types";
 
 // Define the type for the context state
@@ -26,10 +18,8 @@ interface ManagerContextProps {
   setIID: (IID: IID) => void;
 
   // Manager Fetching state
-  ManagerList: IManager[];
-  setManagerList: (ManagerList: IManager[]) => void;
-  searchKeyword: string;
-  setSearchKeyword: (searchKeyword: string) => void;
+  ManagerList: IManager[] | null;
+  setManagerList: (ManagerList: IManager[] | null) => void;
 
   // Manager Editing state
   ManagerRequest: IManagerRequest;
@@ -78,8 +68,7 @@ const ManagerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   });
 
   // Fetching States
-  const [ManagerList, setManagerList] = useState<IManager[]>([]);
-  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [ManagerList, setManagerList] = useState<IManager[] | null>(null);
 
   // Editing States
   const [ManagerRequest, setManagerRequest] = useState<IManagerRequest>({
@@ -100,9 +89,6 @@ const ManagerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
   const [fieldsErrors, setFieldsErrors] = useState<IMyFieldError[]>([]);
 
-
-
-
   return (
     <ManagerContext.Provider
       value={{
@@ -120,8 +106,6 @@ const ManagerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         // Manager Fetching state
         ManagerList,
         setManagerList,
-        searchKeyword,
-        setSearchKeyword,
 
         // Manager Editing state
         ManagerRequest,
@@ -132,7 +116,6 @@ const ManagerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       }}
     >
       {children}
-
     </ManagerContext.Provider>
   );
 };
