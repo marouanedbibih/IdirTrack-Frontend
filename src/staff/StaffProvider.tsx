@@ -11,8 +11,8 @@ import { IDialog, IFetching, IID, ILoading, IMyFieldError, IPagination } from "@
 // Define the type for the context state
 interface StaffContextProps {
   // Staff Fetching states
-  staffList: Staff[];
-  setStaffList: (staffList: Staff[]) => void;
+  staffList: Staff[] | null;
+  setStaffList: (staffList: Staff[] | null) => void;
   search: string;
   setSearch: (search: string) => void;
 
@@ -26,6 +26,7 @@ interface StaffContextProps {
   // Basic states
   pagination: IPagination;
   setPagination: (pagination: IPagination) => void;
+  initPagination: () => void;
   loading: ILoading;
   setLoading: (loading: ILoading) => void;
   dialog: IDialog;
@@ -69,9 +70,17 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     totalElements: 0,
     size: 5,
   });
+  const initPagination = () => {
+    setPagination({
+      currentPage: 1,
+      totalPages: 1,
+      totalElements: 0,
+      size: 5,
+    });
+  };
 
   // Satff Fetching states
-  const [staffList, setStaffList] = useState<Staff[]>([]);
+  const [staffList, setStaffList] = useState<Staff[] | null>(null);
   const [search, setSearch] = useState<string>("");
 
 
@@ -100,6 +109,7 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setStaffList,
         pagination,
         setPagination,
+        initPagination,
         search,
         setSearch,
         staffRequest,
