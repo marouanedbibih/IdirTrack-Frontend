@@ -55,7 +55,7 @@ const StaffProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     filter: false,
   });
   const [fetching, setFetching] = useState<IFetching>({ 
-    normal: false,
+    normal: true,
     filter: false,
     search: false,
   });

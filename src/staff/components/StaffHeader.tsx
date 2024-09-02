@@ -13,55 +13,16 @@ import {
 } from "@material-tailwind/react";
 import { useStaffContext } from "@/staff/StaffProvider";
 import { searchStaffsAPI } from "@/staff/StaffServices";
+import { SearchStaff } from "./SearchStaff";
 export interface IStaffHeaderProps {}
 
 export default function StaffHeader(props: IStaffHeaderProps) {
-  // Staff list state management
-  const { setStaffList } = useStaffContext();
+  // Basics states
+  const { dialog, setDialog } = useStaffContext();
 
-  // Pagination state management
-  const { setPagination } = useStaffContext();
-
-  // Search state management
-  const { search, setSearch } = useStaffContext();
-
-  // Loading state management
-  const { tableLoading, setTableLoading } = useStaffContext();
-
-  // Handel open form
-  const { handleOpenForm } = useStaffContext();
-
-  /**
-   * Fetch the searched staff list
-   * This function is used to fetch the staff list based on the search value, from the service and update the state
-   * of the staff list, the pagination and the loading state
-   * @param search The value to search for
-   * @param page The page number
-   * @param size The size of the page
-   * @returns void
-   */
-  const fetchSearchedStaffList = (
-    search: string,
-    page: number,
-    size: number
-  ) => {
-    setTableLoading(true);
-    searchStaffsAPI(search, page, size)
-      .then((data) => {
-        setStaffList(data.content);
-        setPagination({
-          currentPage: data.metadata?.currentPage ?? 1,
-          totalPages: data.metadata?.totalPages ?? 1,
-          size: data.metadata?.size ?? 5,
-          totalElements: data.metadata?.totalElements ?? 0,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setTableLoading(false);
-      });
+  // Function to handle the open form dialog
+  const handleOpenForm = () => {
+    setDialog({ ...dialog, form: !dialog.form });
   };
 
   return (
@@ -101,18 +62,7 @@ export default function StaffHeader(props: IStaffHeaderProps) {
             </Typography>
           </div>
           <div className="flex w-full shrink-0 gap-2 md:w-max">
-            <div className="w-full md:w-72">
-              <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                crossOrigin={undefined}
-                onChange={(e) => {
-                  fetchSearchedStaffList(e.target.value, 1, 5);
-                }}
-              />
-            </div>
+            <SearchStaff />
             <Button
               className="flex items-center gap-3"
               size="sm"

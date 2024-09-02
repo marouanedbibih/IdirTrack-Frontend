@@ -1,5 +1,4 @@
 import { useStaffContext } from "@/staff/StaffProvider";
-import { deleteStaffAPI, getAllStaffsListAPI } from "@/staff/StaffServices";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   Card,
@@ -9,16 +8,11 @@ import {
   Tooltip,
   Typography,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
-import StaffTableFooter from "./StaffTableFooter";
 
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-} from "@material-tailwind/react";
+import { useDeleteStaff, useFetchListOfStaffs } from "../hooks/StaffHooks";
+import DeleteConfirmationDialog from "@/components/dialog/DeleteConfirmationDialog";
+import { SmallTextTable } from "@/components/text/SmallTextTable";
+import Pagination from "@/components/pagination/Pagination";
 
 export interface IStaffTableProps {}
 
@@ -31,102 +25,38 @@ const TABLE_HEAD = [
   "Actions",
 ];
 export default function StaffTable(props: IStaffTableProps) {
-  // Staff list state management
-  const { staffList, setStaffList } = useStaffContext();
-
-  // Loading state management
-  const { tableLoading, setTableLoading } = useStaffContext();
-
-  // Pagination state management
+  // Basics states
   const { pagination, setPagination } = useStaffContext();
+  const { loading, setLoading } = useStaffContext();
+  const { dialog, setDialog } = useStaffContext();
+  const { fetching, setFetching } = useStaffContext();
+  const { IID, setIID } = useStaffContext();
 
-  // Search state management
-  const { search } = useStaffContext();
-
-  // Dialog state management
-  const [openDialog, setOpenDialog] = useState(false);
-
-  // Staff Id local state management
-  // const [staffId, setStaffId] = useState<number | null>(null);
-
-  // Loading delete local staff state management
-  const [loadingDelete, setLoadingDelete] = useState(false);
-
-  // Message state management
-  const { setMessage, message } = useStaffContext();
-
-  // Alert state management
-  const { setAlertOpen } = useStaffContext();
-
-  // Stafe ID provider state management
-  const { setStaffId, staffId } = useStaffContext();
-
-  // Open Modal provider state management
-  const { setOpenForm} = useStaffContext();
-
-  // Fetch staff list provider state management
-  const { fetchStaffList } = useStaffContext();
+  // Staff Fetching states
+  const { staffList, setStaffList } = useStaffContext();
 
   // Function to handle the delete staff dialog
   const handelDeleteStaffDialog = (id: number | null) => {
     if (id) {
-      setStaffId(id);
+      setIID({ ...IID, delete: id });
     }
-    setOpenDialog(!openDialog);
+    setDialog({ ...dialog, delete: !dialog.delete });
   };
 
-  /**
-   * Handel the update staff dialog
-   * @param id
-   * @returns void
-   */
+  // Function to handle the update staff dialog
   const handelUpdateStaffDialog = (id: number) => {
-    setStaffId(id);
-    setOpenForm(true);
-
+    setIID({ ...IID, update: id });
+    setDialog({ ...dialog, form: !dialog.form });
   };
 
-  // -------------- APIs functions --------------
-
-  /**
-   * This function is used to delete a staff member by calling the deleteStaffAPI
-   * and then updating the staff list state
-   */
-  const deleteStaff = () => {
-    if (staffId) {
-      setLoadingDelete(true);
-      deleteStaffAPI(staffId)
-        .then((data) => {
-          fetchStaffList(pagination.currentPage, 5);
-          setMessage({
-            message: data.message,
-            messageType: data.messageType,
-          });
-
-          setAlertOpen(true);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          handelDeleteStaffDialog(null);
-          setLoadingDelete(false);
-        });
-    }
-  };
+  // Hook Functions to delete staff
+  const deleteStaff = useDeleteStaff();
 
 
-
-  // Use effect to fetch the staff list when the page changes
-  useEffect(() => {
-    if (search === "") {
-      fetchStaffList(pagination.currentPage, 5);
-    }
-  }, [pagination.currentPage]);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      {tableLoading ? (
+      {loading.table ? (
         <Spinner
           className="h-8 w-8"
           onPointerEnterCapture={undefined}
@@ -181,64 +111,19 @@ export default function StaffTable(props: IStaffTableProps) {
                     return (
                       <tr key={id}>
                         <td className={classes}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {name}
-                          </Typography>
+                          <SmallTextTable text={name} />
                         </td>
                         <td className={classes}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {phone}
-                          </Typography>
+                          <SmallTextTable text={phone} />
                         </td>
                         <td className={classes}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {position}
-                          </Typography>
+                          <SmallTextTable text={position} />
                         </td>
                         <td className={classes}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {clientName}
-                          </Typography>
+                          <SmallTextTable text={clientName} />
                         </td>
                         <td className={classes}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {clientCompany}
-                          </Typography>
+                          <SmallTextTable text={clientCompany} />
                         </td>
                         <td className={`${classes} flex flex-row gap-2`}>
                           <Tooltip content="View Staff">
@@ -283,12 +168,12 @@ export default function StaffTable(props: IStaffTableProps) {
               </tbody>
             </table>
           </CardBody>
-          <StaffTableFooter
+          <Pagination
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
-            onPageChange={(page) =>
-              setPagination({ ...pagination, currentPage: page })
-            }
+            onPageChange={(page) => {
+              setPagination({ ...pagination, currentPage: page });
+            }}
           />
         </Card>
       ) : (
@@ -301,67 +186,13 @@ export default function StaffTable(props: IStaffTableProps) {
           No Staff Found
         </Typography>
       )}
-
-      <Dialog
-        open={openDialog}
-        handler={handelDeleteStaffDialog}
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      >
-        <DialogHeader
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Confirm Deletion
-        </DialogHeader>
-        <DialogBody
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Are you sure you want to delete this staff member? This action cannot
-          be undone.
-        </DialogBody>
-        {loadingDelete ? (
-          <div className="flex flex-1 justify-center items-center p-4">
-            <Spinner
-              className="h-8 w-8"
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            />
-          </div>
-        ) : (
-          <DialogFooter
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <Button
-              variant="text"
-              color="red"
-              onClick={() => handelDeleteStaffDialog(null)}
-              className="mr-1"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              variant="gradient"
-              color="green"
-              onClick={() => deleteStaff()}
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <span>Confirm</span>
-            </Button>
-          </DialogFooter>
-        )}
-      </Dialog>
+      <DeleteConfirmationDialog
+        open={dialog.delete}
+        handleClose={() => handelDeleteStaffDialog(null)}
+        handleConfirm={() => deleteStaff(IID.delete!)}
+        loading={loading.delete}
+        message="Are you sure you want to delete this staff?"
+      />
     </div>
   );
 }

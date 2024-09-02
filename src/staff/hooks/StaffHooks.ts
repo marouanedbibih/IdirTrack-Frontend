@@ -20,7 +20,7 @@ export const useFetchListOfStaffs = () => {
     const { pagination, setPagination, initPagination } = useStaffContext();
 
     // Fetch the list of staffs
-    const fetchListOfStaffs = async (page: number, size: number) => {
+    const fetchListOfStaffs = (page: number, size: number) => {
         setFetching({ ...fetching, normal: true, search: false, filter: false });
         setLoading({ ...loading, table: true, form: false, delete: false });
         // Call the API to get the list of staffs
@@ -76,11 +76,11 @@ export const useSearchStaffs = () => {
     const { loading, setLoading } = useStaffContext();
     const { setStaffList } = useStaffContext();
     const { pagination, setPagination, initPagination } = useStaffContext();
-    const { search } = useStaffContext();
+    const { search, setSearch } = useStaffContext();
 
     // Call the API to search for staffs
-    const searchStaffs = async (search: string, page: number, size: number) => {
-        setFetching({ ...fetching, normal: false, search: true, filter: false });
+    const searchStaffs = (search: string, page: number, size: number) => {
+        // setFetching({ ...fetching, normal: false, search: true, filter: false });
         setLoading({ ...loading, table: true, form: false, delete: false });
         searchStaffsAPI(search, page, size)
             .then((res: IMyResponse) => {
@@ -121,7 +121,7 @@ export const useSearchStaffs = () => {
     }, [search, pagination.currentPage, pagination.size, fetching.search]);
 
     // Return the function to search for staffs
-    return searchStaffs;
+    return { searchStaffs, pagination, initPagination, setFetching, setSearch };
 }
 
 // Hook to Fetch staff by ID
@@ -167,7 +167,6 @@ export const useCreateStaff = () => {
     // Import the necessary state from the provider
     const { loading, setLoading } = useStaffContext();
     const { dialog, setDialog } = useStaffContext();
-    const { setFetching } = useStaffContext();
     const { pagination, initPagination } = useStaffContext();
     const { resetStaffRequest } = useStaffContext();
     const { setFieldErrors } = useStaffContext();
@@ -179,15 +178,13 @@ export const useCreateStaff = () => {
         setLoading({ ...loading, table: false, form: true, delete: false });
         createStaffAPI(request)
             .then((res: IMyResponse) => {
+                setDialog({ ...dialog, form: false });
+                resetStaffRequest();
                 setMessage({
                     message: res.message ? res.message : "Staff Created Successfully",
                     messageType: MessageType.SUCCESS
                 });
                 setAlertOpen(true);
-                setDialog({ ...dialog, form: false });
-                resetStaffRequest();
-                setFetching({ normal: true, search: false, filter: false });
-                initPagination();
                 fetchListOfStaffs(pagination.currentPage, pagination.size);
             })
             .catch((err: IMyErrorResponse) => {
@@ -215,8 +212,7 @@ export const useUpdateStaff = () => {
     // Import the necessary state from the provider
     const { loading, setLoading } = useStaffContext();
     const { dialog, setDialog } = useStaffContext();
-    const { setFetching } = useStaffContext();
-    const { pagination, initPagination } = useStaffContext();
+    const { pagination } = useStaffContext();
     const { resetStaffRequest } = useStaffContext();
     const { IID, setIID } = useStaffContext();
     const { setFieldErrors } = useStaffContext();
@@ -228,17 +224,15 @@ export const useUpdateStaff = () => {
         setLoading({ ...loading, table: false, form: true, delete: false });
         createStaffAPI(request)
             .then((res: IMyResponse) => {
+                setDialog({ ...dialog, form: false });
+                resetStaffRequest();
+                setIID({ ...IID, update: null });
                 setMessage({
                     message: res.message ? res.message : "Staff Updated Successfully",
                     messageType: MessageType.SUCCESS
                 });
                 setAlertOpen(true);
-                setDialog({ ...dialog, form: false });
-                resetStaffRequest();
-                setFetching({ normal: true, search: false, filter: false });
-                initPagination();
                 fetchListOfStaffs(pagination.currentPage, pagination.size);
-                setIID({ ...IID, update: null });
             })
             .catch((err: IMyErrorResponse) => {
                 console.error("Error Updating Staff", err);
@@ -265,8 +259,7 @@ export const useDeleteStaff = () => {
     // Import the necessary state from the provider
     const { loading, setLoading } = useStaffContext();
     const { dialog, setDialog } = useStaffContext();
-    const { setFetching } = useStaffContext();
-    const { pagination, initPagination } = useStaffContext();
+    const { pagination } = useStaffContext();
     const { IID, setIID } = useStaffContext();
     // Import the fetchListOfStaffs function from the useFetchListOfStaffs hook
     const fetchListOfStaffs = useFetchListOfStaffs();
@@ -276,16 +269,14 @@ export const useDeleteStaff = () => {
         setLoading({ ...loading, table: false, form: false, delete: true });
         deleteStaffAPI(id)
             .then((res: IMyResponse) => {
+                setDialog({ ...dialog, delete: false });
+                setIID({ ...IID, delete: null });
                 setMessage({
                     message: res.message ? res.message : "Staff Deleted Successfully",
                     messageType: MessageType.SUCCESS
                 });
                 setAlertOpen(true);
-                setDialog({ ...dialog, delete: false });
-                setFetching({ normal: true, search: false, filter: false });
-                initPagination();
                 fetchListOfStaffs(pagination.currentPage, pagination.size);
-                setIID({ ...IID, delete: null });
             })
             .catch((err: IMyErrorResponse) => {
                 console.error("Error Deleting Staff", err);
