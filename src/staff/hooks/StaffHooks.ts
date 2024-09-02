@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IMyErrorResponse, IMyResponse } from "@/types";
 import { useStaffContext } from "../StaffProvider"
-import { createStaffAPI, deleteStaffAPI, getListOfStaffsListAPI, getStaffByIdAPI, searchStaffsAPI } from "../StaffServices";
+import { createStaffAPI, deleteStaffAPI, getListOfStaffsListAPI, getStaffByIdAPI, searchStaffsAPI, updateStaffAPI } from "../StaffServices";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { MessageType } from "@/types/Basics";
 import React from "react";
@@ -222,7 +222,7 @@ export const useUpdateStaff = () => {
     // Call the API to update a staff
     const updateStaff = async (id: number, request: StaffRequest) => {
         setLoading({ ...loading, table: false, form: true, delete: false });
-        createStaffAPI(request)
+        updateStaffAPI(id, request)
             .then((res: IMyResponse) => {
                 setDialog({ ...dialog, form: false });
                 resetStaffRequest();
