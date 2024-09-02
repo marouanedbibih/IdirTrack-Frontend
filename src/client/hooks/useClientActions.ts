@@ -4,7 +4,7 @@ import { useClientContext } from "../contexts/ClientProvider";
 import { createClientAPI } from "../ClientService";
 import { IMyErrorResponse, IMyResponse } from "@/types";
 import { MessageType } from "@/types/Basics";
-import { useFetchListOfClients } from "./useClientFetch";
+import { useFetchListOfClients } from "./ClientHooks";
 
 
 export const useCreateClient = () => {

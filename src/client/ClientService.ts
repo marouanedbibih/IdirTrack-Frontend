@@ -55,12 +55,12 @@ export const getClientByIdAPI = async (id: number): Promise<IMyResponse> => {
 }
 
 // Update client by id
-export const updateClientAPI = async (id: number, req: IClientRequest): Promise<ApiResponse> => {
+export const updateClientAPI = async (id: number, req: IClientRequest): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.put(`/api/client/${id}`, req);
+        const { data } = await axiosClient.put(`/api/v1/client/${id}`, req);
         return data;
     } catch (error: any) {
-        return error.response.data;
+        throw error.response.data;
     }
 }
 

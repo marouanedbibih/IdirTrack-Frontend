@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react";
 import {
   Button,
@@ -13,26 +14,26 @@ import DefaultSelect from "@/components/inputs/DefaultSelect";
 import { DefaultInput } from "@/components/inputs/DefaultInput";
 import DefaultTextArea from "@/components/inputs/DefaultTextArea";
 import { useFetchClientCategoriesDropdown } from "@/client-category/hooks/useFetchClientCategories";
-import { useClientFunctionsContext } from "../contexts/ClientFunctionsProvider";
 import { useCreateClient } from "../hooks/useClientActions";
+import { useFetchClientById, useUpdateClient } from "../hooks/ClientHooks";
 interface ClientFormProps {}
 export const ClientForm: React.FC<ClientFormProps> = ({}) => {
   // Basics States
   const { dialog, setDialog } = useClientContext();
-  const { loading, setLoading } = useClientContext();
-  const { IIDs, setIIDs } = useClientContext();
+  const { loading } = useClientContext();
+  const { IIDs } = useClientContext();
   // Client Editing States
   const { clientRequest, setClientRequest } = useClientContext();
   const { fieldErrors, setFieldErrors } = useClientContext();
   // Client Category Dropdown List
   const { clientCategoryDropdown } = useFetchClientCategoriesDropdown();
 
-  // Create client function provider
+  // Hook to fetch client by ID
+  const { fetchClientById } = useFetchClientById();
+  // Hook to update client
+  const { updateClient } = useUpdateClient();
+  // Hook to create client
   const { createClient } = useCreateClient();
-  // Fetch client by ID function provider
-  const { fetchClientById } = useClientFunctionsContext();
-  // Update client by ID function provider
-  const { updateClientById } = useClientFunctionsContext();
 
   // Dialog Handler
   const handler = () => {
@@ -71,7 +72,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({}) => {
     console.log("Client Request", clientRequest);
     if (IIDs.update) {
       // Update the client
-      updateClientById(IIDs.update, clientRequest);
+      updateClient(IIDs.update, clientRequest);
     } else {
       // Create the client
       createClient(clientRequest);

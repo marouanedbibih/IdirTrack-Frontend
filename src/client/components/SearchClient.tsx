@@ -2,7 +2,7 @@ import React from "react";
 import { Input } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useClientContext } from "../contexts/ClientProvider";
-import { useSearchClient } from "../hooks/useClientFetch";
+import { useSearchClient } from "../hooks/ClientHooks";
 
 interface SearchClientProps {}
 

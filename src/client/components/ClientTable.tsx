@@ -9,14 +9,13 @@ import {
   Tooltip,
   IconButton,
 } from "@material-tailwind/react";
-import { useFetchListOfClients } from "../hooks/useClientFetch";
-import { IClient, IClientTableDTO } from "../types/type";
+import { IClientTableDTO } from "../types/type";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline"; // Example import, adjust as necessary
 import { SmallTextTable } from "@/components/text/SmallTextTable";
 import Pagination from "@/components/pagination/Pagination";
-import { useClientFunctionsContext } from "../contexts/ClientFunctionsProvider";
 import DeleteConfirmationDialog from "@/components/dialog/DeleteConfirmationDialog";
 import { useClientContext } from "../contexts/ClientProvider";
+import { useDeleteClient } from "../hooks/ClientHooks";
 
 interface ClientTableProps {}
 
@@ -32,23 +31,23 @@ const TABLE_HEAD = [
 ];
 
 export const ClientTable: React.FC<ClientTableProps> = () => {
-  // Fetch list of clients
-  const { data, pagination, setPagination, fetching, loading } =
-    useFetchListOfClients();
-
-  // Client ID state
-  const {IIDs,setIIDs} = useClientContext();
-  // Dialog state
+  // Basics states
+  const { data } = useClientContext();
+  const { loading } = useClientContext();
+  const { pagination, setPagination } = useClientContext();
+  const { IIDs, setIIDs } = useClientContext();
   const { dialog, setDialog } = useClientContext();
 
-  // Delete function provider
-  const { deleteClientById } = useClientFunctionsContext();
+  // Hook to delete client
+  const { deleteClient } = useDeleteClient();
 
+  // Handle update client
   const handleUpdateClient = (id: number) => {
     setIIDs({ ...IIDs, update: id });
     setDialog({ ...dialog, form: true });
   };
 
+  // Handle delete dialog
   const handleDeleteDialog = (id: number) => {
     setIIDs({ ...IIDs, delete: id });
     setDialog({ ...dialog, delete: true });
@@ -60,7 +59,6 @@ export const ClientTable: React.FC<ClientTableProps> = () => {
       placeholder={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
-      
     >
       <table className="w-full min-w-max table-auto text-left">
         <thead>
@@ -184,7 +182,7 @@ export const ClientTable: React.FC<ClientTableProps> = () => {
         open={dialog.delete}
         handleClose={() => setDialog({ ...dialog, delete: false })}
         handleConfirm={() => {
-          // deleteClientById(IIDs.delete);
+          deleteClient(IIDs.delete!);
         }}
         loading={loading.delete}
         message="Are you sure you want to delete this client?"
