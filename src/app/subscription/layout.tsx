@@ -1,24 +1,25 @@
 "use client";
 import { DefaultNavbar } from "@/components/navbar/DefaultNavbar";
-import { useGlobalContext } from "@/context/GlobalProvider";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Adjust the import path as needed
-import { Spinner } from "@material-tailwind/react";
 import { SideBar } from "@/components/sidebar/SideBar";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { Spinner } from "@material-tailwind/react";
+import { useRouter } from "next/navigation";
+import React from "react";
 
-export default function ClientLayout({
+
+export default function SubscriptionLayout({
   children, // will be a page or nested layout
 }: {
   children: React.ReactNode;
 }) {
   const { getRoleFromLocalStorage, getTokenFromLocalStorage } =
     useGlobalContext(); // Access context
-  const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [token, setToken] = React.useState<string | null>(null);
+  const [role, setRole] = React.useState<string | null>(null);
   const router = useRouter(); // Hook for navigation
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Fetch token and role from localStorage on the client side
     const fetchedToken = getTokenFromLocalStorage();
     const fetchedRole = getRoleFromLocalStorage();

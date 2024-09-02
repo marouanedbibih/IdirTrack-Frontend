@@ -1,4 +1,4 @@
-import { ComplexNavbar } from "@/components/navbar/ComplexNavbar";
+import { ComplexNavbar } from "@/components/navbar/DefaultNavbar";
 import { SidebarWithContentSeparator } from "@/components/sidebar/SidebarWithContentSeparator";
 import { StaffProvider } from "@/staff/StaffProvider";
 import { ManagerProvider } from "@/manager/ManagerProvider";

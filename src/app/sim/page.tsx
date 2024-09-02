@@ -11,7 +11,7 @@ import React, { useEffect } from "react";
 
 const SimHome: React.FC = () => {
   return (
-    <div className="flex flex-col justify-center items-center mx-auto p-4 gap-4 ">
+    <div className="flex flex-col justify-center items-center mx-auto  gap-4 ">
       <OperatorProvider>
         <div className="flex flex-row justify-between items-start w-full">
           <OperatorTable />

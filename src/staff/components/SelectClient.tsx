@@ -9,7 +9,7 @@ import { Spinner, Typography } from "@material-tailwind/react";
 import * as React from "react";
 import { getClientsForDropdown } from "@/client/ClientService";
 import { IMyResponse } from "@/operators/types";
-import { IClientDropdown } from "@/client/type";
+import { IClientDropdown } from "@/client/types/type";
 
 export interface ISelectClientProps {
   error?: string | null;

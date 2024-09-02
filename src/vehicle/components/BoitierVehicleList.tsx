@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import {
   List,
@@ -29,9 +30,13 @@ import { deleteBoitierApi } from "@/boitier/BoitierService";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { MessageType } from "@/types/Basics";
 
-interface BoitierVehicleListProps {}
+interface BoitierVehicleListProps {
+  reFetchUnassignedBoitiers: boolean;
+}
 
-export const BoitierVehicleList: React.FC<BoitierVehicleListProps> = ({}) => {
+export const BoitierVehicleList: React.FC<BoitierVehicleListProps> = ({
+  reFetchUnassignedBoitiers
+}) => {
   /**
    * Global context
    */
@@ -45,7 +50,7 @@ export const BoitierVehicleList: React.FC<BoitierVehicleListProps> = ({}) => {
 
   React.useEffect(() => {
     fetchBoitierUnassigned();
-  }, []);
+  }, [reFetchUnassignedBoitiers]);
 
   const { boitierId, setBoitierId } = useEditVehicleContext();
 
@@ -113,7 +118,6 @@ export const BoitierVehicleList: React.FC<BoitierVehicleListProps> = ({}) => {
   /**
    * Update boitier
    */
-
   const handleUpdateBoitier = (id: number) => {
     setBoitierId(id);
   };

@@ -1,16 +1,14 @@
-import React from "react";
 import { Input } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useClientContext } from "../contexts/ClientProvider";
-import { useSearchClient } from "../hooks/useClientFetch";
+import { useSearchForSubscriptions } from "../hooks/useFetchSubscription";
 
-interface SearchClientProps {}
+interface SearchSubscriptionProps {}
+export const SearchSubscription: React.FC<SearchSubscriptionProps> = ({}) => {
+  // Search subscription Hooks
+  const { setSearchKeyword, setFetching, initPagination } =
+    useSearchForSubscriptions();
 
-export const SearchClient: React.FC<SearchClientProps> = ({}) => {
-  // Search client Hooks
-  const {setFetching,initPagination,setSearchKeyword} =  useSearchClient();
-
-  // On search client
+  // On search subscription
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     initPagination();
     if (e.target.value !== "") {
@@ -21,6 +19,7 @@ export const SearchClient: React.FC<SearchClientProps> = ({}) => {
       setSearchKeyword("");
     }
   };
+
   return (
     <div className="w-full md:w-72">
       <Input
