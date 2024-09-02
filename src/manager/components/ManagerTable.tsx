@@ -7,7 +7,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 // import ManagerTableFooter from "./ManagerTableFooter";
 
 import {
@@ -20,104 +20,62 @@ import {
 import { useManagerContext } from "../ManagerProvider";
 import { deleteManagerAPI } from "../ManagerServices";
 import ManagerTableFooter from "./ManagerTableFooter";
+import {
+  useDeleteManager,
+  useFetchListOfManagers,
+} from "../hooks/ManagerHooks";
+import { IManager } from "../ManagerTypes";
+import { SmallTextTable } from "@/components/text/SmallTextTable";
+import DeleteConfirmationDialog from "@/components/dialog/DeleteConfirmationDialog";
 
 export interface IManagerTableProps {}
 
 const TABLE_HEAD = ["Name", "Username", "Email", "Phone", "Actions"];
 export default function ManagerTable(props: IManagerTableProps) {
-  // Manager list state management
-  const { ManagerList, setManagerList } = useManagerContext();
-
-  // Loading state management
-  const { tableLoading, setTableLoading } = useManagerContext();
-
-  // Pagination state management
+  // Basics States
+  const { loading, setLoading } = useManagerContext();
+  const { dialog, setDialog } = useManagerContext();
+  const { IID, setIID } = useManagerContext();
   const { pagination, setPagination } = useManagerContext();
 
-  // Search state management
-  const { search } = useManagerContext();
+  // Manager Fetching state
+  const { ManagerList, setManagerList } = useManagerContext();
 
-  // Dialog state management
-  const [openDialog, setOpenDialog] = useState(false);
+  // Fetch list of Managers Hook
+  const { fetchListOfManagers } = useFetchListOfManagers();
 
-  // Manager Id local state management
-  // const [ManagerId, setManagerId] = useState<number | null>(null);
-
-  // Loading delete local Manager state management
-  const [loadingDelete, setLoadingDelete] = useState(false);
-
-  // Message state management
-  const { setMessage, message } = useManagerContext();
-
-  // Alert state management
-  const { setAlertOpen } = useManagerContext();
-
-  // Stafe ID provider state management
-  const { setManagerId, ManagerId } = useManagerContext();
-
-  // Open Modal provider state management
-  const { setOpenForm } = useManagerContext();
-
-  // Fetch Manager list provider state management
-  const { fetchManagerList } = useManagerContext();
+  // Delete Manager Hook Function
+  const { deleteManager } = useDeleteManager();
 
   // Function to handle the delete Manager dialog
   const handelDeleteManagerDialog = (id: number | null) => {
     if (id) {
-      setManagerId(id);
+      setIID({ ...IID, delete: id });
     }
-    setOpenDialog(!openDialog);
+    setDialog({ ...dialog, delete: !dialog.delete });
   };
 
-  /**
-   * Handel the update Manager dialog
-   * @param id
-   * @returns void
-   */
+  // Function to handle the update Manager dialog
   const handelUpdateManagerDialog = (id: number) => {
-    setManagerId(id);
-    setOpenForm(true);
+    setIID({ ...IID, update: id });
+    setDialog({ ...dialog, form: !dialog.form });
   };
 
-  // -------------- APIs functions --------------
-
-  /**
-   * This function is used to delete a Manager member by calling the deleteManagerAPI
-   * and then updating the Manager list state
-   */
-  const deleteManager = () => {
-    if (ManagerId) {
-      setLoadingDelete(true);
-      deleteManagerAPI(ManagerId)
-        .then((data) => {
-          setMessage({
-            message: data.message,
-            messageType: data.messageType,
-          });
-
-          setAlertOpen(true);
-          fetchManagerList(pagination.currentPage, 5);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          handelDeleteManagerDialog(null);
-          setLoadingDelete(false);
-        });
+  // On Delete Manager
+  const onDelete = () => {
+    if (IID.delete) {
+      deleteManager(IID.delete);
     }
   };
 
-  // Use effect to fetch the Manager list when the page changes
-  useEffect(() => {
-    if (search === "") {
-      fetchManagerList(pagination.currentPage, 5);
-    }
-  }, [pagination.currentPage]);
+  // UseEffect to fetch list of Managers
+  React.useEffect(() => {
+    fetchListOfManagers(pagination.currentPage, pagination.size);
+  }, [pagination.currentPage, pagination.size]);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      {tableLoading ? (
+      {loading.table ? (
         <Spinner
           className="h-8 w-8"
           onPointerEnterCapture={undefined}
@@ -159,61 +117,25 @@ export default function ManagerTable(props: IManagerTableProps) {
                 </tr>
               </thead>
               <tbody>
-                {ManagerList.map(({ id, user }, index) => {
+                {ManagerList.map((manager: IManager, index) => {
                   const isLast = index === ManagerList.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
 
                   return (
-                    <tr key={user.id}>
+                    <tr key={manager.managerId}>
                       <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={undefined}
-                          onPointerEnterCapture={undefined}
-                          onPointerLeaveCapture={undefined}
-                        >
-                          {user.name}
-                        </Typography>
+                        <SmallTextTable text={manager.name} />
                       </td>
                       <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={undefined}
-                          onPointerEnterCapture={undefined}
-                          onPointerLeaveCapture={undefined}
-                        >
-                          {user.username}
-                        </Typography>
+                        <SmallTextTable text={manager.username} />
                       </td>
                       <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={undefined}
-                          onPointerEnterCapture={undefined}
-                          onPointerLeaveCapture={undefined}
-                        >
-                          {user.email}
-                        </Typography>
+                        <SmallTextTable text={manager.email} />
                       </td>
                       <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={undefined}
-                          onPointerEnterCapture={undefined}
-                          onPointerLeaveCapture={undefined}
-                        >
-                          {user.phone}
-                        </Typography>
+                        <SmallTextTable text={manager.phone} />
                       </td>
                       <td className={`${classes} flex flex-row gap-2`}>
                         <Tooltip content="View Manager">
@@ -233,7 +155,7 @@ export default function ManagerTable(props: IManagerTableProps) {
                             onPointerLeaveCapture={undefined}
                             color="green"
                             onClick={(event) => {
-                              handelUpdateManagerDialog(user.id);
+                              handelUpdateManagerDialog(manager.managerId);
                             }}
                           >
                             <PencilIcon className="h-4 w-4" />
@@ -246,7 +168,7 @@ export default function ManagerTable(props: IManagerTableProps) {
                             onPointerLeaveCapture={undefined}
                             color="red"
                             onClick={(event) =>
-                              handelDeleteManagerDialog(user.id)
+                              handelDeleteManagerDialog(manager.managerId)
                             }
                           >
                             <TrashIcon className="h-4 w-4" />
@@ -278,66 +200,13 @@ export default function ManagerTable(props: IManagerTableProps) {
         </Typography>
       )}
 
-      <Dialog
-        open={openDialog}
-        handler={handelDeleteManagerDialog}
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      >
-        <DialogHeader
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Confirm Deletion
-        </DialogHeader>
-        <DialogBody
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          Are you sure you want to delete this Manager member? This action
-          cannot be undone.
-        </DialogBody>
-        {loadingDelete ? (
-          <div className="flex flex-1 justify-center items-center p-4">
-            <Spinner
-              className="h-8 w-8"
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            />
-          </div>
-        ) : (
-          <DialogFooter
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <Button
-              variant="text"
-              color="red"
-              onClick={() => handelDeleteManagerDialog(null)}
-              className="mr-1"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              variant="gradient"
-              color="green"
-              onClick={() => deleteManager()}
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <span>Confirm</span>
-            </Button>
-          </DialogFooter>
-        )}
-      </Dialog>
+      <DeleteConfirmationDialog
+        handleClose={() => handelDeleteManagerDialog(null)}
+        open={dialog.delete}
+        handleConfirm={onDelete}
+        loading={loading.delete}
+        message="Are you sure you want to delete this Manager?"
+      />
     </div>
   );
 }

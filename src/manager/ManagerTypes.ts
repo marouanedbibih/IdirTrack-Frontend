@@ -7,8 +7,13 @@ export interface IManagerRequest {
 }
 
 export interface IManager {
-    id: number;
-    user: IUser;
+    userId: number;
+    managerId: number;
+    traccarId: number;
+    username: string;
+    name: string;
+    email: string;
+    phone: string;
 
 }
 

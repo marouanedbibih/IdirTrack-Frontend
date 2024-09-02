@@ -29,7 +29,7 @@ export const createManagerAPI = async (Manager: IManagerRequest): Promise<IMyRes
 // Get manager by id API
 export const getManagerByIdAPI = async (id: number): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.get(`/api/manager/${id}`);
+        const { data } = await axiosClient.get(`/api/v1/manager/${id}`);
         console.log("Manager: ", data);
         return data;
     } catch (error: any) {
@@ -41,7 +41,7 @@ export const getManagerByIdAPI = async (id: number): Promise<IMyResponse> => {
 // Update manager by id API
 export const updateManagerAPI = async (id: number, Manager: IManagerRequest): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.put(`/api/manager/${id}`, Manager);
+        const { data } = await axiosClient.put(`/api/v1/manager/${id}`, Manager);
         console.log("Manager Updated: ", data);
         return data;
     } catch (error: any) {
@@ -53,7 +53,7 @@ export const updateManagerAPI = async (id: number, Manager: IManagerRequest): Pr
 // Delete manager by id API
 export const deleteManagerAPI = async (id: number): Promise<IMyResponse> => {
     try {
-        const { data } = await axiosClient.delete(`/api/manager/${id}`);
+        const { data } = await axiosClient.delete(`/api/v1/manager/${id}`);
         console.log("Manager Deleted: ", data);
         return data;
     } catch (error: any) {
